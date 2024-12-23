@@ -1,0 +1,52 @@
+# Develop environment setup
+spring:
+    application:
+        name: "Help Desk Tickets - Production"
+
+# Develop database connections
+    
+    jpa:
+        defer-datasource-initialization: true
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                formatSql: true
+                jdbc:
+                    lob:
+                        non-contextual-creation: true
+        show-sql: true
+        databasePlatform: "org.hibernate.dialect.PostgreSQLDialect"
+    sql:
+        init:
+            mode: always
+    datasource:
+        url: "jdbc:postgresql://localhost:5432/mydatabase"
+        username: myuser
+        password: secret
+
+# LDAP Setup
+    ldap:
+        urls: "ldap://10.10.50.3:389"
+        username: "cn=adm-api,dc=xl,dc=com"
+        password: "M3tr0T3l3c0m"
+        base: "dc=xl,dc=com"
+        ## embedded: base-dn: 'dc=xl,dc=com'
+
+server:
+    servlet:
+        context-path: '/hdesktickets'
+logging:
+    level:
+        org:
+            springframework:
+                security: 'DEBUG'
+
+# keys
+jwt:
+    public:
+        key: 'classpath:static/key/pub.key'
+    private:
+        key: 'classpath:static/key/app.key'
+
+

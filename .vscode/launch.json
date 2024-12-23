@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-HelpDeskTicketsApplication<help_desk_tickets>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "br.com.doubletelecom.help_desk_tickets.HelpDeskTicketsApplication",
+            "projectName": "help_desk_tickets",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
