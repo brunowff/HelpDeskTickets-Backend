@@ -7,9 +7,4 @@ spring:
 server:
     servlet:
         context-path: '/hdesktickets'
-logging:
-    level:
-        org:
-            springframework:
-                security: 'DEBUG'
 

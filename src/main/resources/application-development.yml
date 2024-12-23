@@ -27,7 +27,7 @@ spring:
 
 # LDAP Setup
     ldap:
-        urls: "ldap://10.10.50.3:389"
+        urls: "ldap://10.10.50.3:135"
         username: "cn=adm-api,dc=xl,dc=com"
         password: "M3tr0T3l3c0m"
         base: "dc=xl,dc=com"
