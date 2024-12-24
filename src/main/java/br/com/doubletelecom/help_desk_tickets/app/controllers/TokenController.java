@@ -37,7 +37,6 @@ public class TokenController {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRep;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final LDAPRepository ldapRepository;
 
     @PostMapping("/login")
@@ -60,14 +59,14 @@ public class TokenController {
 
         var claims = JwtClaimsSet.builder()
                 .issuer("AuthBackend")
-                .subject(user.get().getUserId().toString())
+                .subject(user.get().getId().toString())
                 .issuedAt(now)
                 .claim("scope", scopes)
                 .expiresAt(now.plusSeconds(expiresIn));
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims.build())).getTokenValue();
 
-        var loggedUser = new LoggedUserDto(user.get().getUsername(), user.get().getFullname());
+        var loggedUser = new LoggedUserDto(user.get().getUsername());
 
         return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn, loggedUser));
     }
@@ -76,7 +75,7 @@ public class TokenController {
 		try {
 			ADPrincipal principal = ldapRepository.findByCn(username);
 			if(principal == null) {
-				throw new Exception("Invalid credentials");
+				throw new LoginUsernameOrPasswordException();
 			}
 		} catch (DisabledException e) {
 			throw new LoginUsernameOrPasswordException();

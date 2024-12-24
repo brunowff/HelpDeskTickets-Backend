@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID>{
-    
+public interface UserRepository extends JpaRepository<User, Long>{
+
     Optional<User> findByUsername(String username);
     Optional<User> findUserByUsernameAndPassword(String username, String password);
 }

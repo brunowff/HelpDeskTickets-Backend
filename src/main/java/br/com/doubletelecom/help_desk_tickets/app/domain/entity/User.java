@@ -3,7 +3,8 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.entity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
-import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,21 +26,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_users")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
-    private String fullname;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Long id;
 
-    @Column(unique = true)
-    private String username;
-    private String token; // Encoded
-    private String password; // Encoded
-    private Boolean active;
+	@Column(name = "username", unique = true)
+	private String username;
+
+	@Column(name = "password")
+	private String password;
+
+	@Column(name = "entity_no", unique = true)
+	private String entityNo;
 
     // Setting up a bundle of rules.
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
