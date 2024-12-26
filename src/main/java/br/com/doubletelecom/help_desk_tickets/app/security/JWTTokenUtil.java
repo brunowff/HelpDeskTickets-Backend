@@ -1,4 +1,4 @@
-package br.com.doubletelecom.help_desk_tickets.app.controllers;
+package br.com.doubletelecom.help_desk_tickets.app.security;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;

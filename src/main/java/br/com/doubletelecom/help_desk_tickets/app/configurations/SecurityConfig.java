@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/configuration/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger*/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/webjars/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/identity/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
