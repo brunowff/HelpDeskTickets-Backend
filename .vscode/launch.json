@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "HelpDeskTicketsApplication",
+            "request": "launch",
+            "mainClass": "HelpDeskTicketsApplication",
+            "projectName": "help_desk_tickets"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-HelpDeskTicketsApplication<help_desk_tickets>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

@@ -5,9 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.lang.Object;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -88,7 +87,7 @@ public class ExceptionHandlerAdvice {
 
     private String bindExceptionKeywords(Map<String, Object> keywords, String exceptionKey) {
         String message = messageSource.getMessage(exceptionKey, null, LocaleContextHolder.getLocale());
-        return Objects.nonNull(keywords) ? new StrSubstitutor(keywords).replace(message) : message;
+        return Objects.nonNull(keywords) ? new StringSubstitutor(keywords).replace(message) : message;
     }
 
     private HttpStatus getResponseStatus(Throwable exception) {

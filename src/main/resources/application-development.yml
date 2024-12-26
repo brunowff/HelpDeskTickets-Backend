@@ -1,7 +1,7 @@
 # Develop environment setup
 spring:
     application:
-        name: "Help Desk Tickets - Production"
+        name: "Help Desk Tickets - Development"
 
 # Develop database connections
     
@@ -27,11 +27,17 @@ spring:
 
 # LDAP Setup
     ldap:
-        url: "ldap://10.10.50.3:135"
-        username: "cn=adm-api,dc=xl,dc=com"
-        password: "M3tr0T3l3c0m"
-        base: "dc=xl,dc=com"
-        ## embedded: base-dn: 'dc=xl,dc=com'
+        urls: "ldap://10.10.50.3:389"
+        username: "cn={0},dc=local,dc=metrotelecom,dc=com,dc=br"
+        base: "ou=users,ou=system,ou=admin"
+        userDnPatterns: "uid={0},ou=users"
+
+    main:
+        allow-bean-definition-overriding: TRUE
+
+    mvc:
+      pathmatch:
+            matching-strategy: ANT_PATH_MATCHER
 
 server:
     servlet:
@@ -48,5 +54,5 @@ jwt:
         key: 'classpath:static/key/pub.key'
     private:
         key: 'classpath:static/key/app.key'
-
+    secret: 7CA6AFDA-B94C-4CCF-AC45-7C802BD0745F
 
