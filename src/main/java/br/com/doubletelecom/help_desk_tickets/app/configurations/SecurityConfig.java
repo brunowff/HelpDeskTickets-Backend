@@ -2,24 +2,16 @@ package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -47,10 +39,6 @@ public class SecurityConfig {
         @Value("${jwt.private.key}")
         private RSAPrivateKey privateKey;
 
-        @Autowired
-	private UserDetailsService userDetailsService;
-
-
     /*
      * A filter to handle JWT Token on headers and grant authentication on routes match.
      */
@@ -62,11 +50,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/api-docs").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/configuration/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger*/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/webjars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/identity/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -95,17 +78,4 @@ public class SecurityConfig {
 
             return new BCryptPasswordEncoder();
         }
-
-
-    @Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		final List<GlobalAuthenticationConfigurerAdapter> configurers = new ArrayList<>();
-		configurers.add(new GlobalAuthenticationConfigurerAdapter() {
-			@Override
-			public void configure(AuthenticationManagerBuilder auth) throws Exception {
-				auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
-			}
-		});
-		return authConfig.getAuthenticationManager();
-	}   
 }
