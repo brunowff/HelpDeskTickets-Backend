@@ -9,6 +9,7 @@ import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Configuration
@@ -16,6 +17,7 @@ public class DateTimeConfig extends WebMvcConfigurationSupport {
 
     @Bean
     @Override
+    @NonNull
     public FormattingConversionService mvcConversionService() {
         DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService(false);
 

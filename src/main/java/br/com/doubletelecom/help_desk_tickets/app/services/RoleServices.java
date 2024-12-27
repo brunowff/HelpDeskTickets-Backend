@@ -7,6 +7,10 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
-public interface RoleServices {
+import java.util.List;
 
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
+
+public interface RoleServices {
+    List<Role> findAll();
 }
