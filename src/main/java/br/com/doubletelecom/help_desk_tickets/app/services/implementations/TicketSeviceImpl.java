@@ -38,7 +38,7 @@ public class TicketSeviceImpl implements TicketServices{
         var ticket = new Ticket();
 
         ticket.setUser(user.get());
-        ticket.setContent(ticketDto.content());
+        ticket.setTicketTitle(ticketDto.ticketTitle());
 
         try {
             ticketRep.save(ticket);
@@ -57,7 +57,7 @@ public class TicketSeviceImpl implements TicketServices{
         var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
                                 .map(ticket -> 
                                     new FeedItemDto(ticket.getTicketId(),
-                                    ticket.getContent(),
+                                    ticket.getTicketTitle(),
                                     ticket.getUser().getUsername()));
         
         return tickets;                            

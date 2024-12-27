@@ -12,5 +12,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 public interface UserRepository extends JpaRepository<User, UUID>{
 
     Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
 
 }

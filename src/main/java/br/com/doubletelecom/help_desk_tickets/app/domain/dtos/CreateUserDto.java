@@ -2,11 +2,16 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 
 public record CreateUserDto(
     @NotBlank(message = "{required.validation}")
     @Size(min = 7, max = 30, message = "{size.validation}")
-    String username, 
+    String username,
+
+    @NotBlank(message = "{required.validation}")
+    @Email(message = "{email.validation}")
+    String email, 
     
     @NotBlank(message = "{required.validation}")
     @Size(min = 6, max = 30, message = "{size.validation}")

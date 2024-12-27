@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "tb_users")
 public class User implements Serializable {
-    @Serial
+   @Serial 
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -42,9 +43,16 @@ public class User implements Serializable {
 
     @Column(unique = true)
     private String username;
+
+    @Column(unique = true)
+    private String email;
     private String token; // Encoded
     private String password; // Encoded
     private Boolean active;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     // Setting up a bundle of rules.
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -2,6 +2,7 @@ package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -50,13 +54,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v2/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
             return http.build();
-        }
+    }
 
     @Bean
     JwtDecoder jwtDecoder(){
@@ -65,17 +71,32 @@ public class SecurityConfig {
 
     @Bean
     JwtEncoder jwtEncoder(){
+        JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
+        var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 
-            JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
-            var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-
-            return new NimbusJwtEncoder(jwks);
-        }
+        return new NimbusJwtEncoder(jwks);
+    }
 
     // Bean for password encoding.
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
-            return new BCryptPasswordEncoder();
-        }
+    @Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		final CorsConfiguration configuration = new CorsConfiguration();
+
+		configuration.setAllowedOrigins(Collections.singletonList("*"));
+		configuration.setAllowedMethods(Collections.singletonList("*"));
+		configuration.setAllowedHeaders(Collections.singletonList("*"));
+
+		configuration.addAllowedOrigin("*");
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod("*");
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+
+		return source;
+	}
 }

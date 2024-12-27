@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @AllArgsConstructor
-public class PostController {
+public class TicketController {
 
     private final TicketServices ticketServices;
 

@@ -17,7 +17,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoggedUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoginRequest;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoginResponse;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
-import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.LoginUsernameOrPasswordException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.LoginEmailOrPasswordException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -38,11 +38,10 @@ public class TokenController {
     @Transactional
     public ResponseEntity<LoginResponse> login(@Validated @RequestBody LoginRequest loginReq){
 
-        var user = userRep.findByUsername(loginReq.username());
+        var user = userRep.findByEmail(loginReq.email());
 
         if(user.isEmpty() || !user.get().isLoginCorrect(loginReq, passwordEncoder)){
-            throw new LoginUsernameOrPasswordException();
-            //throw new BadCredentialsException("User or passwoard is invalid!");
+            throw new LoginEmailOrPasswordException();
         }
 
         var now = Instant.now();

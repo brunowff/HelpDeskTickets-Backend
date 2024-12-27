@@ -24,15 +24,11 @@ public class AdminUserConfig implements CommandLineRunner{
     private UserRepository userRep;
     private BCryptPasswordEncoder passwordEncoder;
 
-     
-
     public AdminUserConfig(RoleRepository roleRep, UserRepository userRep, BCryptPasswordEncoder passwordEncoder) {
         this.roleRep = roleRep;
         this.userRep = userRep;
         this.passwordEncoder = passwordEncoder;
     }
-
-
     
     @Override
     @Transactional
@@ -50,7 +46,8 @@ public class AdminUserConfig implements CommandLineRunner{
                     var user = new User();
                     user.setFullname("Administrador do Sistema");
                     user.setUsername("admin");
-                    user.setPassword(passwordEncoder.encode("123"));
+                    user.setEmail("admin@doubletelecom.com.br");
+                    user.setPassword(passwordEncoder.encode("M3tr0T3l3c0m"));
                     user.setRoles(Set.of(roleAdmin));
                     userRep.save(user);
                 }

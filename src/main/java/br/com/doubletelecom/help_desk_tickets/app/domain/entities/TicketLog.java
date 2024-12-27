@@ -2,8 +2,6 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,34 +24,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_tickets")
-public class Ticket implements Serializable{
+@Table(name = "tb_ticket_logs")
+public class TicketLog implements Serializable{
+
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ticket_id")
-    private UUID ticketId;
+    @Column(name = "ticket_log_id")
+    private UUID ticketLogId;
+
+    private String logDescription;
+    private String logType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private String ticketTitle;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_type_id")
-    private TicketType ticketType;
-
-    @ManyToOne
-    @JoinColumn(name = "attribuited_to_user_id")
-    private User attribuitedToUser;
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Instant creationTimestamp;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    Date finalizationDateTime;
+    private String logDateTime;
 
 }
