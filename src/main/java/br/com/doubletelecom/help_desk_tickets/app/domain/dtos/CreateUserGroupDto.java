@@ -1,0 +1,16 @@
+package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
+
+import java.util.UUID;
+
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateUserGroupDto(
+
+    @NotBlank(message = "{required.validation}")
+    UUID userId,
+
+    @NotBlank(message = "{required.validation}")
+    UUID groupId
+) {
+
+}

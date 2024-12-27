@@ -50,10 +50,6 @@ public class User implements Serializable {
     private String password; // Encoded
     private Boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
-
     // Setting up a bundle of rules.
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "tb_users_roles",
