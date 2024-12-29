@@ -17,18 +17,26 @@ public class GroupServiceImpl implements GroupServices{
         return null;
     }
 
-    public Group findById(String groupId) {
+    @Override
+    @Transactional
+    public Group findById(String groupId, JwtAuthenticationToken token) {
         return null;
     }
     
+    @Override
+    @Transactional
     public List<Group> findAll() {
         return null;
     }
 
+    @Override
+    @Transactional
     public Group update(CreateGroupDto groupDto, JwtAuthenticationToken token) {
         return null;
     }
 
+    @Override
+    @Transactional
     public Void delete(String groupId, JwtAuthenticationToken token) {
         return null;
     }
