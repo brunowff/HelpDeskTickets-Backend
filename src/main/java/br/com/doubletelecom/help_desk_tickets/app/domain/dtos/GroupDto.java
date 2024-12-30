@@ -1,15 +1,15 @@
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateTicketTypeDto(
-    
+public record GroupDto(
     @NotBlank(message = "{required.validation}")
-    String name,
-    
+    UUID groupId,
+
     @NotBlank(message = "{required.validation}")
-    Group group
+    String name
 ) {
 
 }

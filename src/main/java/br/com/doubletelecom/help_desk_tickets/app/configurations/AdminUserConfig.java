@@ -34,7 +34,7 @@ public class AdminUserConfig implements CommandLineRunner{
     @Transactional
     public void run(String... args) throws Exception{
 
-        var roleAdmin = roleRep.findByName(Role.Values.ADMIN.name()).orElse(null);
+        var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElse(null);
         var userAdmin = userRep.findByUsername("admin");
 
         // Check if admin is present or create it.

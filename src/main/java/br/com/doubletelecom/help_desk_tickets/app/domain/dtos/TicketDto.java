@@ -4,7 +4,10 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateTicketDto(
+public record TicketDto(
+
+    @NotBlank(message = "{required.validation}")
+    UUID ticketId,
 
     @NotBlank(message = "{required.validation}")
     String ticketTitle,
@@ -26,6 +29,7 @@ public record CreateTicketDto(
 
     @NotBlank(message = "{required.validation}")
     UUID attibuitedToUserId
-) {
+    
+    ) {
 
 }

@@ -2,9 +2,11 @@ package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public User save(@RequestBody CreateUserDto userDto){
         
-        var roleBasic = roleRep.findByName(Role.Values.BASIC.name()).orElse(null);
+        var roleBasic = roleRep.findByName(Role.Values.API_BASIC.name()).orElse(null);
         var userFromDb = userRep.findByUsername(userDto.username());
 
         // Check if users already exist.
@@ -55,6 +57,55 @@ public class UserServiceImpl implements UserServices{
         user.setRoles(Set.of(roleBasic));
 
         return userRep.save(user);
+    }
+
+    @Override
+    @Transactional
+    public Void addRoleToUser(String userId, String roleName, JwtAuthenticationToken token){
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var role2add = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var roles = user.getRoles();
+        
+        var isAdmin = user.getRoles()
+            .stream()
+            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.API_ADMIN.name()));
+
+        if(!isAdmin){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        roles.add(role2add);
+        user.setRoles(roles);
+        userRep.save(user);
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void removeRoleFromUser(String userId, String roleName, JwtAuthenticationToken token){
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var roles = user.getRoles();
+        
+        var isAdmin = user.getRoles()
+            .stream()
+            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.API_ADMIN.name()));
+
+        if(!isAdmin){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
+            roles.remove(role2remove);
+            user.setRoles(roles);
+            userRep.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        
+
+        return null;
     }
 
 }

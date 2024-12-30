@@ -51,7 +51,7 @@ public class Ticket implements Serializable{
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Instant creationTimestamp;
+    private Instant creationDateTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date finalizationDateTime;

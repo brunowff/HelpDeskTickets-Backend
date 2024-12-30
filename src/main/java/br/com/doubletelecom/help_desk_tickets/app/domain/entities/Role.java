@@ -48,8 +48,23 @@ public class Role implements Serializable {
     public enum Values {
 
         // For add new roles is necessary to upgrade the classpath:data.sql file to insert in database to.
-        ADMIN(1L),
-        BASIC(2L);
+        API_ADMIN(1L),
+        API_BASIC(2L),
+        API_GROUP(3L),
+        API_GROUP_MANAGER(4L),
+        API_USER(5L),
+        API_USER_MANAGER(6L),
+        API_ROLE(7L),
+        API_ROLE_MANAGER(8L),
+        API_TICKET(9L),
+        API_TICKET_MANAGER(10L),
+        API_TICKET_TYPE(11L),
+        API_TICKET_TYPE_MANAGER(12L),
+        API_TICKET_MESSAGE(13L),
+        API_TICKET_MESSAGE_MANAGER(14L),
+        API_TICKET_LOG(15L),
+        API_TICKET_LOG_MANAGER(16L),
+        ;
 
         long roleId;
 

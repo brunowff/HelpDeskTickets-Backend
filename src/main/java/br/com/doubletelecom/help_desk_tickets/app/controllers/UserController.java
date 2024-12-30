@@ -35,9 +35,9 @@ public class UserController {
 
     }
 
-    // Generate the User list if the requester is admin.
+    // Generate the User list if the requester is an admin.
     @GetMapping("/users")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN')")
     public ResponseEntity<List<User>> listUsers(){
         var users = userServices.findAll();
         return ResponseEntity.ok(users);
