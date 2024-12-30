@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
@@ -77,11 +76,7 @@ public class GroupServiceImpl implements GroupServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        var isAdmin = user.getRoles()
-            .stream()
-            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.API_ADMIN.name()));
-
-        if(isAdmin){
+        if(user.isAdmin()){
             groupRep.delete(group);
             return null;
         } else {

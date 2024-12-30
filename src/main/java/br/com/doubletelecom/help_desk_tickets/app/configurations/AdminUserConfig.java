@@ -4,7 +4,9 @@ import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
@@ -34,7 +36,7 @@ public class AdminUserConfig implements CommandLineRunner{
     @Transactional
     public void run(String... args) throws Exception{
 
-        var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElse(null);
+        var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElseThrow( () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
         var userAdmin = userRep.findByUsername("admin");
 
         // Check if admin is present or create it.

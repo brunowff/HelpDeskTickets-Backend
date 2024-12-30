@@ -2,6 +2,7 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,6 +49,6 @@ public class TicketLog implements Serializable{
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private String logDateTime;
+    private Date logDateTime;
 
 }

@@ -13,9 +13,9 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
 public interface UserServices {
 
-    User save(CreateUserDto userDto);
-    List<User> findAll();
-    Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
-    Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
-
+    public User save(CreateUserDto userDto);
+    public List<User> findAll();
+    public Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
+    public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
+    
 }

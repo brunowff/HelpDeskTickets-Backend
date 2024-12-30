@@ -104,7 +104,6 @@ public class UserServiceImpl implements UserServices{
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
         
-
         return null;
     }
 

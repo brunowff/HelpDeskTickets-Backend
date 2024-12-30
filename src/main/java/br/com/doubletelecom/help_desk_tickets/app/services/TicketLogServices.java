@@ -2,15 +2,18 @@ package br.com.doubletelecom.help_desk_tickets.app.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 
 public interface TicketLogServices {
-    public TicketLogServices save(TicketLogServices ticketLogServices, JwtAuthenticationToken token);
-    public TicketLogServices findById(String ticketLogServicesId, JwtAuthenticationToken token);
+    public Void save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token);
+    public TicketLog findById(String ticketLogServicesId, JwtAuthenticationToken token);
     public Void delete(String ticketLogServicesId, JwtAuthenticationToken token);
-    public List<TicketLogServices> findAll(JwtAuthenticationToken token);
+    public Page<TicketLog> findAll(int page, int pageSize);
     public List<Ticket> findTicketsLogByTicketId(String ticketId, JwtAuthenticationToken token);
     public List<TicketLogServices> findTicketLogsByUserId(String userId, JwtAuthenticationToken token);
 }

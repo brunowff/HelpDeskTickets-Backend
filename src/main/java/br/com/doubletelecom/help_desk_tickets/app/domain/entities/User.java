@@ -60,5 +60,9 @@ public class User implements Serializable {
     public boolean isLoginCorrect(LoginRequest loginReq, PasswordEncoder passwordEncoder){
         return passwordEncoder.matches(loginReq.password(), this.password);
     }
+
+    public Boolean isAdmin(){
+        return this.roles.stream().anyMatch(role -> role.getName().equals("API_ADMIN"));
+    }
     
 }
