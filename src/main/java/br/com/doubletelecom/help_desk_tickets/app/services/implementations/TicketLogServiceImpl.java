@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
@@ -84,24 +83,27 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Override
     @Transactional
     public Page<TicketLog> findAll(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int pageSize){;
+                                    @RequestParam(defaultValue = "10") int pageSize){;
         
-        var tickets = ticketLogRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "logDateTime"));
-                        
+        var tickets = ticketLogRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "logDateTime"));                
         return tickets;
+
     }
 
     @Override
     @Transactional
-    public List<Ticket> findTicketsLogByTicketId(@RequestBody String ticketId, JwtAuthenticationToken token){
-        // TODO
-        return null;
+    public List<TicketLog> findTicketsLogByTicketId(@RequestBody String ticketId, JwtAuthenticationToken token){
+        
+        var ticketLogs = ticketLogRep.findByTicketId(UUID.fromString(ticketId));
+        return ticketLogs;
+
     }
 
     @Override
     @Transactional
-    public List<TicketLogServices> findTicketLogsByUserId(@RequestBody String userId, JwtAuthenticationToken token){
-        // TODO
-        return null;
+    public List<TicketLog> findTicketLogsByUserId(@RequestBody String userId, JwtAuthenticationToken token){
+        
+        var ticketLogs = ticketLogRep.findByUserId(UUID.fromString(userId));
+        return ticketLogs;
     }
 }
