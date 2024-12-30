@@ -13,6 +13,6 @@ public interface TicketLogServices {
     public TicketLog findById(String ticketLogServicesId, JwtAuthenticationToken token);
     public Void delete(String ticketLogServicesId, JwtAuthenticationToken token);
     public Page<TicketLog> findAll(int page, int pageSize);
-    public List<TicketLog> findTicketsLogByTicketId(String ticketId, JwtAuthenticationToken token);
-    public List<TicketLog> findTicketLogsByUserId(String userId, JwtAuthenticationToken token);
+    public List<TicketLog> findTicketsLogByTicket(String ticket);
+    public List<TicketLog> findTicketLogsByUser(String user);
 }

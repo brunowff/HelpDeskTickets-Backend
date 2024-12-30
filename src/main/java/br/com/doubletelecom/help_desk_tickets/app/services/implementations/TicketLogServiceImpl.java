@@ -92,18 +92,21 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketsLogByTicketId(@RequestBody String ticketId, JwtAuthenticationToken token){
+    public List<TicketLog> findTicketsLogByTicket(@RequestBody String ticketId){
         
-        var ticketLogs = ticketLogRep.findByTicketId(UUID.fromString(ticketId));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketLogs = ticketLogRep.findByTicket(ticket);
         return ticketLogs;
 
     }
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketLogsByUserId(@RequestBody String userId, JwtAuthenticationToken token){
-        
-        var ticketLogs = ticketLogRep.findByUserId(UUID.fromString(userId));
+    public List<TicketLog> findTicketLogsByUser(@RequestBody String userId){
+
+        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketLogs = ticketLogRep.findByUser(user);
         return ticketLogs;
+
     }
 }
