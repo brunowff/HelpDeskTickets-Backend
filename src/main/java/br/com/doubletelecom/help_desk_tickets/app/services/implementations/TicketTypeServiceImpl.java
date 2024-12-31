@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketTypeDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketType;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
-import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketTypeServices;
@@ -28,7 +26,6 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
 
     private final UserRepository userRep;
     private final GroupRepository groupRep;
-    private final TicketRepository ticketRep;
     private final TicketTypeRepository ticketTypeRep;
 
     @Override
@@ -89,15 +86,6 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
         
         var ticketTypes = ticketTypeRep.findAll();
         return ticketTypes;
-    }
-
-    @Override
-    @Transactional
-    public List<Ticket> findTicketsByTicketTypeId(@RequestParam String ticketTypeId, JwtAuthenticationToken token){
-        
-        var ticket = ticketRep.findById(UUID.fromString(ticketTypeId)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var tickets = ticketTypeRep.findByTicket(ticket);
-        return tickets;
     }
 
     @Override
