@@ -20,6 +20,7 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -31,7 +32,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket save(@RequestBody CreateTicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName()));
         var ticket = new Ticket();
@@ -64,7 +65,7 @@ public class TicketSeviceImpl implements TicketServices{
     
     @Override
     @Transactional
-    public Void deleteTicket(String ticketId, JwtAuthenticationToken token){
+    public Void deleteTicket(@RequestParam String ticketId, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -80,7 +81,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket findById(@RequestBody String ticketId){
+    public Ticket findById(@RequestParam String ticketId){
        
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return ticket;
@@ -89,7 +90,8 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<Ticket> findAll(int page, int pageSize){
+    public Page<Ticket> findAll(@RequestParam(defaultValue = "0") int page, 
+                                @RequestParam(defaultValue = "10") int pageSize){
         
         var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"));
         return tickets;
@@ -98,7 +100,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket update(@RequestBody TicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket update(@RequestBody @Valid TicketDto ticketDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));

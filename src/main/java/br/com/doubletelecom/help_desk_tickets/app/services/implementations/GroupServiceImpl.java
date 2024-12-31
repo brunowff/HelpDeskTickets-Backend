@@ -17,6 +17,7 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 
@@ -30,7 +31,7 @@ public class GroupServiceImpl implements GroupServices{
     
     @Override
     @Transactional
-    public Group save(@RequestBody CreateGroupDto groupDto, JwtAuthenticationToken token) {
+    public Group save(@RequestBody @Valid CreateGroupDto groupDto, JwtAuthenticationToken token) {
         
         var group = new Group();
         
@@ -59,7 +60,7 @@ public class GroupServiceImpl implements GroupServices{
 
     @Override
     @Transactional
-    public Group update(@RequestBody GroupDto groupDto, JwtAuthenticationToken token) {
+    public Group update(@RequestBody @Valid GroupDto groupDto, JwtAuthenticationToken token) {
         var group = groupRep.findById(groupDto.groupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
         try {

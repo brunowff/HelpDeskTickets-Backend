@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
@@ -19,6 +20,7 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public User save(@RequestBody CreateUserDto userDto){
+    public User save(@RequestBody @Valid CreateUserDto userDto){
         
         var roleBasic = roleRep.findByName(Role.Values.API_BASIC.name()).orElse(null);
         var userFromDb = userRep.findByUsername(userDto.username());
@@ -61,16 +63,13 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public Void addRoleToUser(String userId, String roleName, JwtAuthenticationToken token){
+    public Void addRoleToUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
+        
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var role2add = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var roles = user.getRoles();
-        
-        var isAdmin = user.getRoles()
-            .stream()
-            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.API_ADMIN.name()));
-
-        if(!isAdmin){
+       
+        if(!user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -83,16 +82,13 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public Void removeRoleFromUser(String userId, String roleName, JwtAuthenticationToken token){
+    public Void removeRoleFromUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
+        
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var roles = user.getRoles();
         
-        var isAdmin = user.getRoles()
-            .stream()
-            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.API_ADMIN.name()));
-
-        if(!isAdmin){
+        if(!user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

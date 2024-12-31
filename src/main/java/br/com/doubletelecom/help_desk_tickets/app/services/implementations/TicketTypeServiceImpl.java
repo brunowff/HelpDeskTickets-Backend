@@ -19,6 +19,7 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeReposit
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketTypeServices;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -32,7 +33,7 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
 
     @Override
     @Transactional
-    public TicketType save(@RequestBody CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
+    public TicketType save(@RequestBody @Valid CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -84,7 +85,7 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
 
     @Override
     @Transactional
-    public List<TicketType> findAll(JwtAuthenticationToken token){
+    public List<TicketType> findAll(){
         
         var ticketTypes = ticketTypeRep.findAll();
         return ticketTypes;
@@ -101,7 +102,7 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
 
     @Override
     @Transactional
-    public TicketType update(@RequestBody CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
+    public TicketType update(@RequestBody @Valid CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 

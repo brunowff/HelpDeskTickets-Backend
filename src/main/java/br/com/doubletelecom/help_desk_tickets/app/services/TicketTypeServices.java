@@ -12,7 +12,7 @@ public interface TicketTypeServices {
     public TicketType save(CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token);
     public TicketType findById(String ticketTypeId, JwtAuthenticationToken token);
     public Void delete(String ticketTypeId, JwtAuthenticationToken token);
-    public List<TicketType> findAll(JwtAuthenticationToken token);
+    public List<TicketType> findAll();
     public List<Ticket> findTicketsByTicketTypeId(String ticketTypeId, JwtAuthenticationToken token);
     public TicketType update(CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token);
 }

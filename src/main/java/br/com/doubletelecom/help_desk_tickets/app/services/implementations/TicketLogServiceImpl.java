@@ -20,6 +20,7 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogReposito
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketLogServices;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -32,7 +33,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Void save(@RequestBody CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
+    public Void save(@RequestBody @Valid CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(ticketLogDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));

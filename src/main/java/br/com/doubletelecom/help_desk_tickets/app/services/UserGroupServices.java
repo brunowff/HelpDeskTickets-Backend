@@ -16,7 +16,7 @@ public interface UserGroupServices {
     public Void delete(String UserGroupId, JwtAuthenticationToken token);
     public UserGroup addUsertToGroup(String userId, String groupId, JwtAuthenticationToken token);
     public Void removeUserFromGroup(String userId, String groupId, JwtAuthenticationToken token);
-    public List<UserGroup> findAll(JwtAuthenticationToken token);
+    public List<UserGroup> findAll();
     public List<User> findUsersByGroupId(String groupId, JwtAuthenticationToken token);
     public List<Group> findGroupsByUserId(String userId, JwtAuthenticationToken token);
 
