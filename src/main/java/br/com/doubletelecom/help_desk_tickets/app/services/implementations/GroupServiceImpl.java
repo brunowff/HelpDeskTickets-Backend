@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
@@ -34,6 +35,7 @@ public class GroupServiceImpl implements GroupServices{
         var group = new Group();
         
         try {
+            group.setName(groupDto.name());
             groupRep.save(group);
             return group;
         } catch (Exception e) {
@@ -43,7 +45,7 @@ public class GroupServiceImpl implements GroupServices{
 
     @Override
     @Transactional
-    public Group findById(@RequestBody String groupId, JwtAuthenticationToken token) {
+    public Group findById(@RequestParam String groupId, JwtAuthenticationToken token) {
         var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return group;
     }
@@ -71,12 +73,12 @@ public class GroupServiceImpl implements GroupServices{
 
     @Override
     @Transactional
-    public Void delete(@RequestBody String groupId, JwtAuthenticationToken token) {
+    public Void delete(@RequestParam String groupId, JwtAuthenticationToken token) {
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin()){
+            var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             groupRep.delete(group);
             return null;
         } else {

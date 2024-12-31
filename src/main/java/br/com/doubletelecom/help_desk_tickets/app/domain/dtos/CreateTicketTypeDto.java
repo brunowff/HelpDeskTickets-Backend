@@ -9,7 +9,7 @@ public record CreateTicketTypeDto(
     String name,
     
     @NotBlank(message = "{required.validation}")
-    Group group
+    Group destinationGroup
 ) {
 
 }

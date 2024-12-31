@@ -52,7 +52,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public TicketLog findById(@RequestBody String ticketLogId, JwtAuthenticationToken token){
+    public TicketLog findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         
         var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -61,7 +61,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Void delete(@RequestBody String ticketLogServicesId, JwtAuthenticationToken token){
+    public Void delete(@RequestParam String ticketLogServicesId, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -92,7 +92,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketsLogByTicket(@RequestBody String ticketId){
+    public List<TicketLog> findTicketsLogByTicket(@RequestParam String ticketId){
         
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticketLogs = ticketLogRep.findByTicket(ticket);
@@ -102,7 +102,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketLogsByUser(@RequestBody String userId){
+    public List<TicketLog> findTicketLogsByUser(@RequestParam String userId){
 
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticketLogs = ticketLogRep.findByUser(user);

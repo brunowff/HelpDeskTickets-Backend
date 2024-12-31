@@ -28,6 +28,8 @@ public class Group implements Serializable{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "group_id")
     private UUID groupId;
+    
+    @Column(unique = true)
     private String name;
 
 }

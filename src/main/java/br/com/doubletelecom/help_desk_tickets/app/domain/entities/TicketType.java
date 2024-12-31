@@ -30,6 +30,7 @@ public class TicketType implements Serializable{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ticket_type_id")
     private UUID ticketTypeId;
+    @Column(unique = true)
     private String name;
     
     @ManyToOne

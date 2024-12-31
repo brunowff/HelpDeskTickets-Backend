@@ -45,6 +45,7 @@ public class User implements Serializable {
 
     @Column(unique = true)
     private String email;
+    @Column(unique = true)
     private String token; // Encoded
     private String password; // Encoded
     private Boolean active;

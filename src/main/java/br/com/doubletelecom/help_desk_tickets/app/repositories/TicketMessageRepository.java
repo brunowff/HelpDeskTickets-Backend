@@ -5,9 +5,15 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
+
+import java.util.List;
+
 
 @Repository
 public interface TicketMessageRepository extends JpaRepository<TicketMessage, UUID> {
-
+    public List<TicketMessage> findByTicket(Ticket ticket);
+    public List<TicketMessage> findByUser(User user);
 }
