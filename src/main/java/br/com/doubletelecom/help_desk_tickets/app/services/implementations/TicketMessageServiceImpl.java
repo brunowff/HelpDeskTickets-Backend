@@ -17,6 +17,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessag
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketMessageRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketMessageServices;
 import jakarta.transaction.Transactional;
@@ -29,24 +30,33 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
     
     private final TicketRepository ticketRep;
     private final TicketMessageRepository ticketMessageRep;
+    private final TicketTypeRepository ticketTypeRep;
     private final UserRepository userRep;
     
     @Override
     @Transactional
     public TicketMessage save(@RequestBody @Valid CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token){
         
+        // If the user is an admin, is in the destination group of the ticket, or is the user who created the ticket
+
         var ticket = ticketRep.findById(ticketMessageDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketType = ticketTypeRep.findById(ticket.getTicketType().getTicketTypeId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var isUserInGroup = user.getGroups().stream().anyMatch( userGroup -> userGroup.getName().equals(ticketType.getDestinationGroup().getName()));
 
-        try {
-            var ticketMessage = new TicketMessage();
-            ticketMessage.setTicket(ticket);
-            ticketMessage.setUser(user);
-            ticketMessage.setMessage(ticketMessageDto.message());
-            ticketMessageRep.save(ticketMessage);
-            return ticketMessage;
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        if(user.isAdmin() || isUserInGroup || ticket.getUser().getUserId().equals(user.getUserId())){
+            try {
+                var ticketMessage = new TicketMessage();
+                ticketMessage.setTicket(ticket);
+                ticketMessage.setUser(user);
+                ticketMessage.setMessage(ticketMessageDto.message());
+                ticketMessageRep.save(ticketMessage);
+                return ticketMessage;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         
     }
@@ -63,6 +73,7 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
     @Transactional
     public Void delete(@RequestParam String ticketMessageId, JwtAuthenticationToken token){
         
+        // It is not recommended to delete a ticket because it loses the message history
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(!user.isAdmin()){

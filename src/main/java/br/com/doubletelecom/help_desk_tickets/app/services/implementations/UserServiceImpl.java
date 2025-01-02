@@ -1,3 +1,4 @@
+
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.RoleRepository;
@@ -63,6 +65,24 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
+    public User updateUser(@RequestBody @Valid UserDto userDto, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    
+        if(user.isAdmin() || user.getUserId().equals(userDto.userId())){
+            user.setFullname(userDto.fullname());
+            user.setUsername(userDto.username());
+            user.setEmail(userDto.email());
+            user.setPassword(passwordEncoder.encode(userDto.password()));
+            user.setActive(userDto.active());
+        return userRep.save(user);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Override
+    @Transactional
     public Void addRoleToUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -100,6 +120,23 @@ public class UserServiceImpl implements UserServices{
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
         
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void passwordReset(@RequestBody @Valid UserDto userDto, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user2update = userRep.findById(userDto.userId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin() || user.getUserId().equals(userDto.userId())){
+            user2update.setPassword(passwordEncoder.encode("Metro@2025"));
+            userRep.save(user2update);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
         return null;
     }
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketTypeDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketTypeDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketType;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
@@ -34,23 +35,29 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
-        if(!user.isAdmin()){
+        if(user.isAdmin() || user.hasRole("API_TICKET_TYPE_MANAGER")){
+            
+            var group = groupRep.findById(ticketTypeDto.destinationGroup().getGroupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            
+            if(!group.getActive()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group is not active");
+            }
+
+            var ticketType = new TicketType();
+    
+            try {
+                ticketType.setDestinationGroup(group);
+                ticketType.setName(ticketTypeDto.name());
+                ticketType.setActive(true);
+                ticketTypeRep.save(ticketType);
+                return ticketType;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-
-        var group = groupRep.findById(ticketTypeDto.destinationGroup().getGroupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        var ticketType = new TicketType();
-
-        try {
-            ticketType.setDestinationGroup(group);
-            ticketType.setName(ticketTypeDto.name());
-            ticketTypeRep.save(ticketType);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        return ticketType;
+ 
     }
 
     @Override
@@ -64,6 +71,8 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
     @Override
     @Transactional
     public Void delete(@RequestParam String ticketTypeId, JwtAuthenticationToken token){
+
+        // It not recomended to delete a TicketType, but just inactivate it.
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -90,27 +99,65 @@ public class TicketTypeServiceImpl implements TicketTypeServices{
 
     @Override
     @Transactional
-    public TicketType update(@RequestBody @Valid CreateTicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
+    public TicketType update(@RequestBody @Valid TicketTypeDto ticketTypeDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if(!user.isAdmin()){
+        if(user.isAdmin() || user.hasRole("API_TICKET_TYPE_MANAGER")){
+            try {
+                var ticketType = new TicketType();
+                var group = groupRep.findById(ticketTypeDto.destinationGroup().getGroupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                ticketType.setName(ticketTypeDto.name());
+                ticketType.setDestinationGroup(group);
+                ticketType.setActive(ticketTypeDto.active());
+                ticketTypeRep.save(ticketType);
+                return ticketType;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-
-        var ticketType = new TicketType();
-
-        try {
-            var group = groupRep.findById(ticketTypeDto.destinationGroup().getGroupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            ticketType.setName(ticketTypeDto.name());
-            ticketType.setDestinationGroup(group);
-            ticketTypeRep.save(ticketType);
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        return ticketType;
+        
     }
 
+    @Override
+    @Transactional
+    public Void activate(@RequestParam String ticketTypeId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin() || user.hasRole("API_TICKET_TYPE_MANAGER")){
+            try {
+                var ticketType = ticketTypeRep.findById(UUID.fromString(ticketTypeId)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                ticketType.setActive(true);
+                ticketTypeRep.save(ticketType);
+                return null;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Void deactivate(@RequestParam String ticketTypeId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin() || user.hasRole("API_TICKET_TYPE_MANAGER")){
+            try {
+                var ticketType = ticketTypeRep.findById(UUID.fromString(ticketTypeId)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                ticketType.setActive(false);
+                ticketTypeRep.save(ticketType);
+                return null;
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

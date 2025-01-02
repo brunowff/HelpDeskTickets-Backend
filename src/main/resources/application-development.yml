@@ -26,6 +26,18 @@ spring:
         username: myuser
         password: secret
 
+    mail:
+        host: smtp.doubletelecom.com.br
+        port: 587
+        username: ti@doubletelecom.com.br
+        password: "123456"
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+
 server:
     servlet:
         context-path: '/hdesktickets'

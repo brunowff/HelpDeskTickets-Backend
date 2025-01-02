@@ -32,6 +32,7 @@ public class TicketType implements Serializable{
     private UUID ticketTypeId;
     @Column(unique = true)
     private String name;
+    private Boolean active;
     
     @ManyToOne
     @JoinColumn(name = "group_id", insertable = true, updatable = true)

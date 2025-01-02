@@ -35,11 +35,14 @@ public class Ticket implements Serializable{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ticket_id")
     private UUID ticketId;
+    private String ticketTitle;
+    private String ticketDescription;
+    private String ticketStatus;
+    private String ticketPriority;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private String ticketTitle;
 
     @ManyToOne
     @JoinColumn(name = "ticket_type_id")
@@ -55,5 +58,41 @@ public class Ticket implements Serializable{
 
     @Temporal(TemporalType.TIMESTAMP)
     Date finalizationDateTime;
+
+    public enum ValuesOfTicketStatus {
+
+        ABERTO("ABERTO"),
+        FINALIZADO("FINALIZADO"),
+        CANCELADO("CANCELADO"),
+        ;
+
+        private final String ticketStatus;
+
+        ValuesOfTicketStatus(String ticketStatus) {
+            this.ticketStatus = ticketStatus;
+        }
+
+        public String getTicketStatus() {
+            return ticketStatus;
+        }
+    }
+
+    public enum ValuesOfPriority {
+
+        HIGH("HIGH"),
+        MEDIUM("MEDIUM"),
+        LOW("LOW"),
+        ;
+
+        private final String ticketPriority;
+
+        ValuesOfPriority(String ticketPriority) {
+            this.ticketPriority = ticketPriority;
+        }
+
+        public String getTicketPriority() {
+            return ticketPriority;
+        }
+    }
 
 }

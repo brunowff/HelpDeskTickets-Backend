@@ -31,5 +31,7 @@ public class Group implements Serializable{
     
     @Column(unique = true)
     private String name;
+    private String description;
+    private Boolean active;
 
 }

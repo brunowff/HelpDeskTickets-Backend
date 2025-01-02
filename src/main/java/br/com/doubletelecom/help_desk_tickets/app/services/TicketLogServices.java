@@ -1,3 +1,16 @@
+
+/**
+ * Service interface for managing Ticket Logs.
+ * Provides methods for saving, finding, deleting, and retrieving ticket logs.
+ * 
+ * Methods:
+ * - save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token): Saves a new ticket log.
+ * - findById(String ticketLogServicesId, JwtAuthenticationToken token): Finds a ticket log by its ID.
+ * - delete(String ticketLogServicesId, JwtAuthenticationToken token): Deletes a ticket log by its ID.
+ * - findAll(int page, int pageSize): Retrieves a paginated list of all ticket logs.
+ * - findTicketsLogByTicket(String ticket): Retrieves a list of ticket logs associated with a specific ticket.
+ * - findTicketLogsByUser(String user): Retrieves a list of ticket logs associated with a specific user.
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
 import java.util.List;

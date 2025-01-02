@@ -13,7 +13,10 @@ public record TicketTypeDto(
     String name,
     
     @NotBlank(message = "{required.validation}")
-    Group destinationGroup
+    Group destinationGroup,
+
+    @NotBlank(message = "{required.validation}")
+    Boolean active
 ) {
 
 }

@@ -1,6 +1,15 @@
+
 /**
- * Service interface for managing users.
- * Provides methods for saving a new user and retrieving all users.
+ * Interface for user-related services.
+ * Provides methods for saving a user, retrieving all users, 
+ * adding a role to a user, and removing a role from a user.
+ * 
+ * Methods:
+ * - save(CreateUserDto userDto): Saves a new user based on the provided user data transfer object.
+ * - updateUser(UserDto userDto, JwtAuthenticationToken token): Updates an existing user based on the provided user data transfer object.
+ * - findAll(): Retrieves a list of all users.
+ * - addRoleToUser(String userId, String roleId, JwtAuthenticationToken token): Adds a role to a user based on the provided user ID and role ID, with authentication.
+ * - removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token): Removes a role from a user based on the provided user ID and role ID, with authentication.
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
@@ -9,6 +18,7 @@ import java.util.List;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
 public interface UserServices {
@@ -17,5 +27,7 @@ public interface UserServices {
     public List<User> findAll();
     public Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
     public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
+    public User updateUser(UserDto userDto, JwtAuthenticationToken token);
+    public Void passwordReset(UserDto userDto, JwtAuthenticationToken token);
     
 }

@@ -1,5 +1,6 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -17,11 +18,13 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.FeedItemDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+
 
 @Service
 @AllArgsConstructor
@@ -29,18 +32,23 @@ public class TicketSeviceImpl implements TicketServices{
 
     private final TicketRepository ticketRep;
     private final UserRepository userRep;
+    private final TicketTypeRepository ticketTypeRep;
 
     @Override
     @Transactional
     public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
-
-        var user = userRep.findById(UUID.fromString(token.getName()));
-        var ticket = new Ticket();
-
-        ticket.setUser(user.get());
-        ticket.setTicketTitle(ticketDto.ticketTitle());
+        // TODO: Implement the log of the save.
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketType = ticketTypeRep.findById(ticketDto.ticketType()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         try {
+            var ticket = new Ticket();
+            ticket.setUser(user);
+            ticket.setTicketTitle(ticketDto.ticketTitle());
+            ticket.setTicketDescription(ticketDto.ticketDescription());
+            ticket.setTicketType(ticketType);
+            ticket.setTicketPriority(ticketDto.ticketPriority());
+            ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.ABERTO.name());
             ticketRep.save(ticket);
             return ticket;
         } catch (Exception e) {
@@ -54,11 +62,21 @@ public class TicketSeviceImpl implements TicketServices{
     public Page<FeedItemDto> feed(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
 
-        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
-                                .map(ticket -> 
-                                    new FeedItemDto(ticket.getTicketId(),
-                                    ticket.getTicketTitle(),
-                                    ticket.getUser().getUsername()));
+        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new FeedItemDto(
+                        ticket.getTicketId(),
+                        ticket.getTicketTitle(),
+                        ticket.getTicketDescription(),
+                        ticket.getTicketType(),
+                        ticket.getTicketStatus(),
+                        ticket.getTicketPriority(),
+                        ticket.getUser(),
+                        ticket.getAttribuitedToUser(),
+                        Date.from(ticket.getCreationDateTime()), // Convert Instant to Date
+                        ticket.getFinalizationDateTime()
+                        )
+                    );
         
         return tickets;                            
     }
@@ -66,6 +84,8 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Void deleteTicket(@RequestParam String ticketId, JwtAuthenticationToken token){
+
+        // It's not recomended to delete a ticket, but just inactivate it.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -93,7 +113,7 @@ public class TicketSeviceImpl implements TicketServices{
     public Page<Ticket> findAll(@RequestParam(defaultValue = "0") int page, 
                                 @RequestParam(defaultValue = "10") int pageSize){
         
-        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"));
+        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"));
         return tickets;
 
     }
@@ -101,12 +121,15 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket update(@RequestBody @Valid TicketDto ticketDto, JwtAuthenticationToken token){
-        
+        // TODO: Implement the log of the update.
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        // Only Admin or the author of the ticket can update it.
-        if(user.isAdmin() || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))){
+        // Only Admin, user attribuited to it or the author of the ticket can update it.
+        if(user.isAdmin()
+            || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))
+            || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
+        ){
 
             ticket.setUser(user);
             ticket.setTicketTitle(ticketDto.ticketTitle());
@@ -127,73 +150,256 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
+    public Ticket updateStatus(@RequestParam String ticketId, @RequestParam String status, JwtAuthenticationToken token){
+        // TODO: Implement the log of the update.
+
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()
+            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+        ){
+            ticket.setTicketStatus(status);
+            ticketRep.save(ticket);
+            return ticket;
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public Ticket updatePriority(@RequestParam String ticketId, @RequestParam String priority, JwtAuthenticationToken token){
+        // TODO: Implement the log of the update.
+
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()
+            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
+            || ticket.getUser().getUserId().equals(user.getUserId())
+        ){
+            ticket.setTicketPriority(priority);
+            ticketRep.save(ticket);
+            return ticket;
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public Ticket updateAttribuitedTo(@RequestParam String ticketId, @RequestParam String userId, JwtAuthenticationToken token){
+        // TODO: Implement the log of the update.
+
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user2attribuite = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()
+            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+            || ticket.getUser().getUserId().equals(user.getUserId())
+        ){
+            ticket.setAttribuitedToUser(user2attribuite);
+            ticketRep.save(ticket);
+            return ticket;
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public Ticket updateTicketType(@RequestParam String ticketId, @RequestParam String ticketTypeId, JwtAuthenticationToken token){
+        // TODO: Implement the log of the update.
+
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketType = ticketTypeRep.findById(UUID.fromString(ticketTypeId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()
+            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+            || ticket.getUser().getUserId().equals(user.getUserId())
+        ){
+            ticket.setTicketType(ticketType);
+            ticketRep.save(ticket);
+            return ticket;
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @Override
+    @Transactional
     public Page<TicketDto> findTicketsByUserId(@RequestParam String userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+
+        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var tickets = ticketRep.findTicketsByUser(user, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByAttribuitedToUser(@RequestParam String userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+    public Page<TicketDto> findTicketsByAttribuitedToUser(@RequestParam String attribuitedToUserId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+        
+        var user = userRep.findById(UUID.fromString(attribuitedToUserId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var tickets = ticketRep.findTicketsByAttribuitedToUser(user, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
-    @Override
-    @Transactional
-    public Page<TicketDto> findTicketsByGroupId(@RequestParam String groupId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
-
-    }
 
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByTicketTypeId(@RequestParam String ticketTypeId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+
+        var tickets = ticketRep.findTicketsByTicketType(UUID.fromString(ticketTypeId), PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByStatus(@RequestParam String status, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+
+        var tickets = ticketRep.findTicketsByTicketStatus(status, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByPriority(@RequestParam String priority, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+
+        var tickets = ticketRep.findTicketsByTicketPriority(priority, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+
+        var tickets = ticketRep.findTicketsByTicketTitleContaining(title, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByDescription(@RequestParam String description, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
+        // TODO: Implement the log of the update.
+
+        var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new TicketDto(
+                        ticket.ticketId(),
+                        ticket.ticketTitle(),
+                        ticket.ticketDescription(),
+                        ticket.ticketStatus(),
+                        ticket.ticketPriority(),
+                        ticket.ticketType(),
+                        ticket.userId(),
+                        ticket.attibuitedToUserId(),
+                        ticket.creationDateTime(),
+                        ticket.finalizationDateTime()
+                        )
+                    );
+        return tickets;
 
     }
 
-    @Override
-    @Transactional
-    public Page<TicketDto> findByFilter(@RequestParam String userId, @RequestParam String AttibuitedToUserId, @RequestParam String groupId, @RequestParam String ticketTypeId, @RequestParam String status, @RequestParam String priority, @RequestParam String title, @RequestParam String description, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO
-        return null;
-
-    }
 }
