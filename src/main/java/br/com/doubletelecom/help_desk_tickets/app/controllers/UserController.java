@@ -16,11 +16,6 @@ import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-
-
-/*
- * End points to handle Users
- */
 @RestController("/profiles")
 @AllArgsConstructor
 public class UserController {

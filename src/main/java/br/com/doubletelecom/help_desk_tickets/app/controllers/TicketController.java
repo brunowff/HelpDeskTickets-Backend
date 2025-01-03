@@ -16,12 +16,11 @@ import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 
 import lombok.AllArgsConstructor;
 
-/*
- * End Points to handle Ticket Requisitions
- */
 @RestController("/tm")
 @AllArgsConstructor
 public class TicketController {
+    
+    //TODO: Implement endpoints to handle ticket requisitions
 
     private final TicketServices ticketServices;
 
@@ -32,9 +31,6 @@ public class TicketController {
         
     }
 
-    /*
-     * End point to generate a Paginated Tickets Dashboard
-     */
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardTicketDto> dashboard(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
@@ -50,9 +46,6 @@ public class TicketController {
   
     }
 
-    /*
-     * Deletion End Point for the case of user is an author or admin.
-     */
     @DeleteMapping("/tickets/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable("id") String ticketId, JwtAuthenticationToken token){
 
