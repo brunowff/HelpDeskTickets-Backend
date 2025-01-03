@@ -62,6 +62,7 @@ public class Ticket implements Serializable{
     public enum ValuesOfTicketStatus {
 
         ABERTO("ABERTO"),
+        ACEITE("ACEITE"),
         FINALIZADO("FINALIZADO"),
         CANCELADO("CANCELADO"),
         ;

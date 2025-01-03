@@ -1,5 +1,7 @@
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-public record LoggedUserDto(String userName, String fullName) {
+import java.util.UUID;
+
+public record LoggedUserDto(UUID id, String username, String fullname, String email) {
 
 }

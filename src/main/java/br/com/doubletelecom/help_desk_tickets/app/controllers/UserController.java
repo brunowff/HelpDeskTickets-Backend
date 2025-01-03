@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 /*
  * End points to handle Users
  */
-@RestController
+@RestController("/um")
 @AllArgsConstructor
 public class UserController {
 

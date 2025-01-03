@@ -9,9 +9,6 @@ public record TicketLogDto(
     @NotBlank(message = "{required.validation}")
     String logDescription,
 
-    @NotBlank(message = "{required.validation}")
-    String logType,
-
     @NotBlank(message = "{required.validation}")    
     UUID userId,
 

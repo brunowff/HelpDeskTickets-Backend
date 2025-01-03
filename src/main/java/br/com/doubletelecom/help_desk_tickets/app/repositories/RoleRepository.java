@@ -10,6 +10,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>{
 
-    Optional<Role> findByName(String roleName);
-    
+    public Optional<Role> findByName(String roleName);
+
 }

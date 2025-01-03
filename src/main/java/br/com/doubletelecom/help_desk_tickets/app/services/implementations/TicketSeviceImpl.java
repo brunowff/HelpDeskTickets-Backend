@@ -17,6 +17,8 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.FeedItemDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
@@ -33,11 +35,12 @@ public class TicketSeviceImpl implements TicketServices{
     private final TicketRepository ticketRep;
     private final UserRepository userRep;
     private final TicketTypeRepository ticketTypeRep;
+    private final TicketLogRepository ticketLogRep;
 
     @Override
     @Transactional
     public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
-        // TODO: Implement the log of the save.
+
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticketType = ticketTypeRep.findById(ticketDto.ticketType()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -50,6 +53,13 @@ public class TicketSeviceImpl implements TicketServices{
             ticket.setTicketPriority(ticketDto.ticketPriority());
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.ABERTO.name());
             ticketRep.save(ticket);
+
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket created.");
+            ticketLogRep.save(ticketLog);
+
             return ticket;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -57,29 +67,6 @@ public class TicketSeviceImpl implements TicketServices{
 
     }
 
-    @Override
-    @Transactional
-    public Page<FeedItemDto> feed(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int pageSize){
-
-        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new FeedItemDto(
-                        ticket.getTicketId(),
-                        ticket.getTicketTitle(),
-                        ticket.getTicketDescription(),
-                        ticket.getTicketType(),
-                        ticket.getTicketStatus(),
-                        ticket.getTicketPriority(),
-                        ticket.getUser(),
-                        ticket.getAttribuitedToUser(),
-                        Date.from(ticket.getCreationDateTime()), // Convert Instant to Date
-                        ticket.getFinalizationDateTime()
-                        )
-                    );
-        
-        return tickets;                            
-    }
     
     @Override
     @Transactional
@@ -121,21 +108,33 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket update(@RequestBody @Valid TicketDto ticketDto, JwtAuthenticationToken token){
-        // TODO: Implement the log of the update.
+
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketType = ticketTypeRep.findById(ticketDto.ticketType()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        // Only Admin, user attribuited to it or the author of the ticket can update it.
+        // Only Admin, user attribuited to ticket or the author of the ticket can update it.
         if(user.isAdmin()
             || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))
             || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
         ){
 
-            ticket.setUser(user);
-            ticket.setTicketTitle(ticketDto.ticketTitle());
+            
 
             try {
+
+                ticket.setUser(user);
+                ticket.setTicketTitle(ticketDto.ticketTitle());
+                ticket.setTicketDescription(ticketDto.ticketDescription());
+                ticket.setTicketType(ticketType);
                 ticketRep.save(ticket);
+
+                var ticketLog = new TicketLog();
+                ticketLog.setTicket(ticket);
+                ticketLog.setUser(user);
+                ticketLog.setLogDescription("Ticket updated. " + ticket.toString());
+                ticketLogRep.save(ticketLog);
+
                 return ticket;
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -151,7 +150,6 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket updateStatus(@RequestParam String ticketId, @RequestParam String status, JwtAuthenticationToken token){
-        // TODO: Implement the log of the update.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -162,6 +160,13 @@ public class TicketSeviceImpl implements TicketServices{
         ){
             ticket.setTicketStatus(status);
             ticketRep.save(ticket);
+
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket Status updated. " + ticket.toString());
+            ticketLogRep.save(ticketLog);
+
             return ticket;
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -172,7 +177,6 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket updatePriority(@RequestParam String ticketId, @RequestParam String priority, JwtAuthenticationToken token){
-        // TODO: Implement the log of the update.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -184,6 +188,13 @@ public class TicketSeviceImpl implements TicketServices{
         ){
             ticket.setTicketPriority(priority);
             ticketRep.save(ticket);
+
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket priority updated. " + ticket.toString());
+            ticketLogRep.save(ticketLog);
+
             return ticket;
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -194,7 +205,6 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket updateAttribuitedTo(@RequestParam String ticketId, @RequestParam String userId, JwtAuthenticationToken token){
-        // TODO: Implement the log of the update.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -207,6 +217,13 @@ public class TicketSeviceImpl implements TicketServices{
         ){
             ticket.setAttribuitedToUser(user2attribuite);
             ticketRep.save(ticket);
+
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket Attribuition updated. " + ticket.toString());
+            ticketLogRep.save(ticketLog);
+
             return ticket;
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -217,7 +234,6 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Ticket updateTicketType(@RequestParam String ticketId, @RequestParam String ticketTypeId, JwtAuthenticationToken token){
-        // TODO: Implement the log of the update.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -230,12 +246,44 @@ public class TicketSeviceImpl implements TicketServices{
         ){
             ticket.setTicketType(ticketType);
             ticketRep.save(ticket);
+
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket Type updated. " + ticket.toString());
+            ticketLogRep.save(ticketLog);
+                
             return ticket;
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
     }
+
+    @Override
+    @Transactional
+    public Page<FeedItemDto> feed(@RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int pageSize){
+
+        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+                    .map(ticket -> 
+                        new FeedItemDto(
+                        ticket.getTicketId(),
+                        ticket.getTicketTitle(),
+                        ticket.getTicketDescription(),
+                        ticket.getTicketType(),
+                        ticket.getTicketStatus(),
+                        ticket.getTicketPriority(),
+                        ticket.getUser(),
+                        ticket.getAttribuitedToUser(),
+                        Date.from(ticket.getCreationDateTime()), // Convert Instant to Date
+                        ticket.getFinalizationDateTime()
+                        )
+                    );
+        
+        return tickets;                            
+    }
+    
 
     @Override
     @Transactional
@@ -381,7 +429,6 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Page<TicketDto> findTicketsByDescription(@RequestParam String description, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-        // TODO: Implement the log of the update.
 
         var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
                     .map(ticket -> 

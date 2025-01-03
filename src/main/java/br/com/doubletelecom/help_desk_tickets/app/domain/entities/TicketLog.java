@@ -37,7 +37,6 @@ public class TicketLog implements Serializable{
     private UUID ticketLogId;
 
     private String logDescription;
-    private String logType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -50,5 +49,6 @@ public class TicketLog implements Serializable{
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date logDateTime;
+
 
 }

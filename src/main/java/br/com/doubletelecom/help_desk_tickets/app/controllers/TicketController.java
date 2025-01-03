@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 /*
  * End Points to handle Ticket Requisitions
  */
-@RestController
+@RestController("tm")
 @AllArgsConstructor
 public class TicketController {
 
@@ -27,7 +27,6 @@ public class TicketController {
 
     @PostMapping("/ticket")
     public ResponseEntity<Void> createTicket(@RequestBody CreateTicketDto ticketDto, JwtAuthenticationToken token){
-        
         ticketServices.save(ticketDto, token);
         return ResponseEntity.ok().build();
         
@@ -36,7 +35,7 @@ public class TicketController {
     /*
      * End point to generate a Paginated Tickets Feed
      */
-    @GetMapping("feed")
+    @GetMapping("/feed")
     public ResponseEntity<FeedDto> feed(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
         
