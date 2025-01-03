@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessageDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketMessageDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketMessageRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
-import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketMessageServices;
 import jakarta.transaction.Transactional;
@@ -30,7 +31,7 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
     
     private final TicketRepository ticketRep;
     private final TicketMessageRepository ticketMessageRep;
-    private final TicketTypeRepository ticketTypeRep;
+    private final TicketCategoryRepository ticketCategoryRep;
     private final UserRepository userRep;
     
     @Override
@@ -41,8 +42,8 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
 
         var ticket = ticketRep.findById(ticketMessageDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketType = ticketTypeRep.findById(ticket.getTicketType().getTicketTypeId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var isUserInGroup = user.getGroups().stream().anyMatch( userGroup -> userGroup.getName().equals(ticketType.getDestinationGroup().getName()));
+        var ticketCategory = ticketCategoryRep.findById(ticket.getTicketCategory().getTicketCategoryId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var isUserInGroup = user.getGroups().stream().anyMatch( userGroup -> userGroup.getName().equals(ticketCategory.getDestinationGroup().getName()));
 
         if(user.isAdmin() || isUserInGroup || ticket.getUser().getUserId().equals(user.getUserId())){
             try {
@@ -93,10 +94,19 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
 
     @Override
     @Transactional
-    public Page<TicketMessage> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<PageItemTicketMessageDto> findAll(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
         
-        var ticketMessages = ticketMessageRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"));
+        var ticketMessages = ticketMessageRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
+                        .map(
+                        ticketMessage -> new PageItemTicketMessageDto(
+                            ticketMessage.getTicketMessageId(),
+                            ticketMessage.getTicket(),
+                            ticketMessage.getUser(),
+                            ticketMessage.getMessage(),
+                            ticketMessage.getMessageDateTime()
+                        )
+                    );
 
         return ticketMessages;
     }

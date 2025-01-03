@@ -50,6 +50,7 @@ public class AdminUserConfig implements CommandLineRunner{
                     user.setUsername("admin");
                     user.setEmail("admin@doubletelecom.com.br");
                     user.setPassword(passwordEncoder.encode("M3tr0T3l3c0m"));
+                    user.setActive(true);
                     user.setRoles(Set.of(roleAdmin));
                     userRep.save(user);
                 }

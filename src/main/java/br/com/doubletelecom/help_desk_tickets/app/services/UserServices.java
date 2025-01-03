@@ -29,5 +29,7 @@ public interface UserServices {
     public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
     public User updateUser(UserDto userDto, JwtAuthenticationToken token);
     public Void passwordReset(UserDto userDto, JwtAuthenticationToken token);
+    public Void activate(String userId, JwtAuthenticationToken token);
+    public Void deactivate(String userId, JwtAuthenticationToken token);
     
 }

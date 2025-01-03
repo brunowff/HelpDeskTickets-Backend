@@ -23,7 +23,7 @@ public record TicketDto(
     String ticketPriority,
 
     @NotBlank(message = "{required.validation}")
-    UUID ticketType,
+    UUID ticketCategory,
 
     @NotBlank(message = "{required.validation}")
     UUID userId,

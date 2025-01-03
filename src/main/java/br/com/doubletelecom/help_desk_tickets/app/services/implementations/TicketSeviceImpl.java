@@ -20,7 +20,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
-import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketTypeRepository;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 import jakarta.transaction.Transactional;
@@ -34,7 +34,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     private final TicketRepository ticketRep;
     private final UserRepository userRep;
-    private final TicketTypeRepository ticketTypeRep;
+    private final TicketCategoryRepository ticketCategoryRep;
     private final TicketLogRepository ticketLogRep;
 
     @Override
@@ -42,14 +42,14 @@ public class TicketSeviceImpl implements TicketServices{
     public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketType = ticketTypeRep.findById(ticketDto.ticketType()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         try {
             var ticket = new Ticket();
             ticket.setUser(user);
             ticket.setTicketTitle(ticketDto.ticketTitle());
             ticket.setTicketDescription(ticketDto.ticketDescription());
-            ticket.setTicketType(ticketType);
+            ticket.setTicketCategory(ticketCategory);
             ticket.setTicketPriority(ticketDto.ticketPriority());
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.ABERTO.name());
             ticketRep.save(ticket);
@@ -111,7 +111,7 @@ public class TicketSeviceImpl implements TicketServices{
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketType = ticketTypeRep.findById(ticketDto.ticketType()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         // Only Admin, user attribuited to ticket or the author of the ticket can update it.
         if(user.isAdmin()
@@ -126,7 +126,7 @@ public class TicketSeviceImpl implements TicketServices{
                 ticket.setUser(user);
                 ticket.setTicketTitle(ticketDto.ticketTitle());
                 ticket.setTicketDescription(ticketDto.ticketDescription());
-                ticket.setTicketType(ticketType);
+                ticket.setTicketCategory(ticketCategory);
                 ticketRep.save(ticket);
 
                 var ticketLog = new TicketLog();
@@ -155,7 +155,7 @@ public class TicketSeviceImpl implements TicketServices{
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
         ){
             ticket.setTicketStatus(status);
@@ -182,7 +182,7 @@ public class TicketSeviceImpl implements TicketServices{
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
             || ticket.getUser().getUserId().equals(user.getUserId())
         ){
@@ -211,7 +211,7 @@ public class TicketSeviceImpl implements TicketServices{
         var user2attribuite = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
             || ticket.getUser().getUserId().equals(user.getUserId())
         ){
@@ -233,24 +233,24 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket updateTicketType(@RequestParam String ticketId, @RequestParam String ticketTypeId, JwtAuthenticationToken token){
+    public Ticket updateTicketCategory(@RequestParam String ticketId, @RequestParam String ticketCategoryId, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketType = ticketTypeRep.findById(UUID.fromString(ticketTypeId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketType().getDestinationGroup().getGroupId())
+            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
             || ticket.getUser().getUserId().equals(user.getUserId())
         ){
-            ticket.setTicketType(ticketType);
+            ticket.setTicketCategory(ticketCategory);
             ticketRep.save(ticket);
 
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Type updated. " + ticket.toString());
+            ticketLog.setLogDescription("Ticket Category updated. " + ticket.toString());
             ticketLogRep.save(ticketLog);
                 
             return ticket;
@@ -271,7 +271,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.getTicketId(),
                         ticket.getTicketTitle(),
                         ticket.getTicketDescription(),
-                        ticket.getTicketType(),
+                        ticket.getTicketCategory(),
                         ticket.getTicketStatus(),
                         ticket.getTicketPriority(),
                         ticket.getUser(),
@@ -298,7 +298,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -322,7 +322,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -336,9 +336,9 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByTicketTypeId(@RequestParam String ticketTypeId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<TicketDto> findTicketsByTicketCategoryId(@RequestParam String ticketCategoryId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
 
-        var tickets = ticketRep.findTicketsByTicketType(UUID.fromString(ticketTypeId), PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
+        var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
                     .map(ticket -> 
                         new TicketDto(
                         ticket.ticketId(),
@@ -346,7 +346,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -369,7 +369,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -392,7 +392,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -415,7 +415,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),
@@ -438,7 +438,7 @@ public class TicketSeviceImpl implements TicketServices{
                         ticket.ticketDescription(),
                         ticket.ticketStatus(),
                         ticket.ticketPriority(),
-                        ticket.ticketType(),
+                        ticket.ticketCategory(),
                         ticket.userId(),
                         ticket.attibuitedToUserId(),
                         ticket.creationDateTime(),

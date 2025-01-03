@@ -1,7 +1,10 @@
 package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,5 +42,7 @@ public class TicketMessage implements Serializable{
     @JoinColumn(name = "user_id")
     private User user;
 
-   
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date messageDateTime;
 }

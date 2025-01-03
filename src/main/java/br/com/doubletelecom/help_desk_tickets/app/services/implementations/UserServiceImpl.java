@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserServices{
         user.setEmail(userDto.email());
         // Password encoding.
         user.setPassword(passwordEncoder.encode(userDto.password()));
+        user.setActive(true);
         user.setRoles(Set.of(roleBasic));
 
         return userRep.save(user);
@@ -133,6 +134,40 @@ public class UserServiceImpl implements UserServices{
         if(user.isAdmin() || user.getUserId().equals(userDto.userId())){
             user2update.setPassword(passwordEncoder.encode("Metro@2025"));
             userRep.save(user2update);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void activate(@RequestParam String userId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user2activate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()){
+            user2activate.setActive(true);
+            userRep.save(user2activate);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void deactivate(@RequestParam String userId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user2deactivate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(user.isAdmin()){
+            user2deactivate.setActive(false);
+            userRep.save(user2deactivate);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }

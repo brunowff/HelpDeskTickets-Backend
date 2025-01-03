@@ -61,14 +61,14 @@ public class GroupController {
         return ResponseEntity.ok(group);
     }
 
-    @GetMapping("/group/{id}/activate")
+    @GetMapping("/group/activate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> activate(@PathVariable("id") String groupId,JwtAuthenticationToken token) {
         groupServices.activate(groupId, token);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/group/{id}/deactivate")
+    @GetMapping("/group/deactivate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> deactivate(@PathVariable("id") String groupId,JwtAuthenticationToken token) {
         groupServices.deactivate(groupId, token);

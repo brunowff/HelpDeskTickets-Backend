@@ -45,8 +45,8 @@ public class Ticket implements Serializable{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_type_id")
-    private TicketType ticketType;
+    @JoinColumn(name = "ticket_category_id")
+    private TickeCategory ticketCategory;
 
     @ManyToOne
     @JoinColumn(name = "attribuited_to_user_id")

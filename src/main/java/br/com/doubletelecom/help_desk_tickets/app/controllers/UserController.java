@@ -4,27 +4,31 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
-
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+
+
 
 /*
  * End points to handle Users
  */
-@RestController("/um")
+@RestController("/profiles")
 @AllArgsConstructor
 public class UserController {
 
     private final UserServices userServices;
 
     @PostMapping("/users")
-    public ResponseEntity<Void> createUser(@RequestBody CreateUserDto userDto){
+    public ResponseEntity<Void> createUser(@RequestBody @Valid CreateUserDto userDto){
 
         try {
             userServices.save(userDto);
@@ -42,5 +46,20 @@ public class UserController {
         var users = userServices.findAll();
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/user/{id}/activate")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_USER_MANAGER')")
+    public ResponseEntity<Void> activateUser(@PathVariable("id") String userId, JwtAuthenticationToken token) {
+        userServices.activate(userId, token);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user/{id}/deactivate")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_USER_MANAGER')")
+    public ResponseEntity<Void> deactivateUser(@PathVariable("id") String userId, JwtAuthenticationToken token) {
+        userServices.deactivate(userId, token);
+        return ResponseEntity.ok().build();
+    }
+       
     
 }

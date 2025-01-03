@@ -5,9 +5,9 @@ import java.util.UUID;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import jakarta.validation.constraints.NotBlank;
 
-public record TicketTypeDto(
+public record TicketCategoryDto(
     @NotBlank(message = "{required.validation}")
-    UUID ticketTypeId,
+    UUID ticketCategoryId,
 
     @NotBlank(message = "{required.validation}")
     String name,

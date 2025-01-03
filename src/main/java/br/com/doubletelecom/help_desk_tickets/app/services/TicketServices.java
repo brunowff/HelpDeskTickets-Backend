@@ -16,12 +16,12 @@
  * - findTicketsByUserId(String userId, int page, int pageSize): Finds tickets by user ID.
  * - findTicketsByAttribuitedToUser(String userId, int page, int pageSize): Finds tickets attributed to a specific user.
  * - findTicketsByGroupId(String groupId, int page, int pageSize): Finds tickets by group ID.
- * - findTicketsByTicketTypeId(String ticketTypeId, int page, int pageSize): Finds tickets by ticket type ID.
+ * - findTicketsByTicketCategoryId(String ticketCategoryId, int page, int pageSize): Finds tickets by ticket Category ID.
  * - findTicketsByStatus(String status, int page, int pageSize): Finds tickets by status.
  * - findTicketsByPriority(String priority, int page, int pageSize): Finds tickets by priority.
  * - findTicketsByTitle(String title, int page, int pageSize): Finds tickets by title.
  * - findTicketsByDescription(String description, int page, int pageSize): Finds tickets by description.
- * - findByFilter(String userId, String AttibuitedToUserId, String groupId, String ticketTypeId, String status, String priority, String title, String description, int page, int pageSize): Finds tickets by various filters.
+ * - findByFilter(String userId, String AttibuitedToUserId, String groupId, String ticketCategoryId, String status, String priority, String title, String description, int page, int pageSize): Finds tickets by various filters.
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
@@ -44,10 +44,10 @@ public interface TicketServices {
     public Ticket updateStatus(String ticketId, String status, JwtAuthenticationToken token);
     public Ticket updatePriority(String ticketId, String priority, JwtAuthenticationToken token);
     public Ticket updateAttribuitedTo(String ticketId, String userId, JwtAuthenticationToken token);
-    public Ticket updateTicketType(String ticketId, String ticketTypeId, JwtAuthenticationToken token);
+    public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token);
     public Page<TicketDto> findTicketsByUserId(String userId, int page, int pageSize);
     public Page<TicketDto> findTicketsByAttribuitedToUser(String userId, int page, int pageSize);
-    public Page<TicketDto> findTicketsByTicketTypeId(String ticketTypeId, int page, int pageSize);
+    public Page<TicketDto> findTicketsByTicketCategoryId(String ticketCategoryId, int page, int pageSize);
     public Page<TicketDto> findTicketsByStatus(String status, int page, int pageSize);
     public Page<TicketDto> findTicketsByPriority(String priority, int page, int pageSize);
     public Page<TicketDto> findTicketsByTitle(String title, int page, int pageSize);
