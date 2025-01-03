@@ -27,21 +27,21 @@ public class RoleController {
     private final UserServices userServices;
 
     @GetMapping("/roles")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN', 'SCOPE_API_ROLE_MANAGER')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_ROLE_MANAGER')")
     public ResponseEntity<List<Role>> findAll(JwtAuthenticationToken token) {
         var roles = roleServices.findAll();
         return ResponseEntity.ok(roles);
     }
     
     @GetMapping("/role/{roleName}/user/{userId}")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN', 'SCOPE_API_ROLE_MANAGER')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_ROLE_MANAGER')")
     public ResponseEntity<Void> addRole2User (@PathVariable("roleName") String roleName, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
         userServices.addRoleToUser(roleName, userId, token);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/role/{roleName}/user/{userId}")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN', 'SCOPE_API_ROLE_MANAGER')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_ROLE_MANAGER')")
     public ResponseEntity<Void> removeRoleFromUser (@PathVariable("roleName") String roleName, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
         userServices.removeRoleFromUser(roleName, userId, token);
         return ResponseEntity.ok().build();

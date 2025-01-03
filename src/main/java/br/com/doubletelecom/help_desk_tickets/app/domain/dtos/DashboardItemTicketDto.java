@@ -6,7 +6,7 @@ import java.util.UUID;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketType;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
-public record FeedItemDto(
+public record DashboardItemTicketDto(
     UUID PostId, 
     String title,
     String description,

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.FeedDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.DashboardTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 /*
  * End Points to handle Ticket Requisitions
  */
-@RestController("tm")
+@RestController("/tm")
 @AllArgsConstructor
 public class TicketController {
 
@@ -33,15 +33,15 @@ public class TicketController {
     }
 
     /*
-     * End point to generate a Paginated Tickets Feed
+     * End point to generate a Paginated Tickets Dashboard
      */
-    @GetMapping("/feed")
-    public ResponseEntity<FeedDto> feed(@RequestParam(defaultValue = "0") int page,
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardTicketDto> dashboard(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
         
         try {
-            var tickets = ticketServices.feed(page, pageSize);
-            return ResponseEntity.ok(new FeedDto(tickets.getContent(),
+            var tickets = ticketServices.dashboard(page, pageSize);
+            return ResponseEntity.ok(new DashboardTicketDto(tickets.getContent(),
                 page, pageSize, tickets.getTotalPages(), tickets.getTotalElements()));
 
         } catch (Exception e) {

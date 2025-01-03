@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.FeedItemDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.DashboardItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
@@ -262,12 +262,12 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<FeedItemDto> feed(@RequestParam(defaultValue = "0") int page,
+    public Page<DashboardItemTicketDto> dashboard(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int pageSize){
 
         var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
                     .map(ticket -> 
-                        new FeedItemDto(
+                        new DashboardItemTicketDto(
                         ticket.getTicketId(),
                         ticket.getTicketTitle(),
                         ticket.getTicketDescription(),

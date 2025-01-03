@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
@@ -62,7 +63,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Void delete(@RequestParam String ticketLogServicesId, JwtAuthenticationToken token){
+    public Void delete(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -70,7 +71,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogServicesId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
         try {
             ticketLogRep.delete(ticketLog);
@@ -83,10 +84,19 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Page<TicketLog> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<PageItemTicketLogDto> findAll(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int pageSize){;
         
-        var tickets = ticketLogRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "logDateTime"));                
+        var tickets = ticketLogRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "logDateTime"))
+                    .map(
+                        ticketLog -> new PageItemTicketLogDto(
+                            ticketLog.getTicketLogId(),
+                            ticketLog.getTicket(),
+                            ticketLog.getUser(),
+                            ticketLog.getLogDescription(),
+                            ticketLog.getLogDateTime()
+                        )
+                    );                
         return tickets;
 
     }

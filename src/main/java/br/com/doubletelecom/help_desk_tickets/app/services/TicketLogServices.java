@@ -19,13 +19,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 
 public interface TicketLogServices {
     public Void save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token);
-    public TicketLog findById(String ticketLogServicesId, JwtAuthenticationToken token);
-    public Void delete(String ticketLogServicesId, JwtAuthenticationToken token);
-    public Page<TicketLog> findAll(int page, int pageSize);
+    public TicketLog findById(String ticketLogId, JwtAuthenticationToken token);
+    public Void delete(String ticketLogId, JwtAuthenticationToken token);
+    public Page<PageItemTicketLogDto> findAll(int page, int pageSize);
     public List<TicketLog> findTicketsLogByTicket(String ticket);
     public List<TicketLog> findTicketLogsByUser(String user);
 }
