@@ -28,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @AllArgsConstructor
 public class TicketController {
     
-    //TODO: Implement endpoints to handle ticket requisitions
-
     private final TicketServices ticketServices;
 
     @PostMapping("/tickets")

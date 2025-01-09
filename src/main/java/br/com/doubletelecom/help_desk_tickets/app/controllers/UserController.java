@@ -17,7 +17,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController("/profiles")
