@@ -37,8 +37,7 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public Page<PageItemUserDto> findAll(Pageable pageable){
-        
+    public Page<PageItemUserDto> findAll(Pageable pageable){  
         return userRep.findAll(pageable).map(PageItemUserDto::new);
     }
 

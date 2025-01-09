@@ -1,11 +1,9 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.DashboardItemTicketDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
@@ -97,10 +95,8 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<Ticket> findAll(@RequestParam(defaultValue = "0") int page, 
-                                @RequestParam(defaultValue = "10") int pageSize){
-        
-        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"));
+    public Page<PageItemTicketDto> findAll(Pageable pageable){
+        var tickets = ticketRep.findAll(pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
@@ -262,73 +258,28 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<DashboardItemTicketDto> dashboard(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int pageSize){
-
-        var tickets = ticketRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new DashboardItemTicketDto(
-                        ticket.getTicketId(),
-                        ticket.getTicketTitle(),
-                        ticket.getTicketDescription(),
-                        ticket.getTicketCategory(),
-                        ticket.getTicketStatus(),
-                        ticket.getTicketPriority(),
-                        ticket.getUser(),
-                        ticket.getAttribuitedToUser(),
-                        Date.from(ticket.getCreationDateTime()), // Convert Instant to Date
-                        ticket.getFinalizationDateTime()
-                        )
-                    );
-        
+    public Page<PageItemTicketDto> dashboard(Pageable pageable){
+        var tickets = ticketRep.findAll(pageable).map(PageItemTicketDto::new);
         return tickets;                            
     }
     
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByUserId(@RequestParam String userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByUserId(@RequestParam String userId, Pageable pageable){
 
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var tickets = ticketRep.findTicketsByUser(user, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByUser(user, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByAttribuitedToUser(@RequestParam String attribuitedToUserId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(@RequestParam String attribuitedToUserId, Pageable pageable){
         
         var user = userRep.findById(UUID.fromString(attribuitedToUserId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var tickets = ticketRep.findTicketsByAttribuitedToUser(user, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByAttribuitedToUser(user, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
@@ -336,115 +287,44 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByTicketCategoryId(@RequestParam String ticketCategoryId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
-
-        var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+    public Page<PageItemTicketDto> findTicketsByTicketCategoryId(@RequestParam String ticketCategoryId, Pageable pageable){
+        var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByStatus(@RequestParam String status, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByStatus(@RequestParam String status, Pageable pageable){
 
-        var tickets = ticketRep.findTicketsByTicketStatus(status, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByTicketStatus(status, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByPriority(@RequestParam String priority, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByPriority(@RequestParam String priority, Pageable pageable){
 
-        var tickets = ticketRep.findTicketsByTicketPriority(priority, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByTicketPriority(priority, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByTitle(@RequestParam String title, Pageable pageable){
 
-        var tickets = ticketRep.findTicketsByTicketTitleContaining(title, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByTicketTitleContaining(title, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public Page<TicketDto> findTicketsByDescription(@RequestParam String description, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketDto> findTicketsByDescription(@RequestParam String description, Pageable pageable){
 
-        var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationDateTime"))
-                    .map(ticket -> 
-                        new TicketDto(
-                        ticket.ticketId(),
-                        ticket.ticketTitle(),
-                        ticket.ticketDescription(),
-                        ticket.ticketStatus(),
-                        ticket.ticketPriority(),
-                        ticket.ticketCategory(),
-                        ticket.userId(),
-                        ticket.attibuitedToUserId(),
-                        ticket.creationDateTime(),
-                        ticket.finalizationDateTime()
-                        )
-                    );
+        var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, pageable).map(PageItemTicketDto::new);
         return tickets;
 
     }

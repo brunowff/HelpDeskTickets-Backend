@@ -26,31 +26,32 @@
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.DashboardItemTicketDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 
 public interface TicketServices {
 
     public Ticket save(CreateTicketDto ticketDto, JwtAuthenticationToken token);
-    public Page<DashboardItemTicketDto> dashboard(int page, int pageSize);
+    public Page<PageItemTicketDto> dashboard(Pageable pageable);
     public Void deleteTicket(String ticketId, JwtAuthenticationToken token);
     public Ticket findById(String ticketId);
-    public Page<Ticket> findAll(int page, int pageSize);
+    public Page<PageItemTicketDto> findAll(Pageable pageable);
     public Ticket update(TicketDto ticketDto, JwtAuthenticationToken token);
     public Ticket updateStatus(String ticketId, String status, JwtAuthenticationToken token);
     public Ticket updatePriority(String ticketId, String priority, JwtAuthenticationToken token);
     public Ticket updateAttribuitedTo(String ticketId, String userId, JwtAuthenticationToken token);
     public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token);
-    public Page<TicketDto> findTicketsByUserId(String userId, int page, int pageSize);
-    public Page<TicketDto> findTicketsByAttribuitedToUser(String userId, int page, int pageSize);
-    public Page<TicketDto> findTicketsByTicketCategoryId(String ticketCategoryId, int page, int pageSize);
-    public Page<TicketDto> findTicketsByStatus(String status, int page, int pageSize);
-    public Page<TicketDto> findTicketsByPriority(String priority, int page, int pageSize);
-    public Page<TicketDto> findTicketsByTitle(String title, int page, int pageSize);
-    public Page<TicketDto> findTicketsByDescription(String description, int page, int pageSize);
+    public Page<PageItemTicketDto> findTicketsByUserId(String userId, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(String userId, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByTicketCategoryId(String ticketCategoryId, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByStatus(String status, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByPriority(String priority, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByTitle(String title, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByDescription(String description, Pageable pageable);
 
 }
