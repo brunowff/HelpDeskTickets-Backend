@@ -30,7 +30,7 @@ public class GroupController {
 
     private final GroupServices groupServices;
 
-    @PostMapping("/group")
+    @PostMapping("/groups")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> create(@RequestBody @Valid CreateGroupDto createGroupDto, JwtAuthenticationToken token) {
         groupServices.save(createGroupDto, token);

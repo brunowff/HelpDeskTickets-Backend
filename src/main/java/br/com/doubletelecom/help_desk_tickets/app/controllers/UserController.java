@@ -17,6 +17,8 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController("/profiles")
 @AllArgsConstructor
@@ -39,7 +41,7 @@ public class UserController {
     // Generate the User list if the requester is an admin.
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN')")
-    public ResponseEntity<Page<PageItemUserDto>> listUsers(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable pageable) {
+    public ResponseEntity<Page<PageItemUserDto>> listUsers(@PageableDefault(page = 0, size = 10, sort = {"username"}) Pageable pageable) {
         var users = userServices.findAll(pageable);
         return ResponseEntity.ok(users);
     }
@@ -58,5 +60,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
        
-    
 }

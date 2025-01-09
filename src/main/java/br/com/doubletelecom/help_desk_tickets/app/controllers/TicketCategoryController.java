@@ -29,7 +29,7 @@ public class TicketCategoryController {
 
     private final TicketCategoryServices ticketCategoryServices;
 
-    @PostMapping("/ticket-category")
+    @PostMapping("/ticket-categories")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> createTicketCategory(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         ticketCategoryServices.save(ticketCategoryDto, token);
@@ -37,14 +37,14 @@ public class TicketCategoryController {
         
     }
 
-    @PutMapping("/ticket-category/{id}")
+    @PutMapping("/ticket-categories/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> updateTicketCategory(@RequestBody @Valid TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         ticketCategoryServices.update(ticketCategoryDto, token);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/ticket-category/{id}")
+    @DeleteMapping("/ticket-categories/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> deleteTicketCategory(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         ticketCategoryServices.delete(ticketCategoryId, token);
@@ -65,14 +65,14 @@ public class TicketCategoryController {
         return ResponseEntity.ok(ticketCategories);
     }
     
-    @GetMapping("/ticket-category/activate/{id}")
+    @GetMapping("/ticket-categories/activate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> activateTicketCategory(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         ticketCategoryServices.activate(ticketCategoryId, token);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/ticket-category/deactivate/{id}")
+    @GetMapping("/ticket-categories/deactivate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> deactivateTicketCategory(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         ticketCategoryServices.deactivate(ticketCategoryId, token);

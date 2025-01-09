@@ -1,15 +1,18 @@
 package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.NonNull;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Configuration
@@ -31,5 +34,10 @@ public class DateTimeConfig extends WebMvcConfigurationSupport {
         dateRegistrar.registerFormatters(conversionService);
 
         return conversionService;
+    }
+
+    @Override
+    public void addArgumentResolvers(@NonNull List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add( new PageableHandlerMethodArgumentResolver());
     }
 }
