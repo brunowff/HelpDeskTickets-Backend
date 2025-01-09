@@ -1,11 +1,9 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -15,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessageDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketMessageDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketMessageRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
@@ -94,38 +93,31 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketMessageDto> findAll(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int pageSize){
+    public Page<PageItemTicketMessageDto> findAll(Pageable pageable, JwtAuthenticationToken token){
         
-        var ticketMessages = ticketMessageRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimestamp"))
-                        .map(
-                        ticketMessage -> new PageItemTicketMessageDto(
-                            ticketMessage.getTicketMessageId(),
-                            ticketMessage.getTicket(),
-                            ticketMessage.getUser(),
-                            ticketMessage.getMessage(),
-                            ticketMessage.getMessageDateTime()
-                        )
-                    );
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(!user.hasRole(Role.Values.API_TICKET_MESSAGE.toString())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return ticketMessageRep.findAll(pageable).map(PageItemTicketMessageDto::new);
 
-        return ticketMessages;
     }
 
     @Override
     @Transactional
-    public List<TicketMessage> findTicketMessagesByTicketId(@RequestParam String ticketId, JwtAuthenticationToken token){
+    public Page<PageItemTicketMessageDto> findTicketMessagesByTicketId(@RequestParam String ticketId, Pageable pageable, JwtAuthenticationToken token){
         
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketMessages = ticketMessageRep.findByTicket(ticket);
+        var ticketMessages = ticketMessageRep.findByTicket(ticket, pageable).map(PageItemTicketMessageDto::new);
         return ticketMessages;
     }
 
     @Override
     @Transactional
-    public List<TicketMessage> findTicketMessagesByUserId(@RequestParam String userId, JwtAuthenticationToken token){
+    public Page<PageItemTicketMessageDto> findTicketMessagesByUserId(@RequestParam String userId, Pageable pageable, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketMessages = ticketMessageRep.findByUser(user);
+        var ticketMessages = ticketMessageRep.findByUser(user, pageable).map(PageItemTicketMessageDto::new);
         return ticketMessages;
     }
 }

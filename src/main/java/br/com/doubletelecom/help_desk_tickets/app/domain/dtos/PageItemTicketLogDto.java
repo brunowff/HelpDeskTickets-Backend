@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
 public record PageItemTicketLogDto(
@@ -13,5 +14,7 @@ public record PageItemTicketLogDto(
     String description,
     Date creationDateTime
 ) {
-
+    public PageItemTicketLogDto(TicketLog ticketLog) {
+        this(ticketLog.getTicketLogId(), ticketLog.getTicket(), ticketLog.getUser(), ticketLog.getLogDescription(), ticketLog.getLogDateTime());
+    }
 }

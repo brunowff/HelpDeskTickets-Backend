@@ -1,6 +1,7 @@
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
 import jakarta.validation.Valid;
@@ -50,8 +52,8 @@ public class GroupController {
     }
 
     @GetMapping("/groups")
-    public ResponseEntity<List<Group>> findAll(JwtAuthenticationToken token) {
-        var groups = groupServices.findAll();
+    public ResponseEntity<Page<PageItemGroupDto>> findAll(Pageable pageable, JwtAuthenticationToken token) {
+        var groups = groupServices.findAll(pageable);
         return ResponseEntity.ok(groups);
     }
 

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_ticket_types")
-public class TickeCategory implements Serializable{
+public class TicketCategory implements Serializable{
     
     @Serial
     private static final long serialVersionUID = 1L;

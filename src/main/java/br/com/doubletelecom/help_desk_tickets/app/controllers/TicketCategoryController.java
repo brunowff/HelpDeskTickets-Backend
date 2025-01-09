@@ -1,7 +1,7 @@
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketCategoryDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketCategoryDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketCategoryDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TickeCategory;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketCategoryServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -52,16 +53,15 @@ public class TicketCategoryController {
 
     @GetMapping("ticket-category/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
-    public ResponseEntity<TickeCategory> findById(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
+    public ResponseEntity<TicketCategory> findById(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         var ticketCategory = ticketCategoryServices.findById(ticketCategoryId, token);
         return ResponseEntity.ok(ticketCategory);
     }
 
     @GetMapping("/ticket-categories")
     @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
-    public ResponseEntity<List<TickeCategory>> findAll(JwtAuthenticationToken token){
-        
-        var ticketCategories = ticketCategoryServices.findAll();
+    public ResponseEntity<Page<PageItemTicketCategoryDto>> findAll(Pageable pageable, JwtAuthenticationToken token){
+        var ticketCategories = ticketCategoryServices.findAll(pageable);
         return ResponseEntity.ok(ticketCategories);
     }
     

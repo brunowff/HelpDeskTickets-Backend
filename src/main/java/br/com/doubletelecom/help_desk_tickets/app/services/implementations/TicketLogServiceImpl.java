@@ -1,11 +1,9 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -84,39 +82,29 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketLogDto> findAll(@RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int pageSize){;
+    public Page<PageItemTicketLogDto> findAll(Pageable pageable){;
         
-        var tickets = ticketLogRep.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "logDateTime"))
-                    .map(
-                        ticketLog -> new PageItemTicketLogDto(
-                            ticketLog.getTicketLogId(),
-                            ticketLog.getTicket(),
-                            ticketLog.getUser(),
-                            ticketLog.getLogDescription(),
-                            ticketLog.getLogDateTime()
-                        )
-                    );                
+        var tickets = ticketLogRep.findAll(pageable).map(PageItemTicketLogDto::new);
         return tickets;
 
     }
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketsLogByTicket(@RequestParam String ticketId){
+    public Page<PageItemTicketLogDto> findTicketsLogByTicket(@RequestParam String ticketId, Pageable pageable){
         
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketLogs = ticketLogRep.findByTicket(ticket);
+        var ticketLogs = ticketLogRep.findByTicket(ticket, pageable).map(PageItemTicketLogDto::new);
         return ticketLogs;
 
     }
 
     @Override
     @Transactional
-    public List<TicketLog> findTicketLogsByUser(@RequestParam String userId){
+    public Page<PageItemTicketLogDto> findTicketLogsByUser(@RequestParam String userId, Pageable pageable){
 
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketLogs = ticketLogRep.findByUser(user);
+        var ticketLogs = ticketLogRep.findByUser(user, pageable).map(PageItemTicketLogDto::new);
         return ticketLogs;
 
     }

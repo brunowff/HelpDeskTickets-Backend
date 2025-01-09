@@ -14,20 +14,21 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 
 public interface GroupServices {
-    Group save(CreateGroupDto groupDto, JwtAuthenticationToken token);
-    Group findById(String groupId, JwtAuthenticationToken token);
-    List<Group> findAll();
-    Group update(GroupDto groupDto, JwtAuthenticationToken token);
-    Void delete(String groupId, JwtAuthenticationToken token);
-    Void activate(String groupId, JwtAuthenticationToken token);
-    Void deactivate(String groupId, JwtAuthenticationToken token);
+    public Group save(CreateGroupDto groupDto, JwtAuthenticationToken token);
+    public Group findById(String groupId, JwtAuthenticationToken token);
+    public Page<PageItemGroupDto> findAll(Pageable pageable);
+    public Group update(GroupDto groupDto, JwtAuthenticationToken token);
+    public Void delete(String groupId, JwtAuthenticationToken token);
+    public Void activate(String groupId, JwtAuthenticationToken token);
+    public Void deactivate(String groupId, JwtAuthenticationToken token);
 }

@@ -1,8 +1,9 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserGroupRepository;
@@ -64,9 +66,8 @@ public class GroupServiceImpl implements GroupServices{
     
     @Override
     @Transactional
-    public List<Group> findAll() {
-        var groups = groupRep.findAll();
-        return groups;
+    public Page<PageItemGroupDto> findAll(Pageable pageable) {
+        return groupRep.findAll(pageable).map(PageItemGroupDto::new);
     }
 
     @Override

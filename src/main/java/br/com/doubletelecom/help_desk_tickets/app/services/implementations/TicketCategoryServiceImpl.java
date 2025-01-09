@@ -1,8 +1,9 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketCategoryDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketCategoryDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketCategoryDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TickeCategory;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
@@ -31,7 +33,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
     @Override
     @Transactional
-    public TickeCategory save(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
+    public TicketCategory save(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -43,7 +45,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group is not active");
             }
 
-            var ticketCategory = new TickeCategory();
+            var ticketCategory = new TicketCategory();
     
             try {
                 ticketCategory.setDestinationGroup(group);
@@ -62,7 +64,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
     @Override
     @Transactional
-    public TickeCategory findById(@RequestParam String ticketCategoryId, JwtAuthenticationToken token){
+    public TicketCategory findById(@RequestParam String ticketCategoryId, JwtAuthenticationToken token){
         
         var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return ticketCategory;
@@ -91,21 +93,21 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
     @Override
     @Transactional
-    public List<TickeCategory> findAll(){
+    public Page<PageItemTicketCategoryDto> findAll(Pageable pageable){
         
-        var ticketCategories = ticketCategoryRep.findAll();
+        var ticketCategories = ticketCategoryRep.findAll(pageable).map(PageItemTicketCategoryDto::new);
         return ticketCategories;
     }
 
     @Override
     @Transactional
-    public TickeCategory update(@RequestBody @Valid TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
+    public TicketCategory update(@RequestBody @Valid TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if(user.isAdmin() || user.hasRole("API_TICKET_CATEGORY_MANAGER")){
             try {
-                var ticketCategory = new TickeCategory();
+                var ticketCategory = new TicketCategory();
                 var group = groupRep.findById(ticketCategoryDto.destinationGroup().getGroupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
                 ticketCategory.setName(ticketCategoryDto.name());
                 ticketCategory.setDestinationGroup(group);

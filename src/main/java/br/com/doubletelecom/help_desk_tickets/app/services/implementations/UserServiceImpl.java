@@ -1,10 +1,11 @@
 
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.RoleRepository;
@@ -35,8 +37,9 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public List<User> findAll(){
-        return userRep.findAll();
+    public Page<PageItemUserDto> findAll(Pageable pageable){
+        
+        return userRep.findAll(pageable).map(PageItemUserDto::new);
     }
 
     @Override
@@ -75,7 +78,6 @@ public class UserServiceImpl implements UserServices{
             user.setUsername(userDto.username());
             user.setEmail(userDto.email());
             user.setPassword(passwordEncoder.encode(userDto.password()));
-            user.setActive(userDto.active());
         return userRep.save(user);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -165,7 +167,7 @@ public class UserServiceImpl implements UserServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         var user2deactivate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if(user.isAdmin()){
+        if(user.isAdmin() && !user2deactivate.isAdmin()){
             user2deactivate.setActive(false);
             userRep.save(user2deactivate);
         } else {

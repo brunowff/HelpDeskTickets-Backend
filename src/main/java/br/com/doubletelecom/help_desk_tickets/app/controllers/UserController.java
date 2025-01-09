@@ -1,6 +1,8 @@
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -37,8 +39,8 @@ public class UserController {
     // Generate the User list if the requester is an admin.
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN')")
-    public ResponseEntity<List<User>> listUsers(){
-        var users = userServices.findAll();
+    public ResponseEntity<Page<PageItemUserDto>> listUsers(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable pageable) {
+        var users = userServices.findAll(pageable);
         return ResponseEntity.ok(users);
     }
 
