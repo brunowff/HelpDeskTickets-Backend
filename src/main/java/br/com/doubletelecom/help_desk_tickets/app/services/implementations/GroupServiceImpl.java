@@ -4,17 +4,18 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserGroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
@@ -37,7 +38,7 @@ public class GroupServiceImpl implements GroupServices{
     @Transactional
     public Group save(@RequestBody @Valid CreateGroupDto groupDto, JwtAuthenticationToken token) {
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new UserNotFoundException());
         
         if(user.hasRole("API_GROUP_MANAGER") || user.isAdmin()){
             try {
@@ -48,10 +49,10 @@ public class GroupServiceImpl implements GroupServices{
                 groupRep.save(group);
                 return group;
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+                throw new ObjectNotProcessableException();
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         
@@ -60,7 +61,7 @@ public class GroupServiceImpl implements GroupServices{
     @Override
     @Transactional
     public Group findById(@RequestParam String groupId, JwtAuthenticationToken token) {
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
         return group;
     }
     
@@ -74,8 +75,8 @@ public class GroupServiceImpl implements GroupServices{
     @Transactional
     public Group update(@RequestBody @Valid GroupDto groupDto, JwtAuthenticationToken token) {
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var group = groupRep.findById(groupDto.groupId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var group = groupRep.findById(groupDto.groupId()).orElseThrow( () -> new ObjectNotFoundException());
         
         if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER")){
             try {
@@ -85,10 +86,10 @@ public class GroupServiceImpl implements GroupServices{
                 groupRep.save(group);
                 return group;
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+                throw new ObjectNotProcessableException();
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
     }
 
@@ -98,19 +99,19 @@ public class GroupServiceImpl implements GroupServices{
         
         // It is not recommended to delete a group, only deactivate it to avoid losing the ticket history
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
         
         var userGroups = userGroupRep.findByGroup(group);
         if (userGroups != null && !userGroups.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Group has associated users and cannot be deleted");
+            throw new ObjectNotProcessableException();
         }
 
         if(user.isAdmin()){
             groupRep.delete(group);
             return null;
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ObjectNotProcessableException();
         }
 
     }
@@ -119,15 +120,15 @@ public class GroupServiceImpl implements GroupServices{
     @Transactional
     public Void activate(@RequestParam String groupId, JwtAuthenticationToken token) {
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER")){
-            var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
             group.setActive(true);
             groupRep.save(group);
             return null;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -136,15 +137,15 @@ public class GroupServiceImpl implements GroupServices{
     @Transactional
     public Void deactivate(@RequestParam String groupId, JwtAuthenticationToken token) {
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER")){
-            var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
             group.setActive(false);
             groupRep.save(group);
             return null;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }

@@ -6,19 +6,20 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.RoleRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserServices{
 
         // Check if users already exist.
         if(userFromDb.isPresent()){
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ObjectNotProcessableException();
         }
 
         var user = new User();
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public User updateUser(@RequestBody @Valid UserDto userDto, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
     
         if(user.isAdmin() || user.getUserId().equals(userDto.userId())){
             user.setFullname(userDto.fullname());
@@ -79,7 +80,7 @@ public class UserServiceImpl implements UserServices{
             user.setPassword(passwordEncoder.encode(userDto.password()));
         return userRep.save(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
     }
 
@@ -87,12 +88,12 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public Void addRoleToUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var role2add = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var role2add = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
         var roles = user.getRoles();
        
         if(!user.isAdmin()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         roles.add(role2add);
@@ -106,12 +107,12 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public Void removeRoleFromUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
         var roles = user.getRoles();
         
         if(!user.isAdmin()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         try {
@@ -119,7 +120,7 @@ public class UserServiceImpl implements UserServices{
             user.setRoles(roles);
             userRep.save(user);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ObjectNotProcessableException();
         }
         
         return null;
@@ -129,14 +130,14 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public Void passwordReset(@RequestBody @Valid UserDto userDto, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var user2update = userRep.findById(userDto.userId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var user2update = userRep.findById(userDto.userId()).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin() || user.getUserId().equals(userDto.userId())){
             user2update.setPassword(passwordEncoder.encode("Metro@2025"));
             userRep.save(user2update);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         return null;
@@ -146,14 +147,14 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public Void activate(@RequestParam String userId, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var user2activate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var user2activate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin()){
             user2activate.setActive(true);
             userRep.save(user2activate);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         return null;
@@ -163,14 +164,14 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public Void deactivate(@RequestParam String userId, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var user2deactivate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var user2deactivate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin() && !user2deactivate.isAdmin()){
             user2deactivate.setActive(false);
             userRep.save(user2deactivate);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
         return null;

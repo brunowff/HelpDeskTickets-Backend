@@ -4,16 +4,17 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
@@ -34,8 +35,8 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Transactional
     public Void save(@RequestBody @Valid CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(ticketLogDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(ticketLogDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
         
         try {
             var ticketLog = new TicketLog();
@@ -44,7 +45,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
             ticketLog.setLogDescription(ticketLogDto.logDescription());
             ticketLogRep.save(ticketLog);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ObjectNotProcessableException();
         }    
 
         return null;
@@ -54,7 +55,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Transactional
     public TicketLog findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         
-        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ObjectNotFoundException());
         
         return ticketLog;
     }
@@ -63,18 +64,18 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Transactional
     public Void delete(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         
         if(!user.isAdmin()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
-        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ObjectNotFoundException());
         
         try {
             ticketLogRep.delete(ticketLog);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ObjectNotProcessableException();
         }
 
         return null;
@@ -93,7 +94,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Transactional
     public Page<PageItemTicketLogDto> findTicketsLogByTicket(@RequestParam String ticketId, Pageable pageable){
         
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         var ticketLogs = ticketLogRep.findByTicket(ticket, pageable).map(PageItemTicketLogDto::new);
         return ticketLogs;
 
@@ -103,7 +104,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
     @Transactional
     public Page<PageItemTicketLogDto> findTicketLogsByUser(@RequestParam String userId, Pageable pageable){
 
-        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
         var ticketLogs = ticketLogRep.findByUser(user, pageable).map(PageItemTicketLogDto::new);
         return ticketLogs;
 

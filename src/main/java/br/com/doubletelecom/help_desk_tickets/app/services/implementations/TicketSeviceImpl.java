@@ -4,18 +4,19 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRepository;
@@ -39,8 +40,8 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ObjectNotFoundException());
 
         try {
             var ticket = new Ticket();
@@ -60,7 +61,7 @@ public class TicketSeviceImpl implements TicketServices{
 
             return ticket;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ObjectNotProcessableException();
         }
 
     }
@@ -72,23 +73,22 @@ public class TicketSeviceImpl implements TicketServices{
 
         // It's not recomended to delete a ticket, but just inactivate it.
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         
         // Verify if user is an author by the token or if it's an Admin for delete.
         if(user.isAdmin() || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))){
             ticketRep.delete(ticket);
             return null;
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new UserNotAuthorizedException();
         }
     }
 
     @Override
     @Transactional
     public Ticket findById(@RequestParam String ticketId){
-       
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         return ticket;
 
     }
@@ -105,9 +105,9 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket update(@RequestBody @Valid TicketDto ticketDto, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
+        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ObjectNotFoundException());
 
         // Only Admin, user attribuited to ticket or the author of the ticket can update it.
         if(user.isAdmin()
@@ -133,12 +133,12 @@ public class TicketSeviceImpl implements TicketServices{
 
                 return ticket;
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+                throw new ObjectNotProcessableException();
             }
             
             
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -147,8 +147,8 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket updateStatus(@RequestParam String ticketId, @RequestParam String status, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
 
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
@@ -165,7 +165,7 @@ public class TicketSeviceImpl implements TicketServices{
 
             return ticket;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -174,8 +174,8 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket updatePriority(@RequestParam String ticketId, @RequestParam String priority, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
 
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
@@ -193,7 +193,7 @@ public class TicketSeviceImpl implements TicketServices{
 
             return ticket;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -202,9 +202,9 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket updateAttribuitedTo(@RequestParam String ticketId, @RequestParam String userId, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var user2attribuite = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
+        var user2attribuite = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
 
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
@@ -222,7 +222,7 @@ public class TicketSeviceImpl implements TicketServices{
 
             return ticket;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -231,9 +231,9 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket updateTicketCategory(@RequestParam String ticketId, @RequestParam String ticketCategoryId, JwtAuthenticationToken token){
 
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
+        var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ObjectNotFoundException());
 
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
@@ -251,7 +251,7 @@ public class TicketSeviceImpl implements TicketServices{
                 
             return ticket;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthorizedException();
         }
 
     }
@@ -268,7 +268,7 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Page<PageItemTicketDto> findTicketsByUserId(@RequestParam String userId, Pageable pageable){
 
-        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
         var tickets = ticketRep.findTicketsByUser(user, pageable).map(PageItemTicketDto::new);
         return tickets;
 
@@ -278,7 +278,7 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(@RequestParam String attribuitedToUserId, Pageable pageable){
         
-        var user = userRep.findById(UUID.fromString(attribuitedToUserId)).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var user = userRep.findById(UUID.fromString(attribuitedToUserId)).orElseThrow( () -> new UserNotFoundException());
         var tickets = ticketRep.findTicketsByAttribuitedToUser(user, pageable).map(PageItemTicketDto::new);
         return tickets;
 
