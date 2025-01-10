@@ -1,3 +1,10 @@
+/**
+ * Controller for handling JWT token generation and user login.
+ * 
+ * @author 
+ * @version
+ * 
+ */
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import java.time.Instant;

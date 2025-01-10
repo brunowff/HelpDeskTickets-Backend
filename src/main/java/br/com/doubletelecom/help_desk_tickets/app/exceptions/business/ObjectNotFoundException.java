@@ -1,3 +1,16 @@
+/**
+ * Exception thrown when an object is not found.
+ * This exception is mapped to the HTTP status code 404 (Not Found).
+ * 
+ * The exception key is "object.not.found".
+ * 
+ * Extends {@link BaseRuntimeException}.
+ * 
+ * @see BaseRuntimeException
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions.business;
 
 import org.springframework.http.HttpStatus;

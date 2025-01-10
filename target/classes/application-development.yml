@@ -4,8 +4,8 @@ spring:
         name: "Help Desk Tickets - Development"
     main:
         allow-bean-definition-overriding: true
-# Develop database connections
-    
+
+    # Develop database connections
     jpa:
         defer-datasource-initialization: true
         hibernate:
@@ -26,6 +26,7 @@ spring:
         username: myuser
         password: secret
 
+    # Develop mail server
     mail:
         host: smtp.doubletelecom.com.br
         port: 587

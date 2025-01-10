@@ -1,3 +1,30 @@
+/**
+ * Represents a message associated with a ticket in the help desk system.
+ * This entity is mapped to the "tb_ticket_messages" table in the database.
+ * Each message is associated with a specific ticket and user, and includes
+ * a timestamp indicating when the message was created.
+ * 
+ * Annotations:
+ * - @Entity: Specifies that the class is an entity and is mapped to a database table.
+ * - @Table: Specifies the name of the database table to be used for mapping.
+ * - @Id: Specifies the primary key of an entity.
+ * - @GeneratedValue: Provides for the specification of generation strategies for the values of primary keys.
+ * - @Column: Used to specify the mapped column for a persistent property or field.
+ * - @ManyToOne: Defines a many-to-one relationship between two entities.
+ * - @JoinColumn: Specifies a column for joining an entity association or element collection.
+ * - @CreationTimestamp: Automatically populates the annotated field with the timestamp of the entity's creation.
+ * - @Temporal: Specifies the temporal type (date, time, timestamp) of a persistent property or field.
+ * - @Data: A Lombok annotation to generate getters, setters, toString, equals, and hashCode methods.
+ * - @AllArgsConstructor: A Lombok annotation to generate a constructor with one parameter for each field.
+ * - @NoArgsConstructor: A Lombok annotation to generate a no-argument constructor.
+ * 
+ * Fields:
+ * - ticketMessageId (UUID): The unique identifier for the ticket message.
+ * - message (String): The content of the message.
+ * - ticket (Ticket): The ticket associated with this message.
+ * - user (User): The user who created the message.
+ * - messageDateTime (Date): The timestamp when the message was created.
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serializable;

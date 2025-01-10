@@ -1,3 +1,43 @@
+/**
+ * Represents a ticket in the help desk system.
+ * This entity is mapped to the "tb_tickets" table in the database.
+ * Implements Serializable interface for object serialization.
+ * 
+ * Fields:
+ * - ticketId: Unique identifier for the ticket.
+ * - ticketTitle: Title of the ticket.
+ * - ticketDescription: Description of the ticket.
+ * - ticketStatus: Current status of the ticket.
+ * - ticketPriority: Priority level of the ticket.
+ * - user: The user who created the ticket.
+ * - ticketCategory: The category of the ticket.
+ * - attribuitedToUser: The user to whom the ticket is assigned.
+ * - creationDateTime: Timestamp when the ticket was created.
+ * - finalizationDateTime: Timestamp when the ticket was finalized.
+ * 
+ * Enums:
+ * - ValuesOfTicketStatus: Enum representing possible statuses of a ticket.
+ * - ValuesOfPriority: Enum representing possible priority levels of a ticket.
+ * 
+ * Annotations:
+ * - @Entity: Specifies that the class is an entity and is mapped to a database table.
+ * - @Table: Specifies the name of the database table to be used for mapping.
+ * - @Id: Specifies the primary key of an entity.
+ * - @GeneratedValue: Provides for the specification of generation strategies for the values of primary keys.
+ * - @Column: Used to specify the mapped column for a persistent property or field.
+ * - @ManyToOne: Defines a many-to-one relationship between two entities.
+ * - @JoinColumn: Specifies a column for joining an entity association or element collection.
+ * - @CreationTimestamp: Automatically sets the creation timestamp.
+ * - @Temporal: Specifies the temporal type (date, time, timestamp) of a persistent property or field.
+ * 
+ * Lombok Annotations:
+ * - @Data: Generates getters, setters, toString, equals, and hashCode methods.
+ * - @AllArgsConstructor: Generates a constructor with 1 parameter for each field in the class.
+ * - @NoArgsConstructor: Generates a no-argument constructor.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serial;

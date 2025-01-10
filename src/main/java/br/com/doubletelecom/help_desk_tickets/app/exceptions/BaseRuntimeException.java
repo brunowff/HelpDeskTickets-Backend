@@ -1,3 +1,17 @@
+/**
+ * BaseRuntimeException is an abstract class that extends RuntimeException and implements the MessageException interface.
+ * It serves as a base class for custom runtime exceptions in the application.
+ * 
+ * This class contains a map of details that can be used to provide additional information about the exception.
+ * 
+ * @param mapDetails a map containing additional details about the exception
+ * 
+ * @see java.lang.RuntimeException
+ * @see br.com.doubletelecom.help_desk_tickets.app.exceptions.contract.MessageException
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions;
 
 import java.util.Map;

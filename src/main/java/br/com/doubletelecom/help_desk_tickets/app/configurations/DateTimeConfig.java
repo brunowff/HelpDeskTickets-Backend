@@ -1,3 +1,23 @@
+/**
+ * Configuration class for setting up date and time formatting in the application.
+ * Extends {@link WebMvcConfigurationSupport} to customize the MVC configuration.
+ *
+ * <p>This class defines a bean for {@link FormattingConversionService} to handle
+ * date and time formatting using custom patterns. It registers formatters for
+ * both date and date-time formats.</p>
+ *
+ * <p>The date format used is "dd.MM.yyyy" and the date-time format used is "dd.MM.yyyy HH:mm:ss".</p>
+ *
+ * <p>Additionally, this class adds a {@link PageableHandlerMethodArgumentResolver} to the list
+ * of argument resolvers to support pagination in request handling.</p>
+ *
+ * @see WebMvcConfigurationSupport
+ * @see FormattingConversionService
+ * @see DateTimeFormatterRegistrar
+ * @see DateFormatterRegistrar
+ * @see PageableHandlerMethodArgumentResolver
+ */
+
 package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import java.time.format.DateTimeFormatter;

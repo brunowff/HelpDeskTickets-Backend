@@ -1,3 +1,50 @@
+/**
+ * Service implementation for managing tickets.
+ * This class provides methods to create, update, delete, and retrieve tickets.
+ * It also handles ticket status, priority, and category updates.
+ * 
+ * Methods:
+ * - save(CreateTicketDto ticketDto, JwtAuthenticationToken token): Creates a new ticket.
+ * - deleteTicket(String ticketId, JwtAuthenticationToken token): Deletes a ticket by its ID.
+ * - findById(String ticketId): Retrieves a ticket by its ID.
+ * - findAll(Pageable pageable): Retrieves all tickets with pagination.
+ * - update(TicketDto ticketDto, JwtAuthenticationToken token): Updates an existing ticket.
+ * - updateStatus(String ticketId, String status, JwtAuthenticationToken token): Updates the status of a ticket.
+ * - updatePriority(String ticketId, String priority, JwtAuthenticationToken token): Updates the priority of a ticket.
+ * - updateAttribuitedTo(String ticketId, String userId, JwtAuthenticationToken token): Updates the user assigned to a ticket.
+ * - updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token): Updates the category of a ticket.
+ * - dashboard(Pageable pageable): Retrieves a dashboard view of tickets with pagination.
+ * - findTicketsByUserId(String userId, Pageable pageable): Retrieves tickets by user ID with pagination.
+ * - findTicketsByAttribuitedToUser(String attribuitedToUserId, Pageable pageable): Retrieves tickets by assigned user ID with pagination.
+ * - findTicketsByTicketCategoryId(String ticketCategoryId, Pageable pageable): Retrieves tickets by category ID with pagination.
+ * - findTicketsByStatus(String status, Pageable pageable): Retrieves tickets by status with pagination.
+ * - findTicketsByPriority(String priority, Pageable pageable): Retrieves tickets by priority with pagination.
+ * - findTicketsByTitle(String title, Pageable pageable): Retrieves tickets by title with pagination.
+ * - findTicketsByDescription(String description, Pageable pageable): Retrieves tickets by description with pagination.
+ * 
+ * Exceptions:
+ * - ObjectNotFoundException: Thrown when a requested object is not found.
+ * - ObjectNotProcessableException: Thrown when an object cannot be processed.
+ * - UserNotAuthorizedException: Thrown when a user is not authorized to perform an action.
+ * - UserNotFoundException: Thrown when a user is not found.
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service component in the Spring context.
+ * - @AllArgsConstructor: Generates a constructor with one parameter for each field in the class.
+ * - @Transactional: Indicates that the methods should be executed within a transaction context.
+ * - @RequestBody: Indicates that a method parameter should be bound to the body of the web request.
+ * - @RequestParam: Indicates that a method parameter should be bound to a web request parameter.
+ * - @Valid: Indicates that a method parameter should be validated.
+ * 
+ * Dependencies:
+ * - TicketRepository: Repository for managing Ticket entities.
+ * - UserRepository: Repository for managing User entities.
+ * - TicketCategoryRepository: Repository for managing TicketCategory entities.
+ * - TicketLogRepository: Repository for managing TicketLog entities.
+ *
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.UUID;

@@ -1,3 +1,21 @@
+/**
+ * A Data Transfer Object (DTO) representing a paginated item of a ticket.
+ * This DTO is used to transfer ticket data between processes.
+ *
+ * @param PostId               the unique identifier of the ticket
+ * @param title                the title of the ticket
+ * @param description          the description of the ticket
+ * @param ticketCategory       the category of the ticket
+ * @param status               the current status of the ticket
+ * @param priority             the priority level of the ticket
+ * @param userAuthor           the user who created the ticket
+ * @param attribuitedTo        the user to whom the ticket is assigned
+ * @param creationDateTime     the date and time when the ticket was created
+ * @param finalizationDateTime the date and time when the ticket was finalized
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.util.Date;

@@ -1,3 +1,23 @@
+/**
+ * Repository interface for managing {@link TicketLog} entities.
+ * Extends {@link JpaRepository} to provide CRUD operations and pagination support.
+ * 
+ * <p>This repository provides methods to find {@link TicketLog} entries by {@link Ticket} and {@link User}.</p>
+ * 
+ * <p>Methods:</p>
+ * <ul>
+ *   <li>{@link #findByTicket(Ticket, Pageable)}: Retrieves a paginated list of {@link TicketLog} entries associated with a specific {@link Ticket}.</li>
+ *   <li>{@link #findByUser(User, Pageable)}: Retrieves a paginated list of {@link TicketLog} entries associated with a specific {@link User}.</li>
+ * </ul>
+ * 
+ * @see TicketLog
+ * @see Ticket
+ * @see User
+ * @see JpaRepository
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.repositories;
 
 import java.util.UUID;

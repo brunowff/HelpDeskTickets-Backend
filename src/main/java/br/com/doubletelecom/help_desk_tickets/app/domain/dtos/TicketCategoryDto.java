@@ -1,3 +1,14 @@
+/**
+ * Data Transfer Object for Ticket Category.
+ * 
+ * @param ticketCategoryId Unique identifier for the ticket category.
+ * @param name Name of the ticket category.
+ * @param destinationGroup Group to which the ticket category is assigned.
+ * @param active Status indicating whether the ticket category is active.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.util.UUID;

@@ -1,3 +1,37 @@
+/**
+ * Service implementation for managing user groups.
+ * This service provides methods to save, find, delete, and manage user groups.
+ * It also includes methods to add and remove users from groups, and to find users by group ID and groups by user ID.
+ * 
+ * Dependencies:
+ * - UserRepository: Repository for managing users.
+ * - GroupRepository: Repository for managing groups.
+ * - UserGroupRepository: Repository for managing user groups.
+ * 
+ * Methods:
+ * - save(CreateUserGroupDto userGroupDto, JwtAuthenticationToken token): Saves a new user group.
+ * - findById(String UserGroupId, JwtAuthenticationToken token): Finds a user group by its ID.
+ * - findAll(): Finds all user groups.
+ * - delete(String UserGroupId, JwtAuthenticationToken token): Deletes a user group by its ID.
+ * - addUsertToGroup(String userId, String groupId, JwtAuthenticationToken token): Adds a user to a group.
+ * - removeUserFromGroup(String userId, String groupId, JwtAuthenticationToken token): Removes a user from a group.
+ * - findUsersByGroupId(String groupId, JwtAuthenticationToken token): Finds users by group ID.
+ * - findGroupsByUserId(String userId, JwtAuthenticationToken token): Finds groups by user ID.
+ * 
+ * Exceptions:
+ * - UserNotFoundException: Thrown when a user is not found.
+ * - ObjectNotFoundException: Thrown when an object is not found.
+ * - ObjectNotProcessableException: Thrown when an object cannot be processed.
+ * - UserNotAuthorizedException: Thrown when a user is not authorized to perform an action.
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service.
+ * - @AllArgsConstructor: Generates a constructor with one parameter for each field in the class.
+ * - @Transactional: Indicates that the methods should be executed within a transaction.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.List;

@@ -10,6 +10,9 @@
  * - findAll(int page, int pageSize): Retrieves a paginated list of all ticket logs.
  * - findTicketsLogByTicket(String ticket): Retrieves a list of ticket logs associated with a specific ticket.
  * - findTicketLogsByUser(String user): Retrieves a list of ticket logs associated with a specific user.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
@@ -22,7 +25,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogD
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 
 public interface TicketLogServices {
-    public Void save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token);
+    public TicketLog save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token);
     public TicketLog findById(String ticketLogId, JwtAuthenticationToken token);
     public Void delete(String ticketLogId, JwtAuthenticationToken token);
     public Page<PageItemTicketLogDto> findAll(Pageable pageable);

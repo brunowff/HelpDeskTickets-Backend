@@ -1,3 +1,16 @@
+/**
+ * Exception thrown when an operation is attempted on an object that is not activated.
+ * This exception results in a HTTP 400 Bad Request response.
+ * 
+ * <p>This exception extends {@link BaseRuntimeException} and provides a specific
+ * exception key {@code "object.not.activated"} for localization or error handling purposes.</p>
+ * 
+ * @see BaseRuntimeException
+ * @see org.springframework.web.bind.annotation.ResponseStatus
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions.business;
 
 import org.springframework.http.HttpStatus;

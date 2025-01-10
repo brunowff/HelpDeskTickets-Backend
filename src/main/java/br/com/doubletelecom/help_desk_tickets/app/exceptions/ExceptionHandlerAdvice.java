@@ -1,3 +1,49 @@
+/**
+ * ExceptionHandlerAdvice is a controller advice class that handles exceptions thrown by the application.
+ * It provides methods to handle specific exceptions and return appropriate HTTP responses.
+ * 
+ * <p>This class handles the following exceptions:
+ * <ul>
+ *   <li>{@link MethodArgumentNotValidException} - Handles validation errors for method arguments.</li>
+ *   <li>{@link BaseRuntimeException} - Handles custom runtime exceptions.</li>
+ *   <li>{@link Throwable} - Handles all other exceptions.</li>
+ * </ul>
+ * 
+ * <p>Each handler method logs the exception and returns a {@link ResponseEntity} containing an {@link ApiErrorDto}.
+ * The {@link ApiErrorDto} includes details such as the timestamp, HTTP status, and a set of {@link ErrorDto} objects.
+ * 
+ * <p>Dependencies:
+ * <ul>
+ *   <li>{@link MessageSource} - Used for internationalization of error messages.</li>
+ * </ul>
+ * 
+ * <p>Methods:
+ * <ul>
+ *   <li>{@link #handlerMethodArgumentNotValid(MethodArgumentNotValidException)} - Handles validation errors.</li>
+ *   <li>{@link #handlerBaseException(Throwable)} - Handles custom runtime exceptions.</li>
+ *   <li>{@link #handlerMethodThrowable(Throwable)} - Handles all other exceptions.</li>
+ *   <li>{@link #buildError(String, String)} - Builds an {@link ErrorDto} object.</li>
+ *   <li>{@link #baseErrorBuilder(HttpStatus, Set)} - Builds an {@link ApiErrorDto} object.</li>
+ *   <li>{@link #bindExceptionKeywords(Map, String)} - Binds exception keywords to a message template.</li>
+ *   <li>{@link #getResponseStatus(Throwable)} - Retrieves the HTTP status from the exception's {@link ResponseStatus} annotation.</li>
+ * </ul>
+ * 
+ * <p>Logging:
+ * <ul>
+ *   <li>Logs the exception class name and message for each handled exception.</li>
+ * </ul>
+ * 
+ * @see MethodArgumentNotValidException
+ * @see BaseRuntimeException
+ * @see Throwable
+ * @see ApiErrorDto
+ * @see ErrorDto
+ * @see MessageSource
+ * @see ResponseStatus
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions;
 
 import java.util.Date;

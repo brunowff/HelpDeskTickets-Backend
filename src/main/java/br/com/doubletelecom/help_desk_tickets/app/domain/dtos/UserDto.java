@@ -1,3 +1,16 @@
+/**
+ * Data Transfer Object for User.
+ * 
+ * @param userId   Unique identifier for the user. Must not be blank.
+ * @param fullname Full name of the user. Must not be blank.
+ * @param username Username of the user. Must be between 7 and 30 characters. Must not be blank.
+ * @param email    Email address of the user. Must be a valid email format. Must not be blank.
+ * @param password Password for the user. Must be between 6 and 30 characters. Must not be blank.
+ * @param active   Indicates whether the user is active. Must not be blank.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.util.UUID;

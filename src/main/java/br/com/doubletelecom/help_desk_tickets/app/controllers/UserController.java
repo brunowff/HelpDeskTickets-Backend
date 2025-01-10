@@ -1,9 +1,25 @@
+/**
+ * UserController is a REST controller that manages user-related operations.
+ * It provides endpoints for creating users, listing users, and activating/deactivating users.
+ * 
+ * Endpoints:
+ * 
+ * - POST /profiles-manager/users: Creates a new user.
+ * - GET /profiles-manager/users: Lists users with pagination, accessible only to admins.
+ * - GET /profiles-manager/user/{id}/activate: Activates a user by ID, accessible to admins and user managers.
+ * - GET /profiles-manager/user/{id}/deactivate: Deactivates a user by ID, accessible to admins and user managers.
+ * 
+ * This controller uses Spring Security annotations to restrict access to certain endpoints based on user roles.
+ * 
+ * @author 
+ * @version 
+ */
+
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -12,27 +28,32 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 
-@RestController("/profiles")
+
+@RestController("/profiles-manager")
 @AllArgsConstructor
 public class UserController {
 
     private final UserServices userServices;
 
     @PostMapping("/users")
-    public ResponseEntity<Void> createUser(@RequestBody @Valid CreateUserDto userDto){
+    public ResponseEntity<PageItemUserDto> createUser(@RequestBody @Valid CreateUserDto userDto, UriComponentsBuilder uriBuilder){
 
         try {
-            userServices.save(userDto);
-            return ResponseEntity.ok().build();
+            var user = userServices.save(userDto);
+            var uri = uriBuilder.path("/users/{id}").buildAndExpand(user.getUserId()).toUri();
+            return ResponseEntity.created(uri).body(new PageItemUserDto(user));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+           throw new ObjectNotProcessableException();
         }
 
     }

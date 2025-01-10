@@ -22,6 +22,9 @@
  * - findTicketsByTitle(String title, int page, int pageSize): Finds tickets by title.
  * - findTicketsByDescription(String description, int page, int pageSize): Finds tickets by description.
  * - findByFilter(String userId, String AttibuitedToUserId, String groupId, String ticketCategoryId, String status, String priority, String title, String description, int page, int pageSize): Finds tickets by various filters.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

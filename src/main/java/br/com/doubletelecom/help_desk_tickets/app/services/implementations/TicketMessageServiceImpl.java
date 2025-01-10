@@ -1,3 +1,36 @@
+/**
+ * Service implementation for managing ticket messages.
+ * This class provides methods to save, find, delete, and retrieve ticket messages.
+ * It ensures that only authorized users can perform certain actions.
+ * 
+ * Dependencies:
+ * - TicketRepository
+ * - TicketMessageRepository
+ * - TicketCategoryRepository
+ * - UserRepository
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service component in the Spring context.
+ * - @AllArgsConstructor: Generates a constructor with one parameter for each field in the class.
+ * - @Transactional: Ensures that methods are executed within a transactional context.
+ * 
+ * Methods:
+ * - save(CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token): Saves a new ticket message.
+ * - findById(String ticketMessageId, JwtAuthenticationToken token): Finds a ticket message by its ID.
+ * - delete(String ticketMessageId, JwtAuthenticationToken token): Deletes a ticket message by its ID.
+ * - findAll(Pageable pageable, JwtAuthenticationToken token): Retrieves all ticket messages with pagination.
+ * - findTicketMessagesByTicketId(String ticketId, Pageable pageable, JwtAuthenticationToken token): Retrieves ticket messages by ticket ID with pagination.
+ * - findTicketMessagesByUserId(String userId, Pageable pageable, JwtAuthenticationToken token): Retrieves ticket messages by user ID with pagination.
+ * 
+ * Exceptions:
+ * - ObjectNotFoundException: Thrown when an object is not found in the repository.
+ * - ObjectNotProcessableException: Thrown when an object cannot be processed.
+ * - UserNotAuthorizedException: Thrown when a user is not authorized to perform an action.
+ * - UserNotFoundException: Thrown when a user is not found in the repository.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.UUID;

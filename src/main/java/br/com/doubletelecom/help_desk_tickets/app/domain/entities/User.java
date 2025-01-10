@@ -24,6 +24,9 @@
  * 
  * Implements:
  * - Serializable: Allows the object to be converted to a byte stream.
+ * 
+ * @author 
+ * @version
  */
 
 package br.com.doubletelecom.help_desk_tickets.app.domain.entities;

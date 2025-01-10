@@ -8,6 +8,9 @@
  * <p>This interface includes methods for retrieving all Role entities.</p>
  * 
  * @see br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

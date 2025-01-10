@@ -1,0 +1,12 @@
+br.com.doubletelecom.help_desk_tickets
+br.com.doubletelecom.help_desk_tickets.app.configurations
+br.com.doubletelecom.help_desk_tickets.app.controllers
+br.com.doubletelecom.help_desk_tickets.app.domain.dtos
+br.com.doubletelecom.help_desk_tickets.app.domain.entities
+br.com.doubletelecom.help_desk_tickets.app.exceptions
+br.com.doubletelecom.help_desk_tickets.app.exceptions.business
+br.com.doubletelecom.help_desk_tickets.app.exceptions.contract
+br.com.doubletelecom.help_desk_tickets.app.exceptions.dtos
+br.com.doubletelecom.help_desk_tickets.app.repositories
+br.com.doubletelecom.help_desk_tickets.app.services
+br.com.doubletelecom.help_desk_tickets.app.services.implementations

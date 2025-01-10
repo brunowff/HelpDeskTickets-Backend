@@ -1,7 +1,36 @@
+/**
+ * RoleController is a REST controller that provides endpoints for managing roles and their associations with users.
+ * It includes endpoints to retrieve all roles, add a role to a user, and remove a role from a user.
+ * 
+ * Endpoints:
+ * 
+ * - GET /role-manager/roles - Retrieves all roles.</li>
+ * - GET /role-manager/role/{roleName}/user/{userId} - Adds a role to a user.</li>
+ * - DELETE /role-manager/role/{roleName}/user/{userId} - Removes a role from a user.</li>
+ * 
+ * 
+ * Authorization:
+ *   All endpoints require the caller to have either 'SCOPE_API_ADMIN' or 'SCOPE_API_ROLE_MANAGER' authority.</p>
+ * 
+ * Dependencies:
+ * 
+ * - RoleServices - Service for role-related operations.</li>
+ * - UserServices - Service for user-related operations.</li>
+ *
+ * 
+ * <p>Annotations:
+ * 
+ * - @RestController - Indicates that this class is a REST controller.</li>
+ * - @RequestMapping("/role-manager") - Maps requests to /role-manager.</li>
+ * - @AllArgsConstructor - Generates a constructor with one parameter for each field in the class.</li>
+ *
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.services.RoleServices;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
@@ -15,11 +44,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 
 
 
-@RestController("/rm")
+@RestController
+@RequestMapping("/role-manager")
 @AllArgsConstructor
 public class RoleController {
 

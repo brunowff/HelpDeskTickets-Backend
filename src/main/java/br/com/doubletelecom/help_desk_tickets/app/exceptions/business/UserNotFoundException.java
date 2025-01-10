@@ -1,3 +1,15 @@
+/**
+ * Exception thrown when a user is not found in the system.
+ * This exception is mapped to a 404 Not Found HTTP status code.
+ * 
+ * <p>This class extends {@link BaseRuntimeException} and provides a specific
+ * exception key for user not found scenarios.</p>
+ * 
+ * @see BaseRuntimeException
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions.business;
 
 import org.springframework.http.HttpStatus;

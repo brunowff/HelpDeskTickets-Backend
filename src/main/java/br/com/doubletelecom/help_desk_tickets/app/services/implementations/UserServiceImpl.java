@@ -1,4 +1,55 @@
 
+/**
+ * Service implementation for managing users.
+ * This class provides methods for user-related operations such as finding all users, saving a new user,
+ * updating user information, adding/removing roles, resetting passwords, and activating/deactivating users.
+ * 
+ * Methods:
+ * - findAll(Pageable pageable): Retrieves a paginated list of users.
+ * - save(CreateUserDto userDto): Saves a new user.
+ * - updateUser(UserDto userDto, JwtAuthenticationToken token): Updates user information.
+ * - addRoleToUser(String userId, String roleName, JwtAuthenticationToken token): Adds a role to a user.
+ * - removeRoleFromUser(String userId, String roleName, JwtAuthenticationToken token): Removes a role from a user.
+ * - passwordReset(UserDto userDto, JwtAuthenticationToken token): Resets the password of a user.
+ * - activate(String userId, JwtAuthenticationToken token): Activates a user.
+ * - deactivate(String userId, JwtAuthenticationToken token): Deactivates a user.
+ * 
+ * Exceptions:
+ * - ObjectNotFoundException: Thrown when an object is not found.
+ * - ObjectNotProcessableException: Thrown when an object cannot be processed.
+ * - UserNotAuthorizedException: Thrown when a user is not authorized to perform an action.
+ * - UserNotFoundException: Thrown when a user is not found.
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service.
+ * - @AllArgsConstructor: Generates a constructor with 1 parameter for each field in the class.
+ * - @Transactional: Indicates that the method should be executed within a transaction.
+ * - @RequestBody: Indicates that a method parameter should be bound to the body of the web request.
+ * - @RequestParam: Indicates that a method parameter should be bound to a web request parameter.
+ * - @Valid: Indicates that a method parameter should be validated.
+ * 
+ * Dependencies:
+ * - UserRepository: Repository for managing user entities.
+ * - RoleRepository: Repository for managing role entities.
+ * - BCryptPasswordEncoder: Utility for encoding passwords.
+ * 
+ * @see UserServices
+ * @see UserRepository
+ * @see RoleRepository
+ * @see BCryptPasswordEncoder
+ * @see CreateUserDto
+ * @see UserDto
+ * @see PageItemUserDto
+ * @see Role
+ * @see User
+ * @see ObjectNotFoundException
+ * @see ObjectNotProcessableException
+ * @see UserNotAuthorizedException
+ * @see UserNotFoundException
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.Set;

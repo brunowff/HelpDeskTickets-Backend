@@ -10,6 +10,9 @@
  * - findAll(): Retrieves a list of all users.
  * - addRoleToUser(String userId, String roleId, JwtAuthenticationToken token): Adds a role to a user based on the provided user ID and role ID, with authentication.
  * - removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token): Removes a role from a user based on the provided user ID and role ID, with authentication.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

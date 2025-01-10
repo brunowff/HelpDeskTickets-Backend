@@ -1,3 +1,32 @@
+/**
+ * Service implementation for managing Ticket Categories.
+ * This class provides methods to create, update, delete, activate, deactivate, and find ticket categories.
+ * It also includes authorization checks to ensure that only authorized users can perform certain actions.
+ * 
+ * Methods:
+ * - save(CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token): Creates a new ticket category.
+ * - findById(String ticketCategoryId, JwtAuthenticationToken token): Finds a ticket category by its ID.
+ * - delete(String ticketCategoryId, JwtAuthenticationToken token): Deletes a ticket category by its ID.
+ * - findAll(Pageable pageable): Finds all ticket categories with pagination.
+ * - update(TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token): Updates an existing ticket category.
+ * - activate(String ticketCategoryId, JwtAuthenticationToken token): Activates a ticket category by its ID.
+ * - deactivate(String ticketCategoryId, JwtAuthenticationToken token): Deactivates a ticket category by its ID.
+ * 
+ * Exceptions:
+ * - UserNotFoundException: Thrown when the user is not found.
+ * - UserNotAuthorizedException: Thrown when the user is not authorized to perform the action.
+ * - ObjectNotFoundException: Thrown when the ticket category or group is not found.
+ * - ObjectNotActivatedException: Thrown when the group is not activated.
+ * - ObjectNotProcessableException: Thrown when the ticket category cannot be processed.
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service component in the Spring context.
+ * - @AllArgsConstructor: Generates a constructor with 1 parameter for each field in the class.
+ * - @Transactional: Indicates that the methods should be executed within a transaction context.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.UUID;

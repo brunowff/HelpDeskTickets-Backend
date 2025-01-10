@@ -9,6 +9,9 @@
  * - delete(String ticketCategoryId, JwtAuthenticationToken token): Deletes a ticket Category by its ID.
  * - findAll(): Retrieves all ticket Categorys.
  * - update(TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token): Updates an existing ticket Category.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

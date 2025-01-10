@@ -1,3 +1,28 @@
+/**
+ * Represents a role entity in the system.
+ * This entity is mapped to the "tb_roles" table in the database.
+ * Implements Serializable interface for object serialization.
+ * 
+ * Annotations:
+ * - @Data: Generates getters, setters, toString, equals, and hashCode methods.
+ * - @AllArgsConstructor: Generates a constructor with 1 parameter for each field in the class.
+ * - @NoArgsConstructor: Generates a no-argument constructor.
+ * - @Entity: Specifies that the class is an entity and is mapped to a database table.
+ * - @Table: Specifies the table name in the database.
+ * 
+ * Fields:
+ * - serialVersionUID: A unique identifier for Serializable class.
+ * - roleId: The unique identifier for the role, mapped to "role_id" column.
+ * - name: The name of the role, must be unique.
+ * 
+ * Enum Values:
+ * - Represents default roles with predefined role IDs.
+ * - Each enum constant has a roleId associated with it.
+ * - To add new roles, update the classpath:data.sql file to insert them into the database.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serial;

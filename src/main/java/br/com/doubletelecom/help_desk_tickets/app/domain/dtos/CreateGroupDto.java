@@ -1,3 +1,13 @@
+/**
+ * Data Transfer Object for creating a new group.
+ * 
+ * @param name The name of the group. Must be between 7 and 30 characters and cannot be blank.
+ * @param description The description of the group. Must be between 7 and 300 characters and cannot be blank.
+ * 
+ * @author 
+ * @version
+ */
+
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import jakarta.validation.constraints.NotBlank;

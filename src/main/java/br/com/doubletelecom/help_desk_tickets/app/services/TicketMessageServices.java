@@ -12,6 +12,9 @@
  * - findTicketMessagesByUserId(String userId, JwtAuthenticationToken token): Finds all ticket messages associated with a specific user ID.
  * 
  * Note: All methods that require authentication use JwtAuthenticationToken to ensure secure access.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

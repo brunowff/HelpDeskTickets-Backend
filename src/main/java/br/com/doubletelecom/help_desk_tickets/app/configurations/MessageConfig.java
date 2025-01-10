@@ -1,3 +1,17 @@
+/**
+ * Configuration class for message sources, locale resolution, and locale change interception.
+ * This class implements the {@link WebMvcConfigurer} interface to add custom interceptors.
+ * 
+ * <p>It provides the following beans:</p>
+ * <ul>
+ *   <li>{@link MessageSource} - Configures the message source for internationalization with support for reloading.</li>
+ *   <li>{@link LocalValidatorFactoryBean} - Configures the validator to use the message source for validation messages.</li>
+ *   <li>{@link LocaleResolver} - Configures the locale resolver to use session-based locale resolution with a default locale of US.</li>
+ *   <li>{@link LocaleChangeInterceptor} - Configures the interceptor to allow changing the current locale via a request parameter.</li>
+ * </ul>
+ * 
+ * <p>Additionally, it overrides the {@code addInterceptors} method to register the {@link LocaleChangeInterceptor}.</p>
+ */
 package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import org.springframework.context.MessageSource;

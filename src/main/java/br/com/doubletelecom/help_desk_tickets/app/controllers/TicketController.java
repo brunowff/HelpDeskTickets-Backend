@@ -1,4 +1,32 @@
-package br.com.doubletelecom.help_desk_tickets.app.controllers;
+/**
+ * TicketController is a REST controller that manages ticket-related operations.
+ * It provides endpoints for creating, updating, deleting, and retrieving tickets.
+ * 
+ * Endpoints:
+ * 
+ * - POST /tickets: Creates a new ticket.
+ * - GET /dashboard: Retrieves a paginated list of tickets for the dashboard.
+ * - DELETE /tickets/{id}: Deletes a ticket by its ID.
+ * - PUT /tickets/{id}: Updates a ticket by its ID.
+ * - PATCH /tickets/{id}/status: Updates the status of a ticket by its ID.
+ * - PATCH /tickets/{id}/priority: Updates the priority of a ticket by its ID.
+ * - PATCH /tickets/{id}/attribuitedTo: Updates the user to whom the ticket is attributed by its ID.
+ * - PATCH /tickets/{id}/ticketCategory: Updates the category of a ticket by its ID.
+ * - GET /tickets/{id}/userId: Retrieves a paginated list of tickets by user ID.
+ * - GET /tickets/{id}/attribuitedTo: Retrieves a paginated list of tickets attributed to a user by user ID.
+ * - GET /tickets/{id}/ticketCategoryId: Retrieves a paginated list of tickets by category ID.
+ * - GET /tickets/{status}/status: Retrieves a paginated list of tickets by status.
+ * - GET /tickets/{priority}/priority: Retrieves a paginated list of tickets by priority.
+ * - GET /tickets/{title}/title: Retrieves a paginated list of tickets by title.
+ * - GET /tickets/{description}/description: Retrieves a paginated list of tickets by description.
+ * 
+ * All endpoints require a JwtAuthenticationToken for authentication and authorization.
+ * 
+ * @author 
+ * @version
+ */
+
+ package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +40,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
@@ -22,18 +51,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-
-@RestController("/tm")
+@RestController("/ticket-manager")
 @AllArgsConstructor
 public class TicketController {
     
     private final TicketServices ticketServices;
 
     @PostMapping("/tickets")
-    public ResponseEntity<Void> createTicket(@RequestBody CreateTicketDto ticketDto, JwtAuthenticationToken token){
-        ticketServices.save(ticketDto, token);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PageItemTicketDto> createTicket(@RequestBody CreateTicketDto ticketDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
+        var ticket = ticketServices.save(ticketDto, token);
+        var uri = uriBuilder.path("/tickets/{id}").buildAndExpand(ticket.getTicketId()).toUri();
+        return ResponseEntity.created(uri).body(new PageItemTicketDto(ticket));
         
     }
 

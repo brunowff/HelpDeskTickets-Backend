@@ -1,3 +1,31 @@
+/**
+ * Service implementation for managing groups.
+ * This class provides methods to create, update, find, delete, activate, and deactivate groups.
+ * It uses repositories to interact with the database and performs authorization checks based on user roles.
+ * 
+ * Methods:
+ * - save(CreateGroupDto groupDto, JwtAuthenticationToken token): Creates a new group.
+ * - findById(String groupId, JwtAuthenticationToken token): Finds a group by its ID.
+ * - findAll(Pageable pageable): Retrieves all groups with pagination.
+ * - update(GroupDto groupDto, JwtAuthenticationToken token): Updates an existing group.
+ * - delete(String groupId, JwtAuthenticationToken token): Deletes a group (not recommended, prefer deactivation).
+ * - activate(String groupId, JwtAuthenticationToken token): Activates a group.
+ * - deactivate(String groupId, JwtAuthenticationToken token): Deactivates a group.
+ * 
+ * Exceptions:
+ * - UserNotFoundException: Thrown when a user is not found.
+ * - ObjectNotFoundException: Thrown when a group is not found.
+ * - ObjectNotProcessableException: Thrown when an object cannot be processed.
+ * - UserNotAuthorizedException: Thrown when a user is not authorized to perform an action.
+ * 
+ * Annotations:
+ * - @Service: Indicates that this class is a service component in the Spring context.
+ * - @AllArgsConstructor: Generates a constructor with one parameter for each field in the class.
+ * - @Transactional: Indicates that the methods should be executed within a transaction context.
+ * 
+ * @author 
+ * @version
+ */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.UUID;

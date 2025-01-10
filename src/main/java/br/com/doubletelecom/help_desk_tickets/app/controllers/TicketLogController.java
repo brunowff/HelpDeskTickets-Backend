@@ -1,3 +1,28 @@
+/**
+ * Controller for managing Ticket Logs.
+ * Provides endpoints for creating, deleting, finding, and listing ticket logs.
+ * 
+ * Endpoints:
+ * - POST /ticketlog: Create a new ticket log.
+ * - DELETE /ticketlog/{id}: Delete a ticket log by ID.
+ * - GET /ticketlog/{id}: Find a ticket log by ID.
+ * - GET /ticketlogs: List all ticket logs with pagination.
+ * 
+ * Security:
+ * - Requires appropriate OAuth2 scopes for each endpoint.
+ * 
+ * Dependencies:
+ * - TicketLogServices: Service layer for ticket log operations.
+ * 
+ * Annotations:
+ * - @RestController: Marks this class as a Spring MVC controller.
+ * - @AllArgsConstructor: Generates a constructor with 1 parameter for each field in the class.
+ * - @PreAuthorize: Specifies security constraints on each endpoint.
+ * 
+ * @author 
+ * @version
+ */
+
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +35,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
@@ -22,8 +48,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-
-@RestController("/tlm")
+@RestController("/ticket-log-manager")
 @AllArgsConstructor
 public class TicketLogController {
 
@@ -31,10 +56,10 @@ public class TicketLogController {
 
     @PostMapping("/ticketlog")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_LOG_MANAGER')")
-    public ResponseEntity<Void> createTicketLog(@RequestBody CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
-        ticketLogServices.save(ticketLogDto, token);
-        return ResponseEntity.ok().build();
-        
+    public ResponseEntity<PageItemTicketLogDto> createTicketLog(@RequestBody CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
+        var ticketLog = ticketLogServices.save(ticketLogDto, token);
+        var uri = uriBuilder.path("/ticketlog/{id}").buildAndExpand(ticketLog).toUri();
+        return ResponseEntity.created(uri).body(new PageItemTicketLogDto(ticketLog));
     }
 
     @DeleteMapping("/ticketlog/{id}")

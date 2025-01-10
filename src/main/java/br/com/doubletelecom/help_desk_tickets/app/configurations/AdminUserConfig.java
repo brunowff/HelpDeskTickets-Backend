@@ -1,3 +1,28 @@
+/**
+ * Configuration class for creating an admin user with default privileges in the database.
+ * This class implements CommandLineRunner to execute the user creation logic on application startup.
+ * 
+ * The admin user is created with the following details:
+ * - Full name: Administrador do Sistema
+ * - Username: admin
+ * - Email: admin@doubletelecom.com.br
+ * - Password: M3tr0T3l3c0m (encoded using BCryptPasswordEncoder)
+ * - Active status: true
+ * - Roles: API_ADMIN
+ * 
+ * If the admin user already exists, a message is printed to the console.
+ * 
+ * Dependencies:
+ * - RoleRepository: Repository for accessing role data.
+ * - UserRepository: Repository for accessing user data.
+ * - BCryptPasswordEncoder: Encoder for encoding the admin user's password.
+ * 
+ * An exception is thrown if the API_ADMIN role is not found in the database.
+ * 
+ * @param roleRep RoleRepository instance for accessing role data.
+ * @param userRep UserRepository instance for accessing user data.
+ * @param passwordEncoder BCryptPasswordEncoder instance for encoding passwords.
+ */
 package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
 import java.util.Set;

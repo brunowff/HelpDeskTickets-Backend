@@ -11,6 +11,9 @@
  * - delete(String groupId, JwtAuthenticationToken token): Deletes a group by its ID.
  * - activate(String groupId, JwtAuthenticationToken token): Activates a group by its ID.
  * - deactivate(String groupId, JwtAuthenticationToken token): Deactivates a group by its ID.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 

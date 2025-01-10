@@ -1,3 +1,23 @@
+/**
+ * Controller for managing ticket categories.
+ * Provides endpoints for creating, updating, deleting, finding, activating, and deactivating ticket categories.
+ * 
+ * Endpoints:
+ * - POST /ticket-categories: Create a new ticket category.
+ * - PUT /ticket-categories/{id}: Update an existing ticket category.
+ * - DELETE /ticket-categories/{id}: Delete a ticket category.
+ * - GET /ticket-category/{id}: Find a ticket category by ID.
+ * - GET /ticket-categories: Find all ticket categories with pagination.
+ * - GET /ticket-categories/activate/{id}: Activate a ticket category.
+ * - GET /ticket-categories/deactivate/{id}: Deactivate a ticket category.
+ * 
+ * Security:
+ * - Requires appropriate authority scopes for each endpoint.
+ * 
+ * @author 
+ * @version 
+ */
+
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketCategoryDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketCategoryDto;
@@ -23,7 +44,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-@RestController("/tcm")
+@RestController("/ticket-category-manager")
 @AllArgsConstructor
 public class TicketCategoryController {
 
@@ -31,9 +52,10 @@ public class TicketCategoryController {
 
     @PostMapping("/ticket-categories")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
-    public ResponseEntity<Void> createTicketCategory(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
-        ticketCategoryServices.save(ticketCategoryDto, token);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PageItemTicketCategoryDto> createTicketCategory(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
+        var ticketCategory = ticketCategoryServices.save(ticketCategoryDto, token);
+        var uri = uriBuilder.path("/ticket-categories/{id}").buildAndExpand(ticketCategory.getTicketCategoryId()).toUri();
+        return ResponseEntity.created(uri).body(new PageItemTicketCategoryDto(ticketCategory));
         
     }
 

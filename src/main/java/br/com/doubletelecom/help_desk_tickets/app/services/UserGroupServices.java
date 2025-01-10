@@ -12,6 +12,9 @@
  * - findAll(): Retrieves all user groups.
  * - findUsersByGroupId(String groupId, JwtAuthenticationToken token): Finds all users in a specific group.
  * - findGroupsByUserId(String userId, JwtAuthenticationToken token): Finds all groups a specific user belongs to.
+ * 
+ * @author
+ * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
