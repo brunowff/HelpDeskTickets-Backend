@@ -32,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -39,17 +40,20 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
-import jakarta.validation.Valid;
+import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 
 
 @RestController
@@ -58,27 +62,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_GROUP')")
 public class GroupController {
 
+    private final UserServices userServices;
     private final GroupServices groupServices;
 
     @PostMapping("/groups")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
-    public ResponseEntity<PageItemGroupDto> create(@RequestBody @Valid CreateGroupDto createGroupDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<PageItemGroupDto> create(@RequestBody @Validated CreateGroupDto createGroupDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder) {
         var group = groupServices.save(createGroupDto, token);
         var uri = uriBuilder.path("/groups/{id}").buildAndExpand(group.getGroupId()).toUri();
         return ResponseEntity.created(uri).body(new PageItemGroupDto(group));
     }
 
-    @PutMapping("/group/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_GROUP')")
-    public ResponseEntity<Void> update(@RequestBody @Valid GroupDto groupDto, JwtAuthenticationToken token) {
-        groupServices.update(groupDto, token);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/group/{id}")
+    @PutMapping("/groups/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
-    public ResponseEntity<Void> delete(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
-        groupServices.delete(groupId, token);
+    public ResponseEntity<Void> update(@RequestBody @Validated GroupDto groupDto, JwtAuthenticationToken token) {
+        groupServices.update(groupDto, token);
         return ResponseEntity.ok().build();
     }
 
@@ -89,24 +87,51 @@ public class GroupController {
         return ResponseEntity.ok(groups);
     }
 
-    @GetMapping("/group/{id}")
-    public ResponseEntity<Group> findById(@PathVariable("id") String groupId ,JwtAuthenticationToken token) {
+    @GetMapping("/groups/{id}")
+    public ResponseEntity<Group> findById(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         var group = groupServices.findById(groupId, token);
         return ResponseEntity.ok(group);
     }
 
-    @GetMapping("/group/activate/{id}")
+    @GetMapping("/groups/{id}/find-by-user")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER') or hasAuthority('SCOPE_API_GROUP')")
+    public ResponseEntity<Page<PageItemGroupDto>> findGroupsByUser(@PathVariable("id") String userId, JwtAuthenticationToken token, Pageable pageable) {
+        try {
+            var groups = userServices.findGroupsByUser(userId, token, pageable);
+            return ResponseEntity.ok(groups);
+
+        } catch (Exception e) {
+            throw new ObjectNotFoundException();
+        }
+    }
+    
+    @PatchMapping("/groups/activate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
-    public ResponseEntity<Void> activate(@PathVariable("id") String groupId,JwtAuthenticationToken token) {
+    public ResponseEntity<Void> activate(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         groupServices.activate(groupId, token);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/group/deactivate/{id}")
+    @PatchMapping("/groups/deactivate/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
-    public ResponseEntity<Void> deactivate(@PathVariable("id") String groupId,JwtAuthenticationToken token) {
+    public ResponseEntity<Void> deactivate(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         groupServices.deactivate(groupId, token);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/groups/{id}/add-user/{userId}")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
+    public ResponseEntity<Void> addUserToGroup(@PathVariable("id") String groupId, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
+        userServices.addGroupToUser(userId, groupId, token);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/groups/{id}/remove-user/{userId}")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
+    public ResponseEntity<Void> removeUserFromGroup(@PathVariable("id") String groupId, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
+        userServices.removeGroupFromUser(userId, groupId, token);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

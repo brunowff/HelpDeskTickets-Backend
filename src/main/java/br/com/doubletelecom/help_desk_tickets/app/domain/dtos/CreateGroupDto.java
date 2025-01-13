@@ -15,7 +15,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateGroupDto(
     @NotBlank(message = "{required.validation}")
-    @Size(min = 7, max = 30, message = "{size.validation}")
+    @Size(min = 2, max = 30, message = "{size.validation}")
     String name,
     
     @Size(min = 7, max = 300, message = "{size.validation}")

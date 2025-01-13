@@ -23,10 +23,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -34,19 +36,19 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 
 
-@RestController("/profiles-manager")
+@RestController
+@RequestMapping("/profiles-manager")
 @AllArgsConstructor
 public class UserController {
 
     private final UserServices userServices;
 
     @PostMapping("/users")
-    public ResponseEntity<PageItemUserDto> createUser(@RequestBody @Valid CreateUserDto userDto, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<PageItemUserDto> createUser(@RequestBody @Validated CreateUserDto userDto, UriComponentsBuilder uriBuilder){
 
         try {
             var user = userServices.save(userDto);

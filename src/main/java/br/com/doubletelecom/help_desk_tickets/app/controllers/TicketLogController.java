@@ -32,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,7 +57,7 @@ public class TicketLogController {
 
     @PostMapping("/ticketlog")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_LOG_MANAGER')")
-    public ResponseEntity<PageItemTicketLogDto> createTicketLog(@RequestBody CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<PageItemTicketLogDto> createTicketLog(@RequestBody @Validated CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
         var ticketLog = ticketLogServices.save(ticketLogDto, token);
         var uri = uriBuilder.path("/ticketlog/{id}").buildAndExpand(ticketLog).toUri();
         return ResponseEntity.created(uri).body(new PageItemTicketLogDto(ticketLog));
@@ -70,14 +71,14 @@ public class TicketLogController {
     }
 
     @GetMapping("ticketlog/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
     public ResponseEntity<TicketLog> findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         var ticktLog = ticketLogServices.findById(ticketLogId, token);
         return ResponseEntity.ok(ticktLog);
     }
     
     @GetMapping("/ticketlogs")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
     public ResponseEntity<Page<PageItemTicketLogDto>> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable, JwtAuthenticationToken token) {
         
         try {

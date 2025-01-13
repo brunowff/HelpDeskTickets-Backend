@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
@@ -45,11 +46,9 @@ import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotP
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
-import br.com.doubletelecom.help_desk_tickets.app.repositories.UserGroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 
@@ -59,12 +58,10 @@ public class GroupServiceImpl implements GroupServices{
 
     private final UserRepository userRep;
     private final GroupRepository groupRep;
-    private final UserGroupRepository userGroupRep;
 
-    
     @Override
     @Transactional
-    public Group save(@RequestBody @Valid CreateGroupDto groupDto, JwtAuthenticationToken token) {
+    public Group save(@RequestBody @Validated CreateGroupDto groupDto, JwtAuthenticationToken token) {
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new UserNotFoundException());
         
@@ -101,7 +98,7 @@ public class GroupServiceImpl implements GroupServices{
 
     @Override
     @Transactional
-    public Group update(@RequestBody @Valid GroupDto groupDto, JwtAuthenticationToken token) {
+    public Group update(@RequestBody @Validated GroupDto groupDto, JwtAuthenticationToken token) {
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var group = groupRep.findById(groupDto.groupId()).orElseThrow( () -> new ObjectNotFoundException());
@@ -121,28 +118,6 @@ public class GroupServiceImpl implements GroupServices{
         }
     }
 
-    @Override
-    @Transactional
-    public Void delete(@RequestParam String groupId, JwtAuthenticationToken token) {
-        
-        // It is not recommended to delete a group, only deactivate it to avoid losing the ticket history
-
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
-        
-        var userGroups = userGroupRep.findByGroup(group);
-        if (userGroups != null && !userGroups.isEmpty()) {
-            throw new ObjectNotProcessableException();
-        }
-
-        if(user.isAdmin()){
-            groupRep.delete(group);
-            return null;
-        } else {
-            throw new ObjectNotProcessableException();
-        }
-
-    }
 
     @Override
     @Transactional

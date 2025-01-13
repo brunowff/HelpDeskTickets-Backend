@@ -31,7 +31,6 @@ public interface GroupServices {
     public Group findById(String groupId, JwtAuthenticationToken token);
     public Page<PageItemGroupDto> findAll(Pageable pageable);
     public Group update(GroupDto groupDto, JwtAuthenticationToken token);
-    public Void delete(String groupId, JwtAuthenticationToken token);
     public Void activate(String groupId, JwtAuthenticationToken token);
     public Void deactivate(String groupId, JwtAuthenticationToken token);
 }

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
@@ -29,11 +30,14 @@ public interface UserServices {
 
     public User save(CreateUserDto userDto);
     public Page<PageItemUserDto> findAll(Pageable pageable);
-    public Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
-    public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
     public User updateUser(UserDto userDto, JwtAuthenticationToken token);
     public Void passwordReset(UserDto userDto, JwtAuthenticationToken token);
     public Void activate(String userId, JwtAuthenticationToken token);
     public Void deactivate(String userId, JwtAuthenticationToken token);
+    public Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
+    public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
+    public Void addGroupToUser(String userId, String groupId, JwtAuthenticationToken token);
+    public Void removeGroupFromUser(String userId, String groupId, JwtAuthenticationToken token);
+    public Page<PageItemGroupDto> findGroupsByUser(String userId, JwtAuthenticationToken token, Pageable pageable);
     
 }

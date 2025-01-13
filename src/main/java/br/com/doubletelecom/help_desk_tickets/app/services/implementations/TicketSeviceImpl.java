@@ -34,7 +34,7 @@
  * - @Transactional: Indicates that the methods should be executed within a transaction context.
  * - @RequestBody: Indicates that a method parameter should be bound to the body of the web request.
  * - @RequestParam: Indicates that a method parameter should be bound to a web request parameter.
- * - @Valid: Indicates that a method parameter should be validated.
+ * - @Validated: Indicates that a method parameter should be validated.
  * 
  * Dependencies:
  * - TicketRepository: Repository for managing Ticket entities.
@@ -53,6 +53,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
@@ -70,7 +71,6 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRep
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 
@@ -85,7 +85,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket save(@RequestBody @Valid CreateTicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket save(@RequestBody @Validated CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ObjectNotFoundException());
@@ -150,7 +150,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket update(@RequestBody @Valid TicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket update(@RequestBody @Validated TicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
@@ -334,7 +334,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByTicketCategoryId(@RequestParam String ticketCategoryId, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByTicketCategory(@RequestParam String ticketCategoryId, Pageable pageable){
         var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), pageable).map(PageItemTicketDto::new);
         return tickets;
 

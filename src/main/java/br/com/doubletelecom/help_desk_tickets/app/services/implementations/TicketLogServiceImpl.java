@@ -23,7 +23,7 @@
  * - @Transactional: Indicates that the methods should be executed within a transaction context.
  * - @RequestBody: Indicates that a method parameter should be bound to the body of the web request.
  * - @RequestParam: Indicates that a method parameter should be bound to a web request parameter.
- * - @Valid: Indicates that a method parameter should be validated.
+ * - @Validated: Indicates that a method parameter should be validated.
  * 
  * Dependencies:
  * - UserRepository: Repository for managing user entities.
@@ -53,6 +53,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
@@ -67,7 +68,6 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketLogReposito
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketLogServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -80,7 +80,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public TicketLog save(@RequestBody @Valid CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
+    public TicketLog save(@RequestBody @Validated CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(ticketLogDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());

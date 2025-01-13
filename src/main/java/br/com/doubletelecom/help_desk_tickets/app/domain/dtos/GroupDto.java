@@ -14,11 +14,12 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record GroupDto(
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID groupId,
 
     @NotBlank(message = "{required.validation}")
@@ -29,7 +30,7 @@ public record GroupDto(
     @Size(min = 7, max = 300, message = "{size.validation}")
     String description,
 
-    @NotBlank
+    @NotNull(message = "{required.validation}")
     Boolean active
 ) {
 

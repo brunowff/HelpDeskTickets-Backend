@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +37,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketCate
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketCategoryDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketCategoryServices;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,7 +52,7 @@ public class TicketCategoryController {
 
     @PostMapping("/ticket-categories")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
-    public ResponseEntity<PageItemTicketCategoryDto> createTicketCategory(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<PageItemTicketCategoryDto> createTicketCategory(@RequestBody @Validated CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder){
         var ticketCategory = ticketCategoryServices.save(ticketCategoryDto, token);
         var uri = uriBuilder.path("/ticket-categories/{id}").buildAndExpand(ticketCategory.getTicketCategoryId()).toUri();
         return ResponseEntity.created(uri).body(new PageItemTicketCategoryDto(ticketCategory));
@@ -61,7 +61,7 @@ public class TicketCategoryController {
 
     @PutMapping("/ticket-categories/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
-    public ResponseEntity<Void> updateTicketCategory(@RequestBody @Valid TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
+    public ResponseEntity<Void> updateTicketCategory(@RequestBody @Validated TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         ticketCategoryServices.update(ticketCategoryDto, token);
         return ResponseEntity.ok().build();
     }
@@ -74,14 +74,14 @@ public class TicketCategoryController {
     }
 
     @GetMapping("ticket-category/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
     public ResponseEntity<TicketCategory> findById(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         var ticketCategory = ticketCategoryServices.findById(ticketCategoryId, token);
         return ResponseEntity.ok(ticketCategory);
     }
 
     @GetMapping("/ticket-categories")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
     public ResponseEntity<Page<PageItemTicketCategoryDto>> findAll(Pageable pageable, JwtAuthenticationToken token){
         var ticketCategories = ticketCategoryServices.findAll(pageable);
         return ResponseEntity.ok(ticketCategories);

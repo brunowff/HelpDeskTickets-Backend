@@ -88,7 +88,7 @@ public class User implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-     // Setting up a bundle of rules.
+     // Setting up a bundle of groups.
      @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
      @JoinTable(name = "tb_user_groups",
          joinColumns = @JoinColumn(name = "user_id"),

@@ -30,7 +30,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessag
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketMessageDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketMessageServices;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
@@ -40,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,8 +56,8 @@ public class TicketMessageController {
     private final TicketMessageServices ticketMessageServices;
 
     @PostMapping("/ticket-message")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
-    public ResponseEntity<PageItemTicketMessageDto> createTicketMessage(@RequestBody @Valid CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder) {
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
+    public ResponseEntity<PageItemTicketMessageDto> createTicketMessage(@RequestBody @Validated CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token, UriComponentsBuilder uriBuilder) {
         var ticketMessage = ticketMessageServices.save(ticketMessageDto, token);
         var uri = uriBuilder.path("/ticket-message/{id}").buildAndExpand(ticketMessage.getTicketMessageId()).toUri();
         return ResponseEntity.created(uri).body(new PageItemTicketMessageDto(ticketMessage));
@@ -71,7 +71,7 @@ public class TicketMessageController {
     }
 
     @GetMapping("/ticket-messages")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
     public ResponseEntity<Page<PageItemTicketMessageDto>> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable, JwtAuthenticationToken token) {
 
         try {
@@ -83,14 +83,14 @@ public class TicketMessageController {
     }
 
     @GetMapping("/ticket-message/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER')")
     public ResponseEntity<TicketMessage> findById(@RequestParam String ticketMessageId, JwtAuthenticationToken token) {
         var ticketMessage = ticketMessageServices.findById(ticketMessageId, token);
         return ResponseEntity.ok(ticketMessage);
     }
 
     @GetMapping("/ticket-message/ticket/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER')")
     public ResponseEntity<Page<PageItemTicketMessageDto>> findByTicketId(@RequestParam String ticketId, Pageable pageable, JwtAuthenticationToken token) {
         try {
             var ticketMessages = ticketMessageServices.findTicketMessagesByTicketId(ticketId, pageable, token);
@@ -101,7 +101,7 @@ public class TicketMessageController {
     }
 
     @GetMapping("/ticket-message/user/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER')")
     public ResponseEntity<Page<PageItemTicketMessageDto>> findByUserId(@RequestParam String userId, Pageable pageable, JwtAuthenticationToken token) {
         try {
             var ticketMessages = ticketMessageServices.findTicketMessagesByUserId(userId, pageable, token);

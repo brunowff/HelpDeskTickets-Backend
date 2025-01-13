@@ -35,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketCategoryDto;
@@ -51,7 +52,6 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRep
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketCategoryServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -64,7 +64,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
     @Override
     @Transactional
-    public TicketCategory save(@RequestBody @Valid CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
+    public TicketCategory save(@RequestBody @Validated CreateTicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         
@@ -132,7 +132,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
     @Override
     @Transactional
-    public TicketCategory update(@RequestBody @Valid TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
+    public TicketCategory update(@RequestBody @Validated TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
 

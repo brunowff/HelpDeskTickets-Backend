@@ -42,6 +42,8 @@ spring:
 server:
     servlet:
         context-path: '/hdesktickets'
+    error:
+        include-stacktrace: never
 logging:
     level:
         org:

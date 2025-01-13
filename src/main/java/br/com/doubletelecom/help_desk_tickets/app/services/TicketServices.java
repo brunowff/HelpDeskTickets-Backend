@@ -51,7 +51,7 @@ public interface TicketServices {
     public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token);
     public Page<PageItemTicketDto> findTicketsByUserId(String userId, Pageable pageable);
     public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(String userId, Pageable pageable);
-    public Page<PageItemTicketDto> findTicketsByTicketCategoryId(String ticketCategoryId, Pageable pageable);
+    public Page<PageItemTicketDto> findTicketsByTicketCategory(String ticketCategoryId, Pageable pageable);
     public Page<PageItemTicketDto> findTicketsByStatus(String status, Pageable pageable);
     public Page<PageItemTicketDto> findTicketsByPriority(String priority, Pageable pageable);
     public Page<PageItemTicketDto> findTicketsByTitle(String title, Pageable pageable);

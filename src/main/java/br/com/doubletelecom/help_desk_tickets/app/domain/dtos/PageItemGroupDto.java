@@ -18,9 +18,10 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 public record PageItemGroupDto(
     UUID groupId,
     String name,
+    String description,
     Boolean active
 ) {
     public PageItemGroupDto(Group group) {
-        this(group.getGroupId(), group.getName(), group.getActive());
+        this(group.getGroupId(), group.getName(), group.getDescription(), group.getActive());
     }
 }

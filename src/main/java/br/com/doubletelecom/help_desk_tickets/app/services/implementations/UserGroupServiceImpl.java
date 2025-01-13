@@ -39,11 +39,10 @@ import java.util.UUID;
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserGroupDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.UserGroup;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
@@ -54,7 +53,6 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.UserGroupReposito
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserGroupServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -67,7 +65,7 @@ public class UserGroupServiceImpl implements UserGroupServices{
 
     @Override
     @Transactional
-    public UserGroup save(@RequestBody @Valid CreateUserGroupDto userGroupDto, JwtAuthenticationToken token) {
+    public UserGroup save(@RequestBody @Validated CreateUserGroupDto userGroupDto, JwtAuthenticationToken token) {
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new UserNotFoundException());
         var userToAdd = userRep.findById(userGroupDto.userId()).orElseThrow(() -> new UserNotFoundException());
@@ -123,65 +121,5 @@ public class UserGroupServiceImpl implements UserGroupServices{
 
         return null;
     }
-    
-    @Override
-    @Transactional
-    public UserGroup addUsertToGroup(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token) {
-        
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new UserNotFoundException());
-        
-        if(!user.hasRole("API_GROUP_MANAGER")){
-            throw new UserNotAuthorizedException();
-        }
 
-        var userToAdd = userRep.findById(UUID.fromString(userId)).orElseThrow(() -> new UserNotFoundException());
-        
-        if(userToAdd.hasGroup(UUID.fromString(groupId))){
-            throw new ObjectNotProcessableException();
-        }
-
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
-
-        try {
-            var userGroup = new UserGroup();
-            userGroup.setUser(user);
-            userGroup.setGroup(group);
-            userGroupRep.save(userGroup);
-            return userGroup;
-        } catch (Exception e) {
-            throw new ObjectNotProcessableException();
-        }
-
-    }
-
-    @Override
-    @Transactional
-    public Void removeUserFromGroup(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token) {
-        
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow(() -> new UserNotFoundException());
-        
-        if(!user.hasRole("API_GROUP_MANAGER")){
-            throw new UserNotAuthorizedException();
-        }
-
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public List<User> findUsersByGroupId(@RequestParam String groupId, @RequestParam JwtAuthenticationToken token) {
-        
-        var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
-        var users = userGroupRep.findUsersByGroup(group);
-        return users;
-    }
-
-    @Override
-    @Transactional
-    public List<Group> findGroupsByUserId(@RequestParam String userId, JwtAuthenticationToken token) {
-        
-        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
-        var groups = userGroupRep.findGroupsByUser(user);
-        return groups;
-    }
 }

@@ -60,9 +60,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
@@ -71,6 +73,7 @@ import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotF
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotAuthorizedException;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.UserNotFoundException;
+import br.com.doubletelecom.help_desk_tickets.app.repositories.GroupRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.RoleRepository;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
@@ -85,6 +88,7 @@ public class UserServiceImpl implements UserServices{
 
     private final UserRepository userRep;
     private final RoleRepository roleRep;
+    private final GroupRepository groupRep;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
@@ -95,7 +99,7 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public User save(@RequestBody @Valid CreateUserDto userDto){
+    public User save(@RequestBody @Validated CreateUserDto userDto){
         
         var roleBasic = roleRep.findByName(Role.Values.API_BASIC.name()).orElse(null);
         var userFromDb = userRep.findByUsername(userDto.username());
@@ -228,4 +232,56 @@ public class UserServiceImpl implements UserServices{
         return null;
     }
 
+    @Override
+    @Transactional
+    public Void addGroupToUser(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var group2add = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
+        var groups = user.getGroups();
+       
+        if(!user.isAdmin() && !user.hasRole("API_GROUP_MANAGER")){
+            throw new UserNotAuthorizedException();
+        }
+
+        groups.add(group2add);
+        user.setGroups(groups);
+        userRep.save(user);
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Void removeGroupFromUser(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var group2remove = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
+        var groups = user.getGroups();
+        
+        if(!user.isAdmin()){
+            throw new UserNotAuthorizedException();
+        }
+
+        try {
+            groups.remove(group2remove);
+            user.setGroups(groups);
+            userRep.save(user);
+        } catch (Exception e) {
+            throw new ObjectNotProcessableException();
+        }
+        
+        return null;
+    }
+
+    @Override
+    public Page<PageItemGroupDto> findGroupsByUser(String userId, JwtAuthenticationToken token, Pageable pageable) {
+        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
+        try {
+            var groups = userRep.findGroupsByUser(user, pageable).map(PageItemGroupDto::new);
+            return groups;
+        } catch (Exception e) {
+            throw new ObjectNotFoundException();
+        }
+    }
 }

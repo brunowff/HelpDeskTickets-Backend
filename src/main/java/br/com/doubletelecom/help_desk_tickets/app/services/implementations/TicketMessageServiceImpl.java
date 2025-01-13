@@ -39,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessageDto;
@@ -55,7 +56,6 @@ import br.com.doubletelecom.help_desk_tickets.app.repositories.TicketCategoryRep
 import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketMessageServices;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -69,7 +69,7 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
     
     @Override
     @Transactional
-    public TicketMessage save(@RequestBody @Valid CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token){
+    public TicketMessage save(@RequestBody @Validated CreateTicketMessageDto ticketMessageDto, JwtAuthenticationToken token){
         
         // If the user is an admin, is in the destination group of the ticket, or is the user who created the ticket
 
