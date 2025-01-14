@@ -1,31 +1,50 @@
+
 /**
- * GroupController is a REST controller that handles HTTP requests for managing groups.
- * It provides endpoints for creating, updating, deleting, retrieving, activating, and deactivating groups.
+ * GroupController is a REST controller that manages group-related operations.
+ * It provides endpoints for creating, updating, retrieving, activating, deactivating,
+ * and managing users within groups.
  * 
- * Endpoints:
- * - POST /groups: Create a new group. Requires SCOPE_API_ADMIN or SCOPE_API_GROUP_MANAGER authority.
- * - PUT /group/{id}: Update an existing group. Requires SCOPE_API_ADMIN or SCOPE_API_GROUP_MANAGER authority.
- * - DELETE /group/{id}: Delete a group by ID. Requires SCOPE_API_ADMIN or SCOPE_API_GROUP_MANAGER authority.
- * - GET /groups: Retrieve a paginated list of groups. Requires SCOPE_API_BASIC or SCOPE_API_GROUP authority.
- * - GET /group/{id}: Retrieve a group by ID. Requires SCOPE_API_BASIC or SCOPE_API_GROUP authority.
- * - GET /group/activate/{id}: Activate a group by ID. Requires SCOPE_API_ADMIN or SCOPE_API_GROUP_MANAGER authority.
- * - GET /group/deactivate/{id}: Deactivate a group by ID. Requires SCOPE_API_ADMIN or SCOPE_API_GROUP_MANAGER authority.
+ * <p>Endpoints:</p>
+ * <ul>
+ *   <li>POST /group-manager/groups - Create a new group</li>
+ *   <li>PUT /group-manager/groups/{id} - Update an existing group</li>
+ *   <li>GET /group-manager/groups - Retrieve all groups with pagination</li>
+ *   <li>GET /group-manager/groups/{id} - Retrieve a group by its ID</li>
+ *   <li>PATCH /group-manager/groups/{id}/activate - Activate a group</li>
+ *   <li>PATCH /group-manager/groups/{id}/deactivate - Deactivate a group</li>
+ *   <li>POST /group-manager/groups/{id}/add-user/{userId} - Add a user to a group</li>
+ *   <li>DELETE /group-manager/groups/{id}/remove-user/{userId} - Remove a user from a group</li>
+ *   <li>GET /group-manager/groups/{id}/find-by-user - Find groups by user ID</li>
+ * </ul>
  * 
- * Security:
- * - The controller is secured with OAuth2 and requires specific authorities for certain operations.
- * - General access requires either SCOPE_API_BASIC or SCOPE_API_GROUP authority.
+ * <p>Authorization:</p>
+ * <ul>
+ *   <li>Requires 'SCOPE_API_BASIC' or 'SCOPE_API_GROUP' for general access</li>
+ *   <li>Requires 'SCOPE_API_ADMIN' or 'SCOPE_API_GROUP_MANAGER' for group management operations</li>
+ * </ul>
  * 
- * Dependencies:
- * - GroupServices: Service layer for handling group-related operations.
+ * <p>Dependencies:</p>
+ * <ul>
+ *   <li>UserServices - Service for user-related operations</li>
+ *   <li>GroupServices - Service for group-related operations</li>
+ * </ul>
  * 
- * Annotations:
- * - @RestController: Marks the class as a REST controller.
- * - @AllArgsConstructor: Generates a constructor with one parameter for each field in the class.
- * - @PreAuthorize: Specifies security constraints on methods.
- * @author 
- * @version
+ * <p>Exceptions:</p>
+ * <ul>
+ *   <li>ObjectNotFoundException - Thrown when a requested object is not found</li>
+ * </ul>
+ * 
+ * <p>Annotations:</p>
+ * <ul>
+ *   <li>@RestController - Indicates that this class is a REST controller</li>
+ *   <li>@RequestMapping("/group-manager") - Base URL for all endpoints in this controller</li>
+ *   <li>@AllArgsConstructor - Generates a constructor with 1 parameter for each field in this class</li>
+ *   <li>@PreAuthorize - Specifies security constraints on methods</li>
+ * </ul>
  */
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,27 +111,15 @@ public class GroupController {
         var group = groupServices.findById(groupId, token);
         return ResponseEntity.ok(group);
     }
-
-    @GetMapping("/groups/{id}/find-by-user")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER') or hasAuthority('SCOPE_API_GROUP')")
-    public ResponseEntity<Page<PageItemGroupDto>> findGroupsByUser(@PathVariable("id") String userId, JwtAuthenticationToken token, Pageable pageable) {
-        try {
-            var groups = userServices.findGroupsByUser(userId, token, pageable);
-            return ResponseEntity.ok(groups);
-
-        } catch (Exception e) {
-            throw new ObjectNotFoundException();
-        }
-    }
     
-    @PatchMapping("/groups/activate/{id}")
+    @PatchMapping("/groups/{id}/activate")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> activate(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         groupServices.activate(groupId, token);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/groups/deactivate/{id}")
+    @PatchMapping("/groups/{id}/deactivate")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> deactivate(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         groupServices.deactivate(groupId, token);
@@ -122,15 +129,26 @@ public class GroupController {
     @PostMapping("/groups/{id}/add-user/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> addUserToGroup(@PathVariable("id") String groupId, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
-        userServices.addGroupToUser(userId, groupId, token);
+        userServices.addUserToGroup(userId, groupId, token);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/groups/{id}/remove-user/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER')")
     public ResponseEntity<Void> removeUserFromGroup(@PathVariable("id") String groupId, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
-        userServices.removeGroupFromUser(userId, groupId, token);
+        userServices.removeUserFromGroup(userId, groupId, token);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/groups/{id}/find-by-user")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER') or hasAuthority('SCOPE_API_GROUP')")
+    public ResponseEntity<List<PageItemGroupDto>> findGroupsByUser(@PathVariable("id") String userId, JwtAuthenticationToken token) {
+        try {
+            var groups = userServices.findGroupsByUserId(userId, token);
+            return ResponseEntity.ok(groups);
+        } catch (Exception e) {
+            throw new ObjectNotFoundException();
+        }
     }
 
 

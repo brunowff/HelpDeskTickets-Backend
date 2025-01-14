@@ -35,6 +35,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -90,7 +91,7 @@ public class User implements Serializable {
 
      // Setting up a bundle of groups.
      @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-     @JoinTable(name = "tb_user_groups",
+     @JoinTable(name = "tb_users_groups",
          joinColumns = @JoinColumn(name = "user_id"),
          inverseJoinColumns = @JoinColumn(name = "group_id"))
      private Set<Group> groups;
@@ -109,6 +110,8 @@ public class User implements Serializable {
     }
     
     public Boolean hasGroup(UUID groupId){
-        return this.groups.stream().anyMatch(group -> group.getGroupId().equals(groupId));
+        CopyOnWriteArrayList<Group> groups = new CopyOnWriteArrayList<>(this.groups);
+        return groups.stream().anyMatch(group -> group.getGroupId().equals(groupId));
     }
+
 }

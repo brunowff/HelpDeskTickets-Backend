@@ -41,4 +41,15 @@ public record CreateUserDto(
     @NotBlank(message = "{required.validation}")
     String fullname) {
 
+        public CreateUserDto( 
+            String username, 
+            String email, 
+            String password, 
+            String fullname) {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.fullname = fullname;
+        }
+        
 }

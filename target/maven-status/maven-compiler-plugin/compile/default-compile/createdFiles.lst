@@ -14,13 +14,11 @@ br/com/doubletelecom/help_desk_tickets/app/repositories/TicketCategoryRepository
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketMessageServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/controllers/TicketCategoryController.class
 br/com/doubletelecom/help_desk_tickets/app/services/TicketMessageServices.class
-br/com/doubletelecom/help_desk_tickets/app/services/implementations/UserGroupServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotActivatedException.class
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/RoleServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketLogServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/contract/MessageException.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketCategory.class
-br/com/doubletelecom/help_desk_tickets/app/domain/entities/UserGroup.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateTicketDto.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotFoundException.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateTicketMessageDto.class
@@ -29,9 +27,7 @@ br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketCatego
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/GroupServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateGroupDto.class
 br/com/doubletelecom/help_desk_tickets/app/controllers/GroupController.class
-br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateUserGroupDto.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/GroupDto.class
-br/com/doubletelecom/help_desk_tickets/app/repositories/UserGroupRepository.class
 br/com/doubletelecom/help_desk_tickets/app/repositories/GroupRepository.class
 br/com/doubletelecom/help_desk_tickets/app/controllers/UserController.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/ExceptionHandlerAdvice.class
@@ -42,8 +38,8 @@ br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotProcessa
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/LoginRequest.class
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketSeviceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/services/TicketLogServices.class
-br/com/doubletelecom/help_desk_tickets/app/services/UserGroupServices.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/TicketLogDto.class
+br/com/doubletelecom/help_desk_tickets/app/exceptions/business/BusinessExceptionHandler.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/PageItemTicketLogDto.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/dtos/ErrorDto.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/Role.class

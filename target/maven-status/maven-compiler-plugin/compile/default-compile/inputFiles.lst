@@ -17,7 +17,6 @@
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateTicketLogDto.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateTicketMessageDto.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateUserDto.java
-/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateUserGroupDto.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/GroupDto.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/LoggedUserDto.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/LoginRequest.java
@@ -39,9 +38,9 @@
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketLog.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketMessage.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/User.java
-/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/UserGroup.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/BaseRuntimeException.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/ExceptionHandlerAdvice.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/business/BusinessExceptionHandler.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/business/LoginEmailOrPasswordException.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotActivatedException.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotFoundException.java
@@ -57,7 +56,6 @@
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/repositories/TicketLogRepository.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/repositories/TicketMessageRepository.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/repositories/TicketRepository.java
-/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/repositories/UserGroupRepository.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/repositories/UserRepository.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/GroupServices.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/RoleServices.java
@@ -65,7 +63,6 @@
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/TicketLogServices.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/TicketMessageServices.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/TicketServices.java
-/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/UserGroupServices.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/UserServices.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/GroupServiceImpl.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/RoleServiceImpl.java
@@ -73,5 +70,4 @@
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketLogServiceImpl.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketMessageServiceImpl.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketSeviceImpl.java
-/home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/UserGroupServiceImpl.java
 /home/brunowff/Projects/springboot/HelpDeskTickets/src/main/java/br/com/doubletelecom/help_desk_tickets/app/services/implementations/UserServiceImpl.java

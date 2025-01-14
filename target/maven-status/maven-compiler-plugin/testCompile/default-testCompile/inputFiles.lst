@@ -1,0 +1,8 @@
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateGroupDtoTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/GroupTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/RoleTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketCategoryTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketLogTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketMessageTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketTest.java
+/home/brunowff/Projects/springboot/HelpDeskTickets/src/test/java/br/com/doubletelecom/help_desk_tickets/app/domain/entities/UserTest.java

@@ -1,0 +1,8 @@
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/GroupTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketLogTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/RoleTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketCategoryTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketMessageTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/entities/UserTest.class
+br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateGroupDtoTest.class

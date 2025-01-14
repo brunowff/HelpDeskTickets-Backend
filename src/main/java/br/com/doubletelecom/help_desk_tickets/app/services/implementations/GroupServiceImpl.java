@@ -29,7 +29,6 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -55,10 +54,10 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class GroupServiceImpl implements GroupServices{
-
+    
     private final UserRepository userRep;
     private final GroupRepository groupRep;
-
+    
     @Override
     @Transactional
     public Group save(@RequestBody @Validated CreateGroupDto groupDto, JwtAuthenticationToken token) {
@@ -141,7 +140,7 @@ public class GroupServiceImpl implements GroupServices{
     public Void deactivate(@RequestParam String groupId, JwtAuthenticationToken token) {
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-
+        
         if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER")){
             var group = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
             group.setActive(false);
@@ -150,7 +149,7 @@ public class GroupServiceImpl implements GroupServices{
         } else {
             throw new UserNotAuthorizedException();
         }
-
+        
     }
 
 }

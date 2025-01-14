@@ -16,6 +16,8 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -36,8 +38,8 @@ public interface UserServices {
     public Void deactivate(String userId, JwtAuthenticationToken token);
     public Void addRoleToUser(String userId, String roleId, JwtAuthenticationToken token);
     public Void removeRoleFromUser(String userId, String roleId, JwtAuthenticationToken token);
-    public Void addGroupToUser(String userId, String groupId, JwtAuthenticationToken token);
-    public Void removeGroupFromUser(String userId, String groupId, JwtAuthenticationToken token);
-    public Page<PageItemGroupDto> findGroupsByUser(String userId, JwtAuthenticationToken token, Pageable pageable);
+    public Void addUserToGroup(String userId, String groupId, JwtAuthenticationToken token);
+    public Void removeUserFromGroup(String userId, String groupId, JwtAuthenticationToken token);
+    public List<PageItemGroupDto> findGroupsByUserId(String userId, JwtAuthenticationToken token);
     
 }

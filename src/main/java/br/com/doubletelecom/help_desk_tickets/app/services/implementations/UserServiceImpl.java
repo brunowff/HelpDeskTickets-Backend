@@ -52,8 +52,11 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +70,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
@@ -234,39 +238,41 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
-    public Void addGroupToUser(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
+    public Void addUserToGroup(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var group2add = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
-        var groups = user.getGroups();
-       
+        
         if(!user.isAdmin() && !user.hasRole("API_GROUP_MANAGER")){
             throw new UserNotAuthorizedException();
         }
 
+        var group2add = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
+        var user2add = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
+        var groups = user2add.getGroups();
         groups.add(group2add);
-        user.setGroups(groups);
-        userRep.save(user);
+        user2add.setGroups(groups);
+        userRep.save(user2add);
 
         return null;
     }
 
     @Override
     @Transactional
-    public Void removeGroupFromUser(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
+    public Void removeUserFromGroup(@RequestParam String userId, @RequestParam String groupId, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var group2remove = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
-        var groups = user.getGroups();
         
         if(!user.isAdmin()){
             throw new UserNotAuthorizedException();
         }
-
+        
         try {
+            var group2remove = groupRep.findById(UUID.fromString(groupId)).orElseThrow( () -> new ObjectNotFoundException());
+            var user2alterate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
+            var groups = user2alterate.getGroups();
             groups.remove(group2remove);
-            user.setGroups(groups);
-            userRep.save(user);
+            user2alterate.setGroups(groups);
+            userRep.save(user2alterate);
         } catch (Exception e) {
             throw new ObjectNotProcessableException();
         }
@@ -275,13 +281,24 @@ public class UserServiceImpl implements UserServices{
     }
 
     @Override
-    public Page<PageItemGroupDto> findGroupsByUser(String userId, JwtAuthenticationToken token, Pageable pageable) {
-        var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
-        try {
-            var groups = userRep.findGroupsByUser(user, pageable).map(PageItemGroupDto::new);
-            return groups;
-        } catch (Exception e) {
-            throw new ObjectNotFoundException();
+    public List<PageItemGroupDto> findGroupsByUserId(String userId, JwtAuthenticationToken token){
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        
+        if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER") || user.hasRole("API_GROUP")){
+            try {
+                var user2find = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
+                Iterator<Group> groups = user2find.getGroups().iterator();
+                List<PageItemGroupDto> groups2return = new CopyOnWriteArrayList<>();
+                while (groups.hasNext()) {
+                    groups2return.add(new PageItemGroupDto(groups.next()));
+                }
+                return groups2return;
+            } catch (Exception e) {
+                throw new ObjectNotFoundException();
+            }
+        } else {
+            throw new UserNotAuthorizedException();
         }
+        
     }
 }

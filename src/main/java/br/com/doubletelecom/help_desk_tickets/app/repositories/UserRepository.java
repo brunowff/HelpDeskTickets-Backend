@@ -21,12 +21,9 @@ package br.com.doubletelecom.help_desk_tickets.app.repositories;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
 @Repository
@@ -34,6 +31,4 @@ public interface UserRepository extends JpaRepository<User, UUID>{
 
     public Optional<User> findByUsername(String username);
     public Optional<User> findByEmail(String email);
-    public Page<Group> findGroupsByUser(User user, Pageable pageable);
-
 }
