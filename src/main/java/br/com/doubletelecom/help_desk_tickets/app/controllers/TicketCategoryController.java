@@ -29,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -41,10 +42,12 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-@RestController("/ticket-category-manager")
+@RestController
+@RequestMapping("/ticket-category-manager")
 @AllArgsConstructor
 public class TicketCategoryController {
 
@@ -73,28 +76,28 @@ public class TicketCategoryController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("ticket-category/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
+    @GetMapping("ticket-categories/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
     public ResponseEntity<TicketCategory> findById(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         var ticketCategory = ticketCategoryServices.findById(ticketCategoryId, token);
         return ResponseEntity.ok(ticketCategory);
     }
 
     @GetMapping("/ticket-categories")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
+    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY')")
     public ResponseEntity<Page<PageItemTicketCategoryDto>> findAll(Pageable pageable, JwtAuthenticationToken token){
         var ticketCategories = ticketCategoryServices.findAll(pageable);
         return ResponseEntity.ok(ticketCategories);
     }
     
-    @GetMapping("/ticket-categories/activate/{id}")
+    @PatchMapping("/ticket-categories/{id}/activate")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> activateTicketCategory(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         ticketCategoryServices.activate(ticketCategoryId, token);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/ticket-categories/deactivate/{id}")
+    @PatchMapping("/ticket-categories/{id}/deactivate")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_CATEGORY_MANAGER')")
     public ResponseEntity<Void> deactivateTicketCategory(@PathVariable("id") String ticketCategoryId, JwtAuthenticationToken token){
         ticketCategoryServices.deactivate(ticketCategoryId, token);

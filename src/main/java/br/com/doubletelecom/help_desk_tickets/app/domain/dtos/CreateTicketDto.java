@@ -13,9 +13,9 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import java.util.UUID;
-
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateTicketDto(
 
@@ -28,14 +28,9 @@ public record CreateTicketDto(
     @NotBlank(message = "{required.validation}")
     String ticketPriority,
 
-    @NotBlank(message = "{required.validation}")
-    UUID ticketCategory,
+    @NotNull(message = "{required.validation}")
+    TicketCategory ticketCategory
 
-    @NotBlank(message = "{required.validation}")
-    UUID userId,
-
-    @NotBlank(message = "{required.validation}")
-    UUID attibuitedToUserId
 ) {
 
 }

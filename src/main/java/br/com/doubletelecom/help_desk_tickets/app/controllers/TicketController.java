@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -53,7 +54,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController("/ticket-manager")
+@RestController
+@RequestMapping("/ticket-manager")
 @AllArgsConstructor
 public class TicketController {
     
@@ -68,10 +70,9 @@ public class TicketController {
         
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/tickets/dashboard")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
     public ResponseEntity<Page<PageItemTicketDto>> dashboard(Pageable pageable){
-        
         try {
             var tickets = ticketServices.dashboard(pageable);
             return ResponseEntity.ok(tickets);
@@ -79,13 +80,11 @@ public class TicketController {
         } catch (Exception e) {
             throw new ObjectNotFoundException();
         }
-  
     }
 
     @DeleteMapping("/tickets/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
     public ResponseEntity<Void> deleteTicket(@PathVariable("id") String ticketId, JwtAuthenticationToken token){
-
         ticketServices.deleteTicket(ticketId, token);
         return ResponseEntity.ok().build();
 

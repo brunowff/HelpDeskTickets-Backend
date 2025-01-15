@@ -11,13 +11,14 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateTicketCategoryDto(
     
     @NotBlank(message = "{required.validation}")
     String name,
     
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     Group destinationGroup
 ) {
 

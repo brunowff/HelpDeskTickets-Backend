@@ -15,13 +15,15 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.util.UUID;
 
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UserDto(
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID userId,
 
     @NotBlank(message = "{required.validation}")
@@ -34,13 +36,17 @@ public record UserDto(
     @NotBlank(message = "{required.validation}")
     @Email(message = "{email.validation}")
     String email, 
-    
-    @NotBlank(message = "{required.validation}")
-    @Size(min = 6, max = 30, message = "{size.validation}")
-    String password,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     Boolean active
     
     ) {
+
+        public UserDto(){
+            this(null, null, null, null, null);
+        }
+
+        public UserDto(User user) {
+            this(user.getUserId(), user.getFullname(), user.getUsername(), user.getEmail(), user.getActive());
+        }
 }

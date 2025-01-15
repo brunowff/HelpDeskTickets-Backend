@@ -47,7 +47,7 @@ public class TokenController {
 
         var user = userRep.findByEmail(loginReq.email());
 
-        if(user.isEmpty() || !user.get().isLoginCorrect(loginReq, passwordEncoder)){
+        if(user.isEmpty() || !user.get().isLoginCorrect(loginReq, passwordEncoder) || user.get().getActive() == false){
             throw new LoginEmailOrPasswordException();
         }
 

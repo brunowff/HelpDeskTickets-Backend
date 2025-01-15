@@ -15,18 +15,19 @@ import java.util.Date;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record TicketLogDto(
     @NotBlank(message = "{required.validation}")
     String logDescription,
 
-    @NotBlank(message = "{required.validation}")    
+    @NotNull(message = "{required.validation}")    
     UUID userId,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID ticketId,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     Date logDateTime
 ) {
 

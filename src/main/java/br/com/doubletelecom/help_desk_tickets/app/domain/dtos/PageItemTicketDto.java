@@ -23,21 +23,32 @@ import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 
+// No Password field in UserDto class because of security reasons
 public record PageItemTicketDto(
-    UUID PostId, 
+    UUID ticketId, 
     String title,
     String description,
     TicketCategory ticketCategory,
     String status,
     String priority, 
-    User userAuthor,
-    User attribuitedTo,
+    UserDto userAuthor,
+    UserDto attribuitedTo,
     Date creationDateTime,
     Date finalizationDateTime
     ) {
-        public PageItemTicketDto(Ticket ticket){
-            this(ticket.getTicketId(), ticket.getTicketTitle(), ticket.getTicketDescription(), ticket.getTicketCategory(), ticket.getTicketStatus(), ticket.getTicketPriority(), ticket.getUser(), ticket.getAttribuitedToUser(), Date.from(ticket.getCreationDateTime()), ticket.getFinalizationDateTime());
+        public PageItemTicketDto(Ticket ticket) {
+            this(
+                ticket.getTicketId(), 
+                ticket.getTicketTitle(), 
+                ticket.getTicketDescription(), 
+                ticket.getTicketCategory(), 
+                ticket.getTicketStatus(), 
+                ticket.getTicketPriority(), 
+                new UserDto(ticket.getUser()), 
+                ticket.getAttribuitedToUser() == null ? null : new UserDto(ticket.getAttribuitedToUser()), 
+                Date.from(ticket.getCreationDateTime()), 
+                ticket.getFinalizationDateTime()
+            );
         }
 }

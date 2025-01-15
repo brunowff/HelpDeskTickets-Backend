@@ -14,20 +14,24 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record TicketCategoryDto(
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID ticketCategoryId,
 
     @NotBlank(message = "{required.validation}")
     String name,
     
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     Group destinationGroup,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     Boolean active
 ) {
-
+    public TicketCategoryDto(TicketCategory ticketCategory) {
+        this(ticketCategory.getTicketCategoryId(), ticketCategory.getName(), ticketCategory.getDestinationGroup(), ticketCategory.getActive());
+    }
 }

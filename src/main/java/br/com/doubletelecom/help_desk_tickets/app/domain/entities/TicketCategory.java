@@ -45,7 +45,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tb_ticket_types")
+@Table(name = "tb_ticket_category")
 public class TicketCategory implements Serializable{
     
     @Serial

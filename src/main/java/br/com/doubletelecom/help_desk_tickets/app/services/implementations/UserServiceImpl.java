@@ -136,7 +136,6 @@ public class UserServiceImpl implements UserServices{
             user.setFullname(userDto.fullname());
             user.setUsername(userDto.username());
             user.setEmail(userDto.email());
-            user.setPassword(passwordEncoder.encode(userDto.password()));
         return userRep.save(user);
         } else {
             throw new UserNotAuthorizedException();
@@ -170,19 +169,19 @@ public class UserServiceImpl implements UserServices{
     @Override
     @Transactional
     public Void removeRoleFromUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
-        //TODO: Refactor this method to use Enum.
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
-        var roles = user.getRoles();
         
-        if(!user.isAdmin()){
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        
+        if(!user.isAdmin() || roleName.equals("API_ADMIN")){
             throw new UserNotAuthorizedException();
         }
-
         try {
+            var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
+            var user2alterate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
+            var roles = user2alterate.getRoles();
             roles.remove(role2remove);
-            user.setRoles(roles);
-            userRep.save(user);
+            user2alterate.setRoles(roles);
+            userRep.save(user2alterate);
         } catch (Exception e) {
             throw new ObjectNotProcessableException();
         }

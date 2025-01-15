@@ -115,7 +115,8 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
 
         try {
             var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow(() -> new ObjectNotFoundException());
-            ticketCategoryRep.delete(ticketCategory);
+            ticketCategory.setActive(false);
+            ticketCategoryRep.save(ticketCategory);
         } catch (Exception e) {
             throw new ObjectNotProcessableException();
         }
@@ -135,11 +136,15 @@ public class TicketCategoryServiceImpl implements TicketCategoryServices{
     public TicketCategory update(@RequestBody @Validated TicketCategoryDto ticketCategoryDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var group = groupRep.findById(ticketCategoryDto.destinationGroup().getGroupId()).orElseThrow( () -> new ObjectNotFoundException());
+        
+        if(!group.getActive()){
+            throw new ObjectNotActivatedException();
+        }
 
         if(user.isAdmin() || user.hasRole("API_TICKET_CATEGORY_MANAGER")){
             try {
-                var ticketCategory = new TicketCategory();
-                var group = groupRep.findById(ticketCategoryDto.destinationGroup().getGroupId()).orElseThrow( () -> new ObjectNotFoundException());
+                var ticketCategory = ticketCategoryRep.findById(ticketCategoryDto.ticketCategoryId()).orElseThrow( () -> new ObjectNotFoundException());
                 ticketCategory.setName(ticketCategoryDto.name());
                 ticketCategory.setDestinationGroup(group);
                 ticketCategory.setActive(ticketCategoryDto.active());

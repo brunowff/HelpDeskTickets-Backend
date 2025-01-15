@@ -13,15 +13,16 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateTicketMessageDto(
     @NotBlank(message = "{required.validation}")
     String message,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID ticketId,
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID userId
 ) {
 

@@ -20,11 +20,13 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 import java.util.Date;
 import java.util.UUID;
 
+import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record TicketDto(
 
-    @NotBlank(message = "{required.validation}")
+    @NotNull(message = "{required.validation}")
     UUID ticketId,
 
     @NotBlank(message = "{required.validation}")
@@ -39,19 +41,16 @@ public record TicketDto(
     @NotBlank(message = "{required.validation}")
     String ticketPriority,
 
-    @NotBlank(message = "{required.validation}")
-    UUID ticketCategory,
+    @NotNull(message = "{required.validation}")
+    TicketCategory ticketCategory,
 
-    @NotBlank(message = "{required.validation}")
-    UUID userId,
+    @NotNull(message = "{required.validation}")
+    UserDto userId,
 
-    @NotBlank(message = "{required.validation}")
-    UUID attibuitedToUserId,
+    UserDto attibuitedToUserId,
 
-    @NotBlank(message = "{required.validation}")
     Date creationDateTime,
 
-    @NotBlank(message = "{required.validation}")
     Date finalizationDateTime
     
     ) {

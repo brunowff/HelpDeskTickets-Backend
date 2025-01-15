@@ -43,6 +43,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -64,17 +65,17 @@ public class RoleController {
         return ResponseEntity.ok(roles);
     }
     
-    @GetMapping("/role/{roleName}/user/{userId}")
+    @PatchMapping("/roles/{roleName}/user/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_ROLE_MANAGER')")
     public ResponseEntity<Void> addRole2User (@PathVariable("roleName") String roleName, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
-        userServices.addRoleToUser(roleName, userId, token);
+        userServices.addRoleToUser(userId, roleName, token);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/role/{roleName}/user/{userId}")
+    @DeleteMapping("/roles/{roleName}/user/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_ROLE_MANAGER')")
     public ResponseEntity<Void> removeRoleFromUser (@PathVariable("roleName") String roleName, @PathVariable("userId") String userId, JwtAuthenticationToken token) {
-        userServices.removeRoleFromUser(roleName, userId, token);
+        userServices.removeRoleFromUser(userId, roleName, token);
         return ResponseEntity.ok().build();
     }
     

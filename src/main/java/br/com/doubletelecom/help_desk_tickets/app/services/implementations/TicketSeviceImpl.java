@@ -47,15 +47,14 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
@@ -85,18 +84,18 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket save(@RequestBody @Validated CreateTicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket save(CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ObjectNotFoundException());
-
+        
         try {
+            var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory().getTicketCategoryId()).orElseThrow( () -> new ObjectNotFoundException());
             var ticket = new Ticket();
             ticket.setUser(user);
             ticket.setTicketTitle(ticketDto.ticketTitle());
             ticket.setTicketDescription(ticketDto.ticketDescription());
             ticket.setTicketCategory(ticketCategory);
-            ticket.setTicketPriority(ticketDto.ticketPriority());
+            ticket.setTicketPriority(Ticket.ValuesOfPriority.valueOf(ticketDto.ticketPriority()).name());
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.ABERTO.name());
             ticketRep.save(ticket);
 
@@ -116,7 +115,7 @@ public class TicketSeviceImpl implements TicketServices{
     
     @Override
     @Transactional
-    public Void deleteTicket(@RequestParam String ticketId, JwtAuthenticationToken token){
+    public Void deleteTicket(String ticketId, JwtAuthenticationToken token){
 
         // It's not recomended to delete a ticket, but just inactivate it.
 
@@ -125,7 +124,9 @@ public class TicketSeviceImpl implements TicketServices{
         
         // Verify if user is an author by the token or if it's an Admin for delete.
         if(user.isAdmin() || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))){
-            ticketRep.delete(ticket);
+            ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.CANCELADO.name());
+            ticket.setFinalizationDateTime(Date.from(Instant.now()));
+            ticketRep.save(ticket);
             return null;
         } else {
             throw new UserNotAuthorizedException();
@@ -134,7 +135,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket findById(@RequestParam String ticketId){
+    public Ticket findById(String ticketId){
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         return ticket;
 
@@ -150,19 +151,17 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket update(@RequestBody @Validated TicketDto ticketDto, JwtAuthenticationToken token){
+    public Ticket update(TicketDto ticketDto, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
-        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory()).orElseThrow( () -> new ObjectNotFoundException());
+        var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory().getTicketCategoryId()).orElseThrow( () -> new ObjectNotFoundException());
 
         // Only Admin, user attribuited to ticket or the author of the ticket can update it.
         if(user.isAdmin()
             || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))
             || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
         ){
-
-            
 
             try {
 
@@ -183,7 +182,6 @@ public class TicketSeviceImpl implements TicketServices{
                 throw new ObjectNotProcessableException();
             }
             
-            
         } else {
             throw new UserNotAuthorizedException();
         }
@@ -192,7 +190,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket updateStatus(@RequestParam String ticketId, @RequestParam String status, JwtAuthenticationToken token){
+    public Ticket updateStatus(String ticketId, String status, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
@@ -219,7 +217,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Ticket updatePriority(@RequestParam String ticketId, @RequestParam String priority, JwtAuthenticationToken token){
+    public Ticket updatePriority(String ticketId, String priority, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
@@ -242,12 +240,11 @@ public class TicketSeviceImpl implements TicketServices{
         } else {
             throw new UserNotAuthorizedException();
         }
-
     }
 
     @Override
     @Transactional
-    public Ticket updateAttribuitedTo(@RequestParam String ticketId, @RequestParam String userId, JwtAuthenticationToken token){
+    public Ticket updateAttribuitedTo(String ticketId, String userId, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
@@ -271,12 +268,11 @@ public class TicketSeviceImpl implements TicketServices{
         } else {
             throw new UserNotAuthorizedException();
         }
-
     }
 
     @Override
     @Transactional
-    public Ticket updateTicketCategory(@RequestParam String ticketId, @RequestParam String ticketCategoryId, JwtAuthenticationToken token){
+    public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token){
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
@@ -309,11 +305,10 @@ public class TicketSeviceImpl implements TicketServices{
         var tickets = ticketRep.findAll(pageable).map(PageItemTicketDto::new);
         return tickets;                            
     }
-    
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByUserId(@RequestParam String userId, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByUserId(String userId, Pageable pageable){
 
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
         var tickets = ticketRep.findTicketsByUser(user, pageable).map(PageItemTicketDto::new);
@@ -323,7 +318,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(@RequestParam String attribuitedToUserId, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByAttribuitedToUser(String attribuitedToUserId, Pageable pageable){
         
         var user = userRep.findById(UUID.fromString(attribuitedToUserId)).orElseThrow( () -> new UserNotFoundException());
         var tickets = ticketRep.findTicketsByAttribuitedToUser(user, pageable).map(PageItemTicketDto::new);
@@ -334,7 +329,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByTicketCategory(@RequestParam String ticketCategoryId, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByTicketCategory(String ticketCategoryId, Pageable pageable){
         var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), pageable).map(PageItemTicketDto::new);
         return tickets;
 
@@ -342,7 +337,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByStatus(@RequestParam String status, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByStatus(String status, Pageable pageable){
 
         var tickets = ticketRep.findTicketsByTicketStatus(status, pageable).map(PageItemTicketDto::new);
         return tickets;
@@ -351,7 +346,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByPriority(@RequestParam String priority, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByPriority(String priority, Pageable pageable){
 
         var tickets = ticketRep.findTicketsByTicketPriority(priority, pageable).map(PageItemTicketDto::new);
         return tickets;
@@ -360,7 +355,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByTitle(@RequestParam String title, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByTitle(String title, Pageable pageable){
 
         var tickets = ticketRep.findTicketsByTicketTitleContaining(title, pageable).map(PageItemTicketDto::new);
         return tickets;
@@ -369,7 +364,7 @@ public class TicketSeviceImpl implements TicketServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketDto> findTicketsByDescription(@RequestParam String description, Pageable pageable){
+    public Page<PageItemTicketDto> findTicketsByDescription(String description, Pageable pageable){
 
         var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, pageable).map(PageItemTicketDto::new);
         return tickets;
