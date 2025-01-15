@@ -148,24 +148,29 @@ public class UserServiceImpl implements UserServices{
     public Void addRoleToUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var role2add = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
-        var roles = user.getRoles();
-       
+        var user2alterate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
+        Role.Values roleEnumValues = Role.Values.valueOf(roleName);
+        var role2add = roleRep.findByName(roleEnumValues.name()).orElseThrow( () -> new ObjectNotFoundException());
+        
+        if(user2alterate.hasRole(role2add.toString())){
+            throw new ObjectNotProcessableException();
+        }
+        
         if(!user.isAdmin()){
             throw new UserNotAuthorizedException();
         }
-
+        
+        var roles = user2alterate.getRoles();
         roles.add(role2add);
-        user.setRoles(roles);
-        userRep.save(user);
-
+        user2alterate.setRoles(roles);
+        userRep.save(user2alterate);
         return null;
     }
 
     @Override
     @Transactional
     public Void removeRoleFromUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
-        
+        //TODO: Refactor this method to use Enum.
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var role2remove = roleRep.findByName(roleName).orElseThrow( () -> new ObjectNotFoundException());
         var roles = user.getRoles();
