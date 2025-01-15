@@ -45,7 +45,7 @@ public record TicketDto(
     TicketCategory ticketCategory,
 
     @NotNull(message = "{required.validation}")
-    UserDto userId,
+    UserDto userAuthor,
 
     UserDto attibuitedToUserId,
 

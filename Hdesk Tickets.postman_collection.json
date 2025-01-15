@@ -1,0 +1,1481 @@
+{
+	"info": {
+		"_postman_id": "cfc59e04-bb94-4020-93e5-5f8ea27a1d41",
+		"name": "Hdesk Tickets",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40613135"
+	},
+	"item": [
+		{
+			"name": "Login -admin-",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@doubletelecom.com.br\",\n    \"password\": \"M3tr0T3l3c0m\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login -basic-",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"brunowff@hotmail.coom\",\n    \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User -basic-",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"bruno\",\n    \"email\": \"brunowff@hotmail.com\",\n    \"password\": \"123\",\n    \"fullname\": \"Bruno Wallace F Franca\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/profiles-manager/users?size=2&page=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"profiles-manager",
+						"users"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "2"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticketTitle\" : \"Criar email para um novo funcionário\",\n    \"ticketDescription\" : \"Necessário criar e-mail no office 365 para o funcionário José\",\n    \"ticketPriority\" : \"HIGH\",\n    \"ticketCategory\" : {\n            \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n            \"name\": \"Criação de Caixa de E-mail Office 365\",\n            \"active\": true,\n            \"destinationGroup\": {\n                \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n                \"name\": \"TI - Help Desk\",\n                \"description\": \"TI e Help Desk\",\n                \"active\": true\n            }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticketId\" : \"dd4034d4-21d7-49e5-8b6d-f25c4e66d865\",\n    \"ticketTitle\" : \"Criar email para um novo funcionário\",\n    \"ticketDescription\" : \"Necessário criar e-mail no office 365 para o funcionário José\",\n    \"ticketStatus\" : \"ACEITE\",\n    \"ticketPriority\" : \"HIGH\",\n    \"ticketCategory\" : {\n            \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n            \"name\": \"Criação de Caixa de E-mail Office 365\",\n            \"active\": true,\n            \"destinationGroup\": {\n                \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n                \"name\": \"TI - Help Desk\",\n                \"description\": \"TI e Help Desk\",\n                \"active\": true\n            }\n    },\n    \"userAuthor\": {\n                \"userId\": \"924e0f2b-62ca-48a8-8044-bec52f88e765\",\n                \"fullname\": \"Administrador do Sistema\",\n                \"username\": \"admin\",\n                \"email\": \"admin@doubletelecom.com.br\",\n                \"active\": true\n            }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dd4034d4-21d7-49e5-8b6d-f25c4e66d865",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"dd4034d4-21d7-49e5-8b6d-f25c4e66d865"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Ticket",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Tickets Dashboard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dashboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"dashboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"Equipe Tecnica\",\n    \"description\" : \"Equipe Tecnica de Campo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"Liberação de Domínio no DNS\",\n    \"destinationGroup\" : {\n                \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n                \"name\": \"TI - Help Desk\",\n                \"description\": \"TI e Help Desk\",\n                \"active\": true\n            }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n    \"name\": \"Criação de Caixa de E-mail Office 365\",\n    \"destinationGroup\": {\n        \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n        \"name\": \"TI - Help Desk\",\n        \"description\": \"TI e Help Desk\",\n        \"active\": true\n    },\n    \"active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories",
+						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Activate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n    \"name\": \"Criação de Caixa de E-mail Office 365\",\n    \"destinationGroup\": {\n        \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n        \"name\": \"TI - Help Desk\",\n        \"description\": \"TI e Help Desk\",\n        \"active\": true\n    },\n    \"active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/activate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories",
+						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
+						"activate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Deactivate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n    \"name\": \"Criação de Caixa de E-mail Office 365\",\n    \"destinationGroup\": {\n        \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n        \"name\": \"TI - Help Desk\",\n        \"description\": \"TI e Help Desk\",\n        \"active\": true\n    },\n    \"active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/deactivate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories",
+						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
+						"deactivate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories",
+						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Find All",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories?size=2&page=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "2"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Category Find By ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-category-manager",
+						"ticket-categories",
+						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Add User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/add-user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
+						"add-user",
+						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Role Add",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"RH - Recursos Humanos\",\n    \"description\" : \"Gestão de Talentos Internos\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/role-manager/roles/API_USER_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"role-manager",
+						"roles",
+						"API_USER_MANAGER",
+						"user",
+						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Role Remove",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"RH - Recursos Humanos\",\n    \"description\" : \"Gestão de Talentos Internos\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/role-manager/roles/API_ROLE_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"role-manager",
+						"roles",
+						"API_ROLE_MANAGER",
+						"user",
+						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Remove User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"RH - Recursos Humanos\",\n    \"description\" : \"Gestão de Talentos Internos\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/d3f2c076-316c-4da4-b737-d845340f57da/remove-user/531897e6-ccfe-4170-88ba-4353200bb113",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"d3f2c076-316c-4da4-b737-d845340f57da",
+						"remove-user",
+						"531897e6-ccfe-4170-88ba-4353200bb113"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"groupId\" : \"328f8513-35cc-4d1c-9f12-24889d7edee8\",\n    \"name\" : \"Financeiro\",\n    \"description\" : \"Departamento Fianceiro e Tributário\",\n    \"active\" : \"true\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/328f8513-35cc-4d1c-9f12-24889d7edee8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"328f8513-35cc-4d1c-9f12-24889d7edee8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Deactivate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"grouId\" : \"2a09bdb7-f05a-45f4-a9a0-baaed8d45dd9\",\n    \"name\" : \"Financeiro\",\n    \"description\" : \"Fianceiro e Tributário\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/deactivate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
+						"deactivate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Activate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"grouId\" : \"2a09bdb7-f05a-45f4-a9a0-baaed8d45dd9\",\n    \"name\" : \"Financeiro\",\n    \"description\" : \"Fianceiro e Tributário\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/activate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
+						"activate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group FindAll",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups?size=2&page=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "2"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group Find By User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/0972d912-4bf4-4d98-9633-b9b5a2d76779/find-by-user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"group-manager",
+						"groups",
+						"0972d912-4bf4-4d98-9633-b9b5a2d76779",
+						"find-by-user"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

@@ -169,12 +169,14 @@ public class TicketSeviceImpl implements TicketServices{
                 ticket.setTicketTitle(ticketDto.ticketTitle());
                 ticket.setTicketDescription(ticketDto.ticketDescription());
                 ticket.setTicketCategory(ticketCategory);
+                ticket.setTicketPriority(null != ticketDto.ticketPriority() ? Ticket.ValuesOfPriority.valueOf(ticketDto.ticketPriority()).name() : ticket.getTicketPriority());
+                ticket.setTicketStatus(null != ticketDto.ticketStatus() ? Ticket.ValuesOfTicketStatus.valueOf(ticketDto.ticketStatus()).name() : ticket.getTicketStatus());
                 ticketRep.save(ticket);
 
                 var ticketLog = new TicketLog();
                 ticketLog.setTicket(ticket);
                 ticketLog.setUser(user);
-                ticketLog.setLogDescription("Ticket updated. " + ticket.toString());
+                ticketLog.setLogDescription("Ticket updated by: " + user.getUsername().toString());
                 ticketLogRep.save(ticketLog);
 
                 return ticket;
