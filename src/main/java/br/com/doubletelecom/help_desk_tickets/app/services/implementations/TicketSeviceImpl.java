@@ -200,14 +200,36 @@ public class TicketSeviceImpl implements TicketServices{
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
+            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())
         ){
+            var message = "Ticket status updated. " + user.getUsername();
+            // Check if ticket is being finalized and the user is the attribuited user or admin.
+            if(status.equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())){
+                if(ticket.getAttribuitedToUser() == null){
+                    throw new UserNotAuthorizedException();
+                }
+                if(ticket.getAttribuitedToUser().equals(user) || user.isAdmin()){
+                    ticket.setFinalizationDateTime(Date.from(Instant.now()));
+                    message = "Ticket finalized by: " + user.getUsername().toString();
+                } else {
+                    throw new UserNotAuthorizedException();
+                }
+            }
+
+            if(status.equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())){
+                if(!user.equals(ticket.getUser()) || !user.isAdmin()){
+                    throw new UserNotAuthorizedException();
+                }
+                message = "Ticket canceled by: " + user.getUsername().toString();
+                ticket.setFinalizationDateTime(Date.from(Instant.now()));
+            }
             ticket.setTicketStatus(status);
             ticketRep.save(ticket);
-
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Status updated. " + ticket.toString());
+            ticketLog.setLogDescription(message);
             ticketLogRep.save(ticketLog);
 
             return ticket;
@@ -228,14 +250,16 @@ public class TicketSeviceImpl implements TicketServices{
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
             || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
             || ticket.getUser().getUserId().equals(user.getUserId())
-        ){
+            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
+            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name()))
+        {
             ticket.setTicketPriority(priority);
             ticketRep.save(ticket);
 
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket priority updated. " + ticket.toString());
+            ticketLog.setLogDescription("Ticket priority updated: " + user.getUsername().toString());
             ticketLogRep.save(ticketLog);
 
             return ticket;
@@ -244,6 +268,35 @@ public class TicketSeviceImpl implements TicketServices{
         }
     }
 
+    @Override
+    @Transactional
+    public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token){
+        
+        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
+        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
+        var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ObjectNotFoundException());
+        
+        if(user.isAdmin()
+        || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
+        || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+        || ticket.getUser().getUserId().equals(user.getUserId())
+        ){
+            ticket.setTicketCategory(ticketCategory);
+            ticketRep.save(ticket);
+            
+            var ticketLog = new TicketLog();
+            ticketLog.setTicket(ticket);
+            ticketLog.setUser(user);
+            ticketLog.setLogDescription("Ticket Category updated by: " + user.getUsername().toString());
+            ticketLogRep.save(ticketLog);
+            
+            return ticket;
+        } else {
+            throw new UserNotAuthorizedException();
+        }
+        
+    }
+    
     @Override
     @Transactional
     public Ticket updateAttribuitedTo(String ticketId, String userId, JwtAuthenticationToken token){
@@ -263,42 +316,13 @@ public class TicketSeviceImpl implements TicketServices{
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Attribuition updated. " + ticket.toString());
+            ticketLog.setLogDescription("Ticket Attribuition updated. " + user.getUsername().toString());
             ticketLogRep.save(ticketLog);
 
             return ticket;
         } else {
             throw new UserNotAuthorizedException();
         }
-    }
-
-    @Override
-    @Transactional
-    public Ticket updateTicketCategory(String ticketId, String ticketCategoryId, JwtAuthenticationToken token){
-
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
-        var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ObjectNotFoundException());
-
-        if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
-            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
-            || ticket.getUser().getUserId().equals(user.getUserId())
-        ){
-            ticket.setTicketCategory(ticketCategory);
-            ticketRep.save(ticket);
-
-            var ticketLog = new TicketLog();
-            ticketLog.setTicket(ticket);
-            ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Category updated. " + ticket.toString());
-            ticketLogRep.save(ticketLog);
-                
-            return ticket;
-        } else {
-            throw new UserNotAuthorizedException();
-        }
-
     }
 
     @Override

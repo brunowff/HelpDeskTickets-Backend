@@ -14,7 +14,7 @@
 					"script": {
 						"exec": [
 							"if(pm.response.code == 200){",
-							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
 							"}"
 						],
 						"type": "text/javascript",
@@ -229,7 +229,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"ticketTitle\" : \"Criar email para um novo funcionário\",\n    \"ticketDescription\" : \"Necessário criar e-mail no office 365 para o funcionário José\",\n    \"ticketPriority\" : \"HIGH\",\n    \"ticketCategory\" : {\n            \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n            \"name\": \"Criação de Caixa de E-mail Office 365\",\n            \"active\": true,\n            \"destinationGroup\": {\n                \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n                \"name\": \"TI - Help Desk\",\n                \"description\": \"TI e Help Desk\",\n                \"active\": true\n            }\n    }\n}",
+					"raw": "{\n    \"ticketTitle\" : \"Criar email para um novo funcionário\",\n    \"ticketDescription\" : \"EXCLUIR essce 365 para o funcionário José\",\n    \"ticketPriority\" : \"HIGH\",\n    \"ticketCategory\" : {\n            \"ticketCategoryId\": \"02c6be89-1eaa-4f9c-9219-4c9ce341d14e\",\n            \"name\": \"Criação de Caixa de E-mail Office 365\",\n            \"active\": true,\n            \"destinationGroup\": {\n                \"groupId\": \"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d\",\n                \"name\": \"TI - Help Desk\",\n                \"description\": \"TI e Help Desk\",\n                \"active\": true\n            }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -312,15 +312,261 @@
 			"response": []
 		},
 		{
-			"name": "Delete Ticket",
+			"name": "Ticket Update Status",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"if(pm.response.code == 200){",
-							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
 							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/status/PENDENTE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"7cbd1182-11e1-4e69-b587-8817997e2020",
+						"status",
+						"PENDENTE"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Update Priority",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/priority/LOW",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"7cbd1182-11e1-4e69-b587-8817997e2020",
+						"priority",
+						"LOW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Update Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7583bbc2-4522-4355-8d80-154b8b1bcd90/ticketCategory/7a136cfa-eeb6-4dae-a835-dc3b80663dc4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"7583bbc2-4522-4355-8d80-154b8b1bcd90",
+						"ticketCategory",
+						"7a136cfa-eeb6-4dae-a835-dc3b80663dc4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ticket Update Attribuited To",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						},
+						{
+							"key": "undefined",
+							"type": "any"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e/attribuitedTo/0972d912-4bf4-4d98-9633-b9b5a2d76779",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hdesktickets",
+						"ticket-manager",
+						"tickets",
+						"de712c77-4d91-4e22-91f4-3dc068b0ce6e",
+						"attribuitedTo",
+						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Ticket",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Fixed syntax ",
+							"if(pm.response.code === 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -354,7 +600,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/",
+					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -364,7 +610,7 @@
 						"hdesktickets",
 						"ticket-manager",
 						"tickets",
-						""
+						"de712c77-4d91-4e22-91f4-3dc068b0ce6e"
 					]
 				}
 			},
@@ -378,7 +624,7 @@
 					"script": {
 						"exec": [
 							"if(pm.response.code == 200){",
-							"pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
 							"}"
 						],
 						"type": "text/javascript",
@@ -826,7 +1072,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories?size=2&page=1",
+					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories?size=2&page=0",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -844,7 +1090,7 @@
 						},
 						{
 							"key": "page",
-							"value": "1"
+							"value": "0"
 						}
 					]
 				}

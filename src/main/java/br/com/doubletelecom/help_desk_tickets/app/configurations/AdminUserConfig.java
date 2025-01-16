@@ -25,14 +25,12 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.configurations;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.repositories.RoleRepository;
@@ -61,7 +59,8 @@ public class AdminUserConfig implements CommandLineRunner{
     @Transactional
     public void run(String... args) throws Exception{
 
-        var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElseThrow( () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+        //var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElseThrow( () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+        Set<Role> roles = new HashSet<>(roleRep.findAll());
         var userAdmin = userRep.findByUsername("admin");
 
         // Check if admin is present or create it.
@@ -76,7 +75,7 @@ public class AdminUserConfig implements CommandLineRunner{
                     user.setEmail("admin@doubletelecom.com.br");
                     user.setPassword(passwordEncoder.encode("M3tr0T3l3c0m"));
                     user.setActive(true);
-                    user.setRoles(Set.of(roleAdmin));
+                    user.setRoles(roles);
                     userRep.save(user);
                 }
         );

@@ -52,7 +52,6 @@ import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/ticket-manager")
@@ -97,30 +96,30 @@ public class TicketController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("tickets/{id}/status")
+    @PatchMapping("tickets/{id}/status/{status}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
-    public ResponseEntity<Void> updateStatus(@PathVariable("id") String id, @RequestParam("status") String status, JwtAuthenticationToken token){
+    public ResponseEntity<Void> updateStatus(@PathVariable("id") String id, @PathVariable("status") String status, JwtAuthenticationToken token){
         ticketServices.updateStatus(id, status, token);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("tickets/{id}/priority")
+    @PatchMapping("tickets/{id}/priority/{priority}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
-    public ResponseEntity<Void> updatePriority(@PathVariable("id") String id, @RequestParam("priority") String priority, JwtAuthenticationToken token){
+    public ResponseEntity<Void> updatePriority(@PathVariable("id") String id, @PathVariable("priority") String priority, JwtAuthenticationToken token){
         ticketServices.updatePriority(id, priority, token);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("tickets/{id}/attribuitedTo")
+    @PatchMapping("tickets/{id}/attribuitedTo/{userId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
-    public ResponseEntity<Void> updateAttribuitedTo(@PathVariable("id") String id, @RequestParam("userId") String userId, JwtAuthenticationToken token){
+    public ResponseEntity<Void> updateAttribuitedTo(@PathVariable("id") String id, @PathVariable("userId") String userId, JwtAuthenticationToken token){
         ticketServices.updateAttribuitedTo(id, userId, token);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("tickets/{id}/ticketCategory")
+    @PatchMapping("tickets/{id}/ticketCategory/{ticketCategoryId}")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_TICKET_MANAGER') or hasAuthority('SCOPE_API_TICKET')")
-    public ResponseEntity<Void> updateTicketCategory(@PathVariable("id") String id, @RequestParam("ticketCategoryId") String ticketCategoryId, JwtAuthenticationToken token){
+    public ResponseEntity<Void> updateTicketCategory(@PathVariable("id") String id, @PathVariable("ticketCategoryId") String ticketCategoryId, JwtAuthenticationToken token){
         ticketServices.updateTicketCategory(id, ticketCategoryId, token);
         return ResponseEntity.ok().build();
     }
