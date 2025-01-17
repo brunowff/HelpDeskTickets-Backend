@@ -28,13 +28,13 @@ package br.com.doubletelecom.help_desk_tickets.app.controllers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -49,7 +49,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@RestController("/ticket-log-manager")
+@RestController
+@RequestMapping("/ticket-log-manager")
 @AllArgsConstructor
 public class TicketLogController {
 
@@ -71,23 +72,32 @@ public class TicketLogController {
     }
 
     @GetMapping("ticketlog/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
     public ResponseEntity<TicketLog> findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
         var ticktLog = ticketLogServices.findById(ticketLogId, token);
         return ResponseEntity.ok(ticktLog);
     }
     
     @GetMapping("/ticketlogs")
-    @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
-    public ResponseEntity<Page<PageItemTicketLogDto>> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable, JwtAuthenticationToken token) {
-        
-        try {
-            var ticketLogs = ticketLogServices.findAll(pageable);
-            return ResponseEntity.ok(ticketLogs);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-  
+    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    public ResponseEntity<Page<PageItemTicketLogDto>> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable, JwtAuthenticationToken token){
+        var ticketLogs = ticketLogServices.findAll(pageable);
+        return ResponseEntity.ok(ticketLogs);
     }
 
+    @GetMapping("/ticketlogs/{id}/ticket")
+    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    public ResponseEntity<Page<PageItemTicketLogDto>> findByTicketId(@PathVariable("id") String ticketId, JwtAuthenticationToken token, Pageable pageable){
+        var ticketLogs = ticketLogServices.findTicketsLogByTicketId(ticketId, pageable);
+        return ResponseEntity.ok(ticketLogs);
+    }
+
+    @GetMapping("/ticketlogs/{id}/user")
+    @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
+    public ResponseEntity<Page<PageItemTicketLogDto>> findByUserId(@PathVariable("id") String userId, JwtAuthenticationToken token, Pageable pageable){
+        var ticketLogs = ticketLogServices.findTicketLogsByUserId(userId, pageable);
+        return ResponseEntity.ok(ticketLogs);
+    }
+    
+    
 }

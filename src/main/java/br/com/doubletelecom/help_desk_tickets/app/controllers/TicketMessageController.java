@@ -43,13 +43,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 
-@RestController("/ticket-message-manager")
+@RestController
+@RequestMapping("/ticket-message-manager")
 @AllArgsConstructor
 public class TicketMessageController {
 
@@ -89,7 +91,7 @@ public class TicketMessageController {
         return ResponseEntity.ok(ticketMessage);
     }
 
-    @GetMapping("/ticket-message/ticket/{id}")
+    @GetMapping("/ticket-message/{id}/ticket")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER')")
     public ResponseEntity<Page<PageItemTicketMessageDto>> findByTicketId(@RequestParam String ticketId, Pageable pageable, JwtAuthenticationToken token) {
         try {
@@ -100,7 +102,7 @@ public class TicketMessageController {
         }
     }
 
-    @GetMapping("/ticket-message/user/{id}")
+    @GetMapping("/ticket-message/{id}/user")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_TICKET_MESSAGE') or hasAuthority('SCOPE_API_TICKET_MESSAGE_MANAGER')")
     public ResponseEntity<Page<PageItemTicketMessageDto>> findByUserId(@RequestParam String userId, Pageable pageable, JwtAuthenticationToken token) {
         try {

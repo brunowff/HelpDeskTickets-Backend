@@ -53,8 +53,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
@@ -80,7 +78,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public TicketLog save(@RequestBody @Validated CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
+    public TicketLog save(CreateTicketLogDto ticketLogDto, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(ticketLogDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
@@ -99,7 +97,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public TicketLog findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
+    public TicketLog findById(String ticketLogId, JwtAuthenticationToken token){
         
         var ticketLog = ticketLogRep.findById(UUID.fromString(ticketLogId)).orElseThrow( () -> new ObjectNotFoundException());
         
@@ -138,7 +136,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketLogDto> findTicketsLogByTicket(@RequestParam String ticketId, Pageable pageable){
+    public Page<PageItemTicketLogDto> findTicketsLogByTicketId(String ticketId, Pageable pageable){
         
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         var ticketLogs = ticketLogRep.findByTicket(ticket, pageable).map(PageItemTicketLogDto::new);
@@ -148,7 +146,7 @@ public class TicketLogServiceImpl implements TicketLogServices{
 
     @Override
     @Transactional
-    public Page<PageItemTicketLogDto> findTicketLogsByUser(@RequestParam String userId, Pageable pageable){
+    public Page<PageItemTicketLogDto> findTicketLogsByUserId(String userId, Pageable pageable){
 
         var user = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
         var ticketLogs = ticketLogRep.findByUser(user, pageable).map(PageItemTicketLogDto::new);

@@ -29,6 +29,6 @@ public interface TicketLogServices {
     public TicketLog findById(String ticketLogId, JwtAuthenticationToken token);
     public Void delete(String ticketLogId, JwtAuthenticationToken token);
     public Page<PageItemTicketLogDto> findAll(Pageable pageable);
-    public Page<PageItemTicketLogDto> findTicketsLogByTicket(String ticket, Pageable pageable);
-    public Page<PageItemTicketLogDto> findTicketLogsByUser(String user, Pageable pageable);
+    public Page<PageItemTicketLogDto> findTicketsLogByTicketId(String ticket, Pageable pageable);
+    public Page<PageItemTicketLogDto> findTicketLogsByUserId(String user, Pageable pageable);
 }
