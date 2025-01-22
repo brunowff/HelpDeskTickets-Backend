@@ -36,13 +36,15 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 
 
 
 @RestController
-@RequestMapping("/profiles-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/profiles-manager")
 public class UserController {
 
     private final UserServices userServices;

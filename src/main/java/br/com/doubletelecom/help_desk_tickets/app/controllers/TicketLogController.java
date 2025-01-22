@@ -42,6 +42,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketLogServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +51,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/ticket-log-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/ticket-log-manager")
 public class TicketLogController {
 
     private final TicketLogServices ticketLogServices;

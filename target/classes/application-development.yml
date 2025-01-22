@@ -2,8 +2,8 @@
 spring:
     application:
         name: "Help Desk Tickets - Development"
-    main:
-        allow-bean-definition-overriding: true
+    #main:
+        #allow-bean-definition-overriding: true
 
     # Develop database connections
     jpa:
@@ -26,34 +26,27 @@ spring:
         username: myuser
         password: secret
 
-    # Develop mail server
-    mail:
-        host: smtp.doubletelecom.com.br
-        port: 587
-        username: ti@doubletelecom.com.br
-        password: "123456"
-        properties:
-            mail:
-                smtp:
-                    auth: true
-                    starttls:
-                        enable: true
-
 server:
-    servlet:
-        context-path: '/hdesktickets'
     error:
         include-stacktrace: never
+
 logging:
     level:
         org:
             springframework:
                 security: 'DEBUG'
 
+springdoc:
+    swagger-ui:
+        enabled: true
+        #For sorting endpoints alphabetically
+        operationsSorter: alpha
+        #For sorting tags alphabetically
+        tagsSorter: alpha
+        
 # keys
 jwt:
     public:
         key: 'classpath:static/key/pub.key'
     private:
         key: 'classpath:static/key/app.key'
-

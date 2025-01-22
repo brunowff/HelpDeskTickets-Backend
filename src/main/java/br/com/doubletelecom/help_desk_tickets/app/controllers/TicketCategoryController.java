@@ -38,6 +38,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketCate
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketCategoryDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketCategoryServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,8 +48,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/ticket-category-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/ticket-category-manager")
 public class TicketCategoryController {
 
     private final TicketCategoryServices ticketCategoryServices;

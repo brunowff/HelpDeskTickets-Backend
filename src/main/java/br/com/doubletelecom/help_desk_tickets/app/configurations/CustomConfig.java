@@ -25,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @Configuration
-public class MessageConfig implements WebMvcConfigurer {
+public class CustomConfig implements WebMvcConfigurer {
 
     @Bean
     public MessageSource messageSource() {
@@ -54,6 +54,5 @@ public class MessageConfig implements WebMvcConfigurer {
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
-
-
+    
 }

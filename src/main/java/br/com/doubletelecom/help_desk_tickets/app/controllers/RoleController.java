@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.services.RoleServices;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -51,8 +52,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("/role-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/role-manager")
 public class RoleController {
 
     private final RoleServices roleServices;

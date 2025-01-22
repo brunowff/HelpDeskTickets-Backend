@@ -49,13 +49,14 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.TicketDto;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketServices;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/ticket-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/ticket-manager")
 public class TicketController {
     
     private final TicketServices ticketServices;

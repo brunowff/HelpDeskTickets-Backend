@@ -47,13 +47,13 @@ public class SecurityConfig {
      * A filter to handle JWT Token on headers and grant authentication on routes match.
      */
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
             http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v2/**", "/v3/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -63,12 +63,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder(){
+    public JwtDecoder jwtDecoder(){
             return NimbusJwtDecoder.withPublicKey(publicKey).build();
         }
 
     @Bean
-    JwtEncoder jwtEncoder(){
+    public JwtEncoder jwtEncoder(){
         JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
         var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 
@@ -77,7 +77,7 @@ public class SecurityConfig {
 
     // Bean for password encoding.
     @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
 

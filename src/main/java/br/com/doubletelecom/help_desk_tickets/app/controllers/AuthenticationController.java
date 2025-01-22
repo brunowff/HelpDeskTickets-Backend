@@ -35,7 +35,7 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @AllArgsConstructor
-public class TokenController {
+public class AuthenticationController {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRep;
@@ -53,7 +53,7 @@ public class TokenController {
 
         var now = Instant.now();
         // Time in secounds to keep the token alive
-        var expiresIn = 300L;
+        var expiresIn = 3600L; // 3600 seconds is equal to 1 hour
         // Retrive User Roles
         var scopes = user.get().getRoles().stream().map(Role::getName).collect(Collectors.joining(" "));
 

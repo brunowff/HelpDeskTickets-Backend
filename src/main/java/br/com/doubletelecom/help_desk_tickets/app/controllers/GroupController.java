@@ -62,6 +62,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -76,8 +77,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("/group-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/group-manager")
 @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_GROUP')")
 public class GroupController {
 

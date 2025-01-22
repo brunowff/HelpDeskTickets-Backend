@@ -30,6 +30,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessag
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketMessageDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketMessageServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
@@ -51,8 +52,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/ticket-message-manager")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearer-key")
+@RequestMapping("/ticket-message-manager")
 public class TicketMessageController {
 
     private final TicketMessageServices ticketMessageServices;
