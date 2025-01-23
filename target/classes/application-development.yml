@@ -47,6 +47,6 @@ springdoc:
 # keys
 jwt:
     public:
-        key: 'classpath:static/key/pub.key'
+        key: 'classpath:key/pub.key'
     private:
-        key: 'classpath:static/key/app.key'
+        key: 'classpath:key/app.key'
