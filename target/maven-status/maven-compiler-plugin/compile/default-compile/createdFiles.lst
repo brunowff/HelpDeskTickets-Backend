@@ -16,8 +16,10 @@ br/com/doubletelecom/help_desk_tickets/app/controllers/TicketCategoryController.
 br/com/doubletelecom/help_desk_tickets/app/services/TicketMessageServices.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotActivatedException.class
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/RoleServiceImpl.class
+br/com/doubletelecom/help_desk_tickets/app/controllers/AuthenticationController.class
 br/com/doubletelecom/help_desk_tickets/app/services/implementations/TicketLogServiceImpl.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/contract/MessageException.class
+br/com/doubletelecom/help_desk_tickets/app/configurations/SprigDocConfig.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketCategory.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/CreateTicketDto.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/business/ObjectNotFoundException.class
@@ -49,9 +51,9 @@ br/com/doubletelecom/help_desk_tickets/app/domain/entities/Ticket.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/dtos/ApiErrorDto.class
 br/com/doubletelecom/help_desk_tickets/HelpDeskTicketsApplication.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/Group.class
-br/com/doubletelecom/help_desk_tickets/app/configurations/DateTimeConfig.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/TicketDto.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/TicketCategoryDto.class
+br/com/doubletelecom/help_desk_tickets/app/configurations/CustomConfig.class
 br/com/doubletelecom/help_desk_tickets/app/repositories/RoleRepository.class
 br/com/doubletelecom/help_desk_tickets/app/services/GroupServices.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/Ticket$ValuesOfPriority.class
@@ -69,8 +71,6 @@ br/com/doubletelecom/help_desk_tickets/app/repositories/TicketLogRepository.clas
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/PageItemTicketMessageDto.class
 br/com/doubletelecom/help_desk_tickets/app/domain/dtos/LoginResponse.class
 br/com/doubletelecom/help_desk_tickets/app/domain/entities/TicketLog.class
-br/com/doubletelecom/help_desk_tickets/app/configurations/MessageConfig.class
 br/com/doubletelecom/help_desk_tickets/app/exceptions/business/LoginEmailOrPasswordException.class
 br/com/doubletelecom/help_desk_tickets/app/repositories/TicketMessageRepository.class
-br/com/doubletelecom/help_desk_tickets/app/controllers/TokenController.class
 br/com/doubletelecom/help_desk_tickets/app/configurations/SecurityConfig.class

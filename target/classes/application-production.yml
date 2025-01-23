@@ -1,0 +1,38 @@
+# Production environment setup
+spring:
+    application:
+        name: "Help Desk Tickets - API"
+   
+    # Production database connections
+    jpa:
+        properties:
+            hibernate:
+                formatSql: false
+        show-sql: false
+        databasePlatform: "org.hibernate.dialect.PostgreSQLDialect"
+    sql:
+        init:
+            mode: always
+    datasource:
+        url: "jdbc:postgresql://${DATASOURCE_URL:localhost:5433/hdesktickets_db_dev}"
+        username: ${DATASOURCE_USERNAME:hdesktickets}
+        password: ${DATASOURCE_PASSWORD:secret}
+
+server:
+    error:
+        include-stacktrace: never
+
+springdoc:
+    swagger-ui:
+        enabled: true
+        #For sorting endpoints alphabetically
+        operationsSorter: alpha
+        #For sorting tags alphabetically
+        tagsSorter: alpha
+        
+# keys
+jwt:
+    public:
+        key: ${HDT_API_RSA_PUBLIC_KEY:classpath:dev_keys/public.key}
+    private:
+        key: ${HDT_API_RSA_PRIVATE_KEY:classpath:dev_keys/private.key}

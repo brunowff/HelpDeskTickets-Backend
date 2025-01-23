@@ -22,8 +22,8 @@ spring:
         init:
             mode: always
     datasource:
-        url: "jdbc:postgresql://localhost:5432/mydatabase"
-        username: myuser
+        url: "jdbc:postgresql://localhost:5433/hdesktickets_db_dev"
+        username: hdesktickets
         password: secret
 
 server:
@@ -47,6 +47,6 @@ springdoc:
 # keys
 jwt:
     public:
-        key: 'classpath:key/pub.key'
+        key: ${HDT_API_RSA_PUBLIC_KEY:classpath:dev_keys/public.key}
     private:
-        key: 'classpath:key/app.key'
+        key: ${HDT_API_RSA_PRIVATE_KEY:classpath:dev_keys/private.key}

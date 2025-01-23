@@ -1,7 +1,7 @@
 # Production environment setup
 spring:
     profiles:
-        active: development
+        active: ${HDT_API_PROFILE:development}
     application:
         name: "Help Desk Tickets - Production"
 server:

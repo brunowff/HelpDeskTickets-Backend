@@ -1,0 +1,14 @@
+# Develop environment setup
+spring:
+    application:
+        name: "Help Desk Tickets - Test"
+    #main:
+        #allow-bean-definition-overriding: true
+    datasource:
+        url: "jdbc:postgresql://localhost:5434/hdesktickets_db_test"
+
+jwt:
+    public:
+        key: ${HDT_API_RSA_PUBLIC_KEY:classpath:dev_keys/public.key}
+    private:
+        key: ${HDT_API_RSA_PRIVATE_KEY:classpath:dev_keys/private.key}
