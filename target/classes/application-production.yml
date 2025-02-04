@@ -19,6 +19,7 @@ spring:
         password: ${DATASOURCE_PASSWORD:secret}
 
 server:
+    port: ${HDT_PORT:8080}
     error:
         include-stacktrace: never
 

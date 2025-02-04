@@ -2,28 +2,41 @@
 
 echo "Starting HDeskTickets"
 echo "Please wait..."
-echo "You can access the application at http://localhost:8080/hdesktickets"
-echo "You can access the documentation at http://localhost:8080/hdesktickets/swagger-ui.html"
-echo "You can access the documentation at http://localhost:8080/hdesktickets/v3/api-docs"
-echo "You can access the documentation at http://localhost:8080/hdesktickets/v3/api-docs.yaml"
-echo "You can access the documentation at http://localhost:8080/hdesktickets/v3/api-docs.json"
 
 echo "Setting up environment variables..."
 
-HDT_API_PROFILE='production'
-DATASOURCE_URL='localhost:5433/hdesktickets_db_dev'
-DATASOURCE_USERNAME='hdesktickets'
-DATASOURCE_PASSWORD='secret'
-HDT_API_RSA_PUBLIC_KEY=""
-HDT_API_RSA_PRIVATE_KEY=""
-HDT_JAR='target/help_desk_tickets-0.0.1-SNAPSHOT.jar'
+source hdesktickets/scripts/hdesktickets.conf
 
+export HDT_API_PROFILE
+export HDT_PORT
+export HDT_DATASOURCE_URL
+export HDT_DATASOURCE_USERNAME
+export HDT_DATASOURCE_PASSWORD
+export HDT_API_RSA_PUBLIC_KEY
+export HDT_API_RSA_PRIVATE_KEY
+export HDT_JAR
+
+echo "You can access the application at http://localhost:$HDT_PORT/hdesktickets"
+echo "You can access the documentation at http://localhost:$HDT_PORT/hdesktickets/swagger-ui.html"
+echo "You can access the documentation at http://localhost:$HDT_PORT/hdesktickets/v3/api-docs"
+echo "You can access the documentation at http://localhost:$HDT_PORT/hdesktickets/v3/api-docs.yaml"
+echo "You can access the documentation at http://localhost:$HDT_PORT/hdesktickets/v3/api-docs.json"
+
+
+echo "HDT_API_PROFILE=$HDT_API_PROFILE"
+echo "HDT_DATASOURCE_URL=$HDT_DATASOURCE_URL"
+echo "HDT_DATASOURCE_USERNAME=$HDT_DATASOURCE_USERNAME"
+echo "HDT_DATASOURCE_PASSWORD=$HDT_DATASOURCE_PASSWORD"
+echo "HDT_API_RSA_PUBLIC_KEY=$HDT_API_RSA_PUBLIC_KEY"
+echo "HDT_API_RSA_PRIVATE_KEY=$HDT_API_RSA_PRIVATE_KEY"
+echo "HDT_JAR=$HDT_JAR"
 
 echo "Running HDeskTickets..."
 java -DHDT_API_PROFILE=$HDT_API_PROFILE \
-    -DDATASOURCE_URL=$DATASOURCE_URL \
-    -DDATASOURCE_USERNAME=$DATASOURCE_USERNAME \
-    -DDATASOURCE_PASSWORD=$DATASOURCE_PASSWORD \
+    -DHDT_DATASOURCE_URL=$HDT_DATASOURCE_URL \
+    -DHDT_DATASOURCE_USERNAME=$HDT_DATASOURCE_USERNAME \
+    -DHDT_DATASOURCE_PASSWORD=$HDT_DATASOURCE_PASSWORD \
     -DHDT_API_RSA_PUBLIC_KEY=$HDT_API_RSA_PUBLIC_KEY \
-    -DHDT_API_RSA_PRIVATE_KEY=$DHDT_API_RSA_PRIVATE_KEY \
+    -DHDT_API_RSA_PRIVATE_KEY=$HDT_API_RSA_PRIVATE_KEY \
+    -DHDT_PORT=$HDT_PORT \
     -jar $HDT_JAR;
