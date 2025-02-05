@@ -9,11 +9,10 @@ API Restfull for Help Desk Ticket Administration with Stateless LDAP and JWT aut
 
 #### Next Dev Steps
 
-- Role Changes
-- SWAGGER
 - E-mail validation for users
 - HATEOS
 - Richardson RestFull Model
+- SOLID STRATEGY for RN
 - Deploy
 
 
