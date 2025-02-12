@@ -8,25 +8,26 @@
 package br.com.doubletelecom.help_desk_tickets.app.controllers;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoggedUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoginRequest;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.LoginResponse;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
+import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.RefreshTokenRequestDto;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.LoginEmailOrPasswordException;
-import br.com.doubletelecom.help_desk_tickets.app.repositories.UserRepository;
-
+import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.TokenExpiredException;
+import br.com.doubletelecom.help_desk_tickets.app.security.JWTUtils;
+import br.com.doubletelecom.help_desk_tickets.app.services.RefreshTokenService;
+import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
@@ -35,40 +36,53 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @AllArgsConstructor
+@RequestMapping("/auth")
 public class AuthenticationController {
 
     private final JwtEncoder jwtEncoder;
-    private final UserRepository userRep;
+    private final UserServices userService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final Long accessTokenExpiresIn = 60L;
+    private final Instant accessTokenExpiresAt = Instant.now().plusSeconds(accessTokenExpiresIn);
+    private final Long refreshTokenExpiresIn = 900L;
+    private final Instant refreshTokenExpiresAt = Instant.now().plusSeconds(refreshTokenExpiresIn);
 
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<LoginResponse> login(@Validated @RequestBody LoginRequest loginReq){
 
-        var user = userRep.findByEmail(loginReq.email());
-
-        if(user.isEmpty() || !user.get().isLoginCorrect(loginReq, passwordEncoder) || user.get().getActive() == false){
+        var user = userService.findByEmail(loginReq.email()).orElseThrow( () -> new LoginEmailOrPasswordException());
+        
+        if(!user.isLoginCorrect(loginReq, passwordEncoder) || user.getActive() == false){
             throw new LoginEmailOrPasswordException();
         }
+        var tokenUUID = UUID.randomUUID();
+        var accessToken = JWTUtils.generateAccessToken(user, jwtEncoder, this.accessTokenExpiresAt);
+        refreshTokenService.saveRefreshToken(user, tokenUUID, refreshTokenExpiresAt);
+        var refreshToken = JWTUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, this.refreshTokenExpiresAt);
+        var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
 
-        var now = Instant.now();
-        // Time in secounds to keep the token alive
-        var expiresIn = 3600L; // 3600 seconds is equal to 1 hour
-        // Retrive User Roles
-        var scopes = user.get().getRoles().stream().map(Role::getName).collect(Collectors.joining(" "));
+        return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken, Instant.now().plusSeconds(accessTokenExpiresIn), loggedUser));
+    }
 
-        var claims = JwtClaimsSet.builder()
-                .issuer("AuthBackend")
-                .subject(user.get().getUserId().toString())
-                .issuedAt(now)
-                .claim("scope", scopes)
-                .expiresAt(now.plusSeconds(expiresIn));
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(@Validated @RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        //TODO - Extract Claims From JwtRefreshToken and verify token UUID
+        var refreshTokenRequest = refreshTokenService.findByToken(UUID.fromString(refreshTokenRequestDto.refreshToken())).orElseThrow(() -> new TokenExpiredException());
+        if(refreshTokenService.verifyExpiration(refreshTokenRequest) == false){
+            throw new TokenExpiredException();
+        }
+        var tokenUUID = UUID.randomUUID();
+        var user = refreshTokenRequest.getUser();
+        var accessToken = JWTUtils.generateAccessToken(user, jwtEncoder, this.accessTokenExpiresAt);
+        var refreshToken = JWTUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, this.refreshTokenExpiresAt);
+        var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
 
-        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims.build())).getTokenValue();
+        refreshTokenService.saveRefreshToken(user, tokenUUID, refreshTokenExpiresAt);
+        refreshTokenService.deleteByToken(UUID.fromString(refreshTokenRequestDto.refreshToken()));
 
-        var loggedUser = new LoggedUserDto(user.get().getUserId(), user.get().getUsername(), user.get().getFullname(), user.get().getEmail());
-
-        return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn, loggedUser));
+        return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken, Instant.now().plusSeconds(accessTokenExpiresIn), loggedUser));
     }
 
 }

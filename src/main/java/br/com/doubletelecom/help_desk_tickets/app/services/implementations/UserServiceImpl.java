@@ -54,6 +54,7 @@ package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -94,6 +95,13 @@ public class UserServiceImpl implements UserServices{
     private final RoleRepository roleRep;
     private final GroupRepository groupRep;
     private final BCryptPasswordEncoder passwordEncoder;
+
+
+    @Override
+    @Transactional
+    public Optional<User> findByEmail(String email){  
+        return userRep.findByEmail(email);
+    }
 
     @Override
     @Transactional

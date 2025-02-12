@@ -17,6 +17,7 @@
 package br.com.doubletelecom.help_desk_tickets.app.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 public interface UserServices {
 
     public User save(CreateUserDto userDto);
+    public Optional<User> findByEmail(String email);
     public Page<PageItemUserDto> findAll(Pageable pageable);
     public User updateUser(UserDto userDto, JwtAuthenticationToken token);
     public Void passwordReset(UserDto userDto, JwtAuthenticationToken token);
