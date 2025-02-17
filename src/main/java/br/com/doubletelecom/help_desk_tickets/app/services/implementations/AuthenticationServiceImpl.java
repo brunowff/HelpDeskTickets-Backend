@@ -30,6 +30,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserServices userService;
     private final RefreshTokenService refreshTokenService;
     private final JWTUtils jwtUtils;
+    private final Long accessTokenTTL;
+    private final Long refreshTokenTTL;
     
     @Override
     @Transactional
@@ -41,11 +43,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         var now = Instant.now();
-        var accessTokenTTL = 60L;
-        var refreshTokenTTL = 900L;
         var accessTokenExpiresAt = now.plusSeconds(accessTokenTTL);
         var refreshTokenExpiresAt = now.plusSeconds(refreshTokenTTL);
+
         var tokenUUID = UUID.randomUUID();
+
         var accessToken = jwtUtils.generateAccessToken(user, jwtEncoder, accessTokenExpiresAt);
         var refreshToken = jwtUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, refreshTokenExpiresAt);
         var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
@@ -67,13 +69,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         var now = Instant.now();
-        var accessTokenTTL = 60L;
-        var refreshTokenTTL = 900L;
         var accessTokenExpiresAt = now.plusSeconds(accessTokenTTL);
         var refreshTokenExpiresAt = now.plusSeconds(refreshTokenTTL);
 
         var tokenUUID = UUID.randomUUID();
-        
+
         var accessToken = jwtUtils.generateAccessToken(user, jwtEncoder, accessTokenExpiresAt);
         var refreshTokenResponse = jwtUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, refreshTokenExpiresAt);
         var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
@@ -86,7 +86,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public void logout(String refreshToken) {
+    public Void logout(String refreshToken) {
+        var jwtRefreshToken = jwtDecoder.decode(refreshToken);
+        refreshTokenService.deleteByToken(jwtUtils.getRefreshTokenUUID(jwtRefreshToken));
+        return null;
     }
 
 }

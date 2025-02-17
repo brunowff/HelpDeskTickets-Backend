@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "cfc59e04-bb94-4020-93e5-5f8ea27a1d41",
 		"name": "Hdesk Tickets",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "40613135"
 	},
 	"item": [
@@ -34,18 +34,48 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"login"
-					]
+				"url": "http://localhost:8080/hdesktickets/login"
+			},
+			"response": []
+		},
+		{
+			"name": "swagger-ui",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if(pm.response.code == 200){",
+							"    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@doubletelecom.com.br\",\n    \"password\": \"M3tr0T3l3c0m\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/hdesktickets/swagger-ui.html"
 			},
 			"response": []
 		},
@@ -68,17 +98,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -91,18 +113,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"login"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/login"
 			},
 			"response": []
 		},
@@ -134,18 +145,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/users",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"users"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/users"
 			},
 			"response": []
 		},
@@ -154,17 +154,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
@@ -213,17 +205,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -236,19 +220,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets"
 			},
 			"response": []
 		},
@@ -271,17 +243,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -294,20 +258,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dd4034d4-21d7-49e5-8b6d-f25c4e66d865",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"dd4034d4-21d7-49e5-8b6d-f25c4e66d865"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dd4034d4-21d7-49e5-8b6d-f25c4e66d865"
 			},
 			"response": []
 		},
@@ -330,17 +281,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -353,22 +296,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/status/PENDENTE",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"7cbd1182-11e1-4e69-b587-8817997e2020",
-						"status",
-						"PENDENTE"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/status/PENDENTE"
 			},
 			"response": []
 		},
@@ -391,17 +319,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -414,22 +334,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/priority/LOW",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"7cbd1182-11e1-4e69-b587-8817997e2020",
-						"priority",
-						"LOW"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7cbd1182-11e1-4e69-b587-8817997e2020/priority/LOW"
 			},
 			"response": []
 		},
@@ -452,17 +357,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -475,22 +372,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7583bbc2-4522-4355-8d80-154b8b1bcd90/ticketCategory/7a136cfa-eeb6-4dae-a835-dc3b80663dc4",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"7583bbc2-4522-4355-8d80-154b8b1bcd90",
-						"ticketCategory",
-						"7a136cfa-eeb6-4dae-a835-dc3b80663dc4"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/7583bbc2-4522-4355-8d80-154b8b1bcd90/ticketCategory/7a136cfa-eeb6-4dae-a835-dc3b80663dc4"
 			},
 			"response": []
 		},
@@ -513,17 +395,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -536,22 +410,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e/attribuitedTo/0972d912-4bf4-4d98-9633-b9b5a2d76779",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"de712c77-4d91-4e22-91f4-3dc068b0ce6e",
-						"attribuitedTo",
-						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e/attribuitedTo/0972d912-4bf4-4d98-9633-b9b5a2d76779"
 			},
 			"response": []
 		},
@@ -576,17 +435,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
@@ -599,20 +450,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"de712c77-4d91-4e22-91f4-3dc068b0ce6e"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/de712c77-4d91-4e22-91f4-3dc068b0ce6e"
 			},
 			"response": []
 		},
@@ -635,17 +473,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [
@@ -655,20 +485,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dashboard",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-manager",
-						"tickets",
-						"dashboard"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-manager/tickets/dashboard"
 			},
 			"response": []
 		},
@@ -691,17 +508,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -714,19 +523,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups"
 			},
 			"response": []
 		},
@@ -749,17 +546,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -772,19 +561,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories"
 			},
 			"response": []
 		},
@@ -807,17 +584,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -830,20 +599,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories",
-						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
 			},
 			"response": []
 		},
@@ -866,17 +622,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -889,21 +637,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/activate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories",
-						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
-						"activate"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/activate"
 			},
 			"response": []
 		},
@@ -926,17 +660,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -949,21 +675,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/deactivate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories",
-						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
-						"deactivate"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e/deactivate"
 			},
 			"response": []
 		},
@@ -986,17 +698,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
@@ -1009,20 +713,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories",
-						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
 			},
 			"response": []
 		},
@@ -1048,17 +739,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
@@ -1119,17 +802,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
@@ -1142,20 +817,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"ticket-category-manager",
-						"ticket-categories",
-						"02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/ticket-category-manager/ticket-categories/02c6be89-1eaa-4f9c-9219-4c9ce341d14e"
 			},
 			"response": []
 		},
@@ -1178,17 +840,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -1201,22 +855,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/add-user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
-						"add-user",
-						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/add-user/0972d912-4bf4-4d98-9633-b9b5a2d76779"
 			},
 			"response": []
 		},
@@ -1239,17 +878,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -1262,22 +893,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/role-manager/roles/API_USER_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"role-manager",
-						"roles",
-						"API_USER_MANAGER",
-						"user",
-						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/role-manager/roles/API_USER_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779"
 			},
 			"response": []
 		},
@@ -1300,17 +916,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
@@ -1323,22 +931,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/role-manager/roles/API_ROLE_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"role-manager",
-						"roles",
-						"API_ROLE_MANAGER",
-						"user",
-						"0972d912-4bf4-4d98-9633-b9b5a2d76779"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/role-manager/roles/API_ROLE_MANAGER/user/0972d912-4bf4-4d98-9633-b9b5a2d76779"
 			},
 			"response": []
 		},
@@ -1361,17 +954,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -1384,22 +969,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/d3f2c076-316c-4da4-b737-d845340f57da/remove-user/531897e6-ccfe-4170-88ba-4353200bb113",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"d3f2c076-316c-4da4-b737-d845340f57da",
-						"remove-user",
-						"531897e6-ccfe-4170-88ba-4353200bb113"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/d3f2c076-316c-4da4-b737-d845340f57da/remove-user/531897e6-ccfe-4170-88ba-4353200bb113"
 			},
 			"response": []
 		},
@@ -1422,17 +992,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -1445,20 +1007,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/328f8513-35cc-4d1c-9f12-24889d7edee8",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"328f8513-35cc-4d1c-9f12-24889d7edee8"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/328f8513-35cc-4d1c-9f12-24889d7edee8"
 			},
 			"response": []
 		},
@@ -1481,17 +1030,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -1504,21 +1045,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/deactivate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
-						"deactivate"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/deactivate"
 			},
 			"response": []
 		},
@@ -1541,17 +1068,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "PATCH",
 				"header": [],
@@ -1564,21 +1083,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/activate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d",
-						"activate"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/c7f6dac8-6fce-45f7-a2b6-ed5b1b8a6a3d/activate"
 			},
 			"response": []
 		},
@@ -1604,17 +1109,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
@@ -1675,17 +1172,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{accessToken}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
@@ -1698,21 +1187,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8080/hdesktickets/group-manager/groups/0972d912-4bf4-4d98-9633-b9b5a2d76779/find-by-user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hdesktickets",
-						"group-manager",
-						"groups",
-						"0972d912-4bf4-4d98-9633-b9b5a2d76779",
-						"find-by-user"
-					]
-				}
+				"url": "http://localhost:8080/hdesktickets/group-manager/groups/0972d912-4bf4-4d98-9633-b9b5a2d76779/find-by-user"
 			},
 			"response": []
 		}

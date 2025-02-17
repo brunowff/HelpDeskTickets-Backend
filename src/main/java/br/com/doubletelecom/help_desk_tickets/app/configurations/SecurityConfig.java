@@ -43,6 +43,12 @@ public class SecurityConfig {
         @Value("${jwt.private.key}")
         private RSAPrivateKey privateKey;
 
+        @Value("${jwt.token.ttl.access}")
+        private String accessTokenTTL;
+        
+        @Value("${jwt.token.ttl.refresh}")
+        private String refreshTokenTTL;
+
     /*
      * A filter to handle JWT Token on headers and grant authentication on routes match.
      */
@@ -73,6 +79,16 @@ public class SecurityConfig {
         var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 
         return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    public Long accessTokenTTL(){
+        return Long.parseLong(accessTokenTTL);
+    }
+
+    @Bean
+    public Long refreshTokenTTL(){
+        return Long.parseLong(refreshTokenTTL);
     }
 
     // Bean for password encoding.
