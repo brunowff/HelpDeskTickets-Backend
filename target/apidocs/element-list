@@ -8,5 +8,6 @@ br.com.doubletelecom.help_desk_tickets.app.exceptions.business
 br.com.doubletelecom.help_desk_tickets.app.exceptions.contract
 br.com.doubletelecom.help_desk_tickets.app.exceptions.dtos
 br.com.doubletelecom.help_desk_tickets.app.repositories
+br.com.doubletelecom.help_desk_tickets.app.security
 br.com.doubletelecom.help_desk_tickets.app.services
 br.com.doubletelecom.help_desk_tickets.app.services.implementations

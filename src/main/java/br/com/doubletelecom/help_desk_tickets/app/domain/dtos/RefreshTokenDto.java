@@ -9,7 +9,9 @@
 
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-public record RefreshTokenDto(@NotBlank String token) {
+import jakarta.validation.constraints.NotNull;
+
+public record RefreshTokenDto(@NotNull JwtAuthenticationToken token) {
 }

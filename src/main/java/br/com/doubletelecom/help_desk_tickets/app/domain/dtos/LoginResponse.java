@@ -12,6 +12,6 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
 import java.time.Instant;
 
-public record LoginResponse(String accessToken, String refreshToken, Instant expitesAt, LoggedUserDto loggedUserDto) {
+public record LoginResponse(String accessToken, Instant accessTokenExpiresAt, String refreshToken, Instant refreshTokenExpitesAt, LoggedUserDto loggedUserDto) {
 
 }

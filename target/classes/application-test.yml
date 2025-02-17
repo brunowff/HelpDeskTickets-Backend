@@ -12,3 +12,7 @@ jwt:
         key: ${HDT_API_RSA_PUBLIC_KEY:classpath:dev_keys/public.key}
     private:
         key: ${HDT_API_RSA_PRIVATE_KEY:classpath:dev_keys/private.key}
+    token:
+        expiration:
+            access: ${HDT_API_TOKEN_ACCESS_EXPIRATION:60L}
+            refresh: ${HDT_API_TOKEN_REFRESH_EXPIRATION:900L}

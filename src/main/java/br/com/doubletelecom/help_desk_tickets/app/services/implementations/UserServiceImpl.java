@@ -105,6 +105,12 @@ public class UserServiceImpl implements UserServices{
 
     @Override
     @Transactional
+    public Optional<User> findByUserId(UUID userId){  
+        return userRep.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional
     public Page<PageItemUserDto> findAll(Pageable pageable){  
         return userRep.findAll(pageable).map(PageItemUserDto::new);
     }
