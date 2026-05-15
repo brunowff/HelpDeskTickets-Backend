@@ -48,7 +48,6 @@
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -125,7 +124,7 @@ public class TicketSeviceImpl implements TicketServices{
         // Verify if user is an author by the token or if it's an Admin for delete.
         if(user.isAdmin() || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))){
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.CANCELADO.name());
-            ticket.setFinalizationDateTime(Date.from(Instant.now()));
+            ticket.setFinalizationDateTime(Instant.now());
             ticketRep.save(ticket);
             return null;
         } else {
@@ -210,7 +209,7 @@ public class TicketSeviceImpl implements TicketServices{
                     throw new UserNotAuthorizedException();
                 }
                 if(ticket.getAttribuitedToUser().equals(user) || user.isAdmin()){
-                    ticket.setFinalizationDateTime(Date.from(Instant.now()));
+                    ticket.setFinalizationDateTime(Instant.now());
                     message = "Ticket finalized by: " + user.getUsername().toString();
                 } else {
                     throw new UserNotAuthorizedException();
@@ -222,7 +221,7 @@ public class TicketSeviceImpl implements TicketServices{
                     throw new UserNotAuthorizedException();
                 }
                 message = "Ticket canceled by: " + user.getUsername().toString();
-                ticket.setFinalizationDateTime(Date.from(Instant.now()));
+                ticket.setFinalizationDateTime(Instant.now());
             }
             ticket.setTicketStatus(status);
             ticketRep.save(ticket);

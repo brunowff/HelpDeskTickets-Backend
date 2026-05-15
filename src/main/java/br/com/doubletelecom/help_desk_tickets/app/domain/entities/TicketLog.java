@@ -13,7 +13,6 @@
  *   {@link ManyToOne} - Defines a many-to-one relationship between two entities.
  *   {@link JoinColumn} - Specifies a column for joining an entity association or element collection.
  *   {@link CreationTimestamp} - Automatically sets the date and time when the entity is created.
- *   {@link Temporal} - Specifies that a persistent property or field should be persisted as a temporal value.
  *   {@link Data} - A Lombok annotation to generate getters, setters, toString, equals, and hashCode methods.
  *   {@link AllArgsConstructor} - A Lombok annotation to generate a constructor with one parameter for each field in the class.
  *   {@link NoArgsConstructor} - A Lombok annotation to generate a no-argument constructor.
@@ -40,7 +39,7 @@ package br.com.doubletelecom.help_desk_tickets.app.domain.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -53,8 +52,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -85,8 +82,7 @@ public class TicketLog implements Serializable{
     private Ticket ticket;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date logDateTime;
+    private Instant logDateTime;
 
 
 }

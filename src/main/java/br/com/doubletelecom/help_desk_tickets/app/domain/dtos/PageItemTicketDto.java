@@ -18,7 +18,7 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
@@ -34,8 +34,8 @@ public record PageItemTicketDto(
     String priority, 
     UserDto userAuthor,
     UserDto attribuitedTo,
-    Date creationDateTime,
-    Date finalizationDateTime
+    Instant creationDateTime,
+    Instant finalizationDateTime
     ) {
         public PageItemTicketDto(Ticket ticket) {
             this(
@@ -47,7 +47,7 @@ public record PageItemTicketDto(
                 ticket.getTicketPriority(), 
                 new UserDto(ticket.getUser()), 
                 ticket.getAttribuitedToUser() == null ? null : new UserDto(ticket.getAttribuitedToUser()), 
-                Date.from(ticket.getCreationDateTime()), 
+                ticket.getCreationDateTime(), 
                 ticket.getFinalizationDateTime()
             );
         }

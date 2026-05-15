@@ -13,7 +13,7 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Ticket;
@@ -25,7 +25,7 @@ public record PageItemTicketLogDto(
     Ticket ticketId,
     User user,
     String description,
-    Date creationDateTime
+    Instant creationDateTime
 ) {
     public PageItemTicketLogDto(TicketLog ticketLog) {
         this(ticketLog.getTicketLogId(), ticketLog.getTicket(), ticketLog.getUser(), ticketLog.getLogDescription(), ticketLog.getLogDateTime());
