@@ -1,10 +1,18 @@
-# Production environment setup
+# =============================================================================
+# HelpDesk Tickets — Perfil: production
+#
+# Todas as variáveis sensíveis são injetadas via variáveis de ambiente.
+# Em produção: configure as variáveis HDT_* no servidor ou no pipeline CI/CD.
+# No GitHub Actions: os valores vêm dos GitHub Secrets (ver .github/workflows/ci.yml).
+# =============================================================================
 spring:
     application:
         name: "Help Desk Tickets - API"
-   
-    # Production database connections
+
     jpa:
+        defer-datasource-initialization: true
+        hibernate:
+            ddl-auto: update
         properties:
             hibernate:
                 formatSql: false
@@ -14,9 +22,9 @@ spring:
         init:
             mode: always
     datasource:
-        url: "jdbc:postgresql://${DATASOURCE_URL:localhost:5433/hdesktickets_db_dev}"
-        username: ${DATASOURCE_USERNAME:hdesktickets}
-        password: ${DATASOURCE_PASSWORD:secret}
+        url: "jdbc:postgresql://${HDT_DATASOURCE_URL}"
+        username: "${HDT_DATASOURCE_USERNAME}"
+        password: "${HDT_DATASOURCE_PASSWORD}"
 
 server:
     port: ${HDT_PORT:8080}
@@ -25,23 +33,16 @@ server:
 
 springdoc:
     swagger-ui:
-        enabled: true
-        path: /swagger-ui.html
-        disable-swagger-default-url: true
-        #For sorting endpoints alphabetically
-        operationsSorter: alpha
-        #For sorting tags alphabetically
-        tagsSorter: alpha
+        enabled: false
     api-docs:
-        path: /v3/api-docs
-        
-# keys
+        enabled: false
+
 jwt:
     public:
-        key: ${HDT_API_RSA_PUBLIC_KEY:classpath:dev_keys/public.key}
+        key: "${HDT_API_RSA_PUBLIC_KEY}"
     private:
-        key: ${HDT_API_RSA_PRIVATE_KEY:classpath:dev_keys/private.key}
+        key: "${HDT_API_RSA_PRIVATE_KEY}"
     token:
         ttl:
-            access: ${HDT_API_TOKEN_ACCESS_TTL:60}
-            refresh: ${HDT_API_TOKEN_REFRESH_TTL:900}
+            access: ${HDT_API_TOKEN_ACCESS_TTL:300}
+            refresh: ${HDT_API_TOKEN_REFRESH_TTL:3600}

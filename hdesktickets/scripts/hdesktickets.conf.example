@@ -1,0 +1,16 @@
+# =============================================================================
+# HelpDesk Tickets — Configuração base (production)
+# Copie este arquivo para hdesktickets.conf e preencha os valores reais.
+# O arquivo hdesktickets.conf está no .gitignore e NUNCA deve ser commitado.
+# =============================================================================
+
+HDT_API_PROFILE='production'
+HDT_PORT='7000'
+HDT_DATASOURCE_URL='<host>:<porta>/<nome_do_banco>'
+HDT_DATASOURCE_USERNAME='<usuario_do_banco>'
+HDT_DATASOURCE_PASSWORD='<senha_do_banco>'
+HDT_API_RSA_PUBLIC_KEY='file:/opt/hdesktickets/key/public.key'
+HDT_API_RSA_PRIVATE_KEY='file:/opt/hdesktickets/key/private.key'
+HDT_JAR='target/help_desk_tickets-0.0.1-SNAPSHOT.jar'
+HDT_API_TOKEN_ACCESS_TTL='300'
+HDT_API_TOKEN_REFRESH_TTL='3600'

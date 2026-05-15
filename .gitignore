@@ -1,43 +1,121 @@
-*#
+# =============================================================================
+# HelpDeskTickets — .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Build & Maven
+# -----------------------------------------------------------------------------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.jar
+*.war
+*.ear
+*.class
+dependency-reduced-pom.xml
+.flattened-pom.xml
+build.log
+
+# -----------------------------------------------------------------------------
+# Chaves RSA — NUNCA commitar chaves privadas
+# -----------------------------------------------------------------------------
+src/main/resources/dev_keys/private.key
+src/main/resources/dev_keys/public.key
+src/main/resources/**/private.key
+src/main/resources/**/public.key
+*.pem
+*.p12
+*.jks
+*.keystore
+
+# -----------------------------------------------------------------------------
+# Arquivos de configuração com credenciais
+# -----------------------------------------------------------------------------
+hdesktickets/scripts/hdesktickets.conf
+hdesktickets/scripts/hdesktickets-production.conf
+secrets.yml
+*.env
+.env
+.env.*
+application-secrets.yml
+
+# -----------------------------------------------------------------------------
+# IDEs — IntelliJ IDEA
+# -----------------------------------------------------------------------------
+.idea/
 *.iml
 *.ipr
 *.iws
-*.jar
-*.sw?
-*~
-.#*
-.*.md.html
-.DS_Store
-.attach_pid*
+*.idea
+
+# -----------------------------------------------------------------------------
+# IDEs — Eclipse / STS
+# -----------------------------------------------------------------------------
 .classpath
-.factorypath
-.gradle
-.metadata
 .project
-.recommenders
-.settings
+.settings/
+.factorypath
 .springBeans
-.vscode
-/code
+.sts4-cache
+.metadata/
+.recommenders/
+
+# -----------------------------------------------------------------------------
+# IDEs — VS Code
+# -----------------------------------------------------------------------------
+.vscode/
+*.code-workspace
+
+# -----------------------------------------------------------------------------
+# Sistema operacional
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*~
+*.sw?
+.#*
+\#*\#
+
+# -----------------------------------------------------------------------------
+# Logs
+# -----------------------------------------------------------------------------
+*.log
+logs/
+build.log
+dump.rdb
+
+# -----------------------------------------------------------------------------
+# Gradle (caso seja adicionado futuramente)
+# -----------------------------------------------------------------------------
+.gradle/
+.gradletasknamecache
+
+# -----------------------------------------------------------------------------
+# Node / Frontend (caso seja adicionado futuramente)
+# -----------------------------------------------------------------------------
+node_modules/
+
+# -----------------------------------------------------------------------------
+# Outros artefatos gerados
+# -----------------------------------------------------------------------------
+out/
+bin/
+!**/src/**/bin/
+!**/src/**/build/
 MANIFEST.MF
 _site/
-activemq-data
-bin
-build
-!/**/src/**/bin
-!/**/src/**/build
-build.log
-dependency-reduced-pom.xml
-dump.rdb
+activemq-data/
+overridedb.*
 interpolated*.xml
 lib/
 manifest.yml
-out
-overridedb.*
-target
-.flattened-pom.xml
-secrets.yml
-.gradletasknamecache
-.sts4-cache
+.attach_pid*
 .git-hooks/
-node_modules
+*.md.html

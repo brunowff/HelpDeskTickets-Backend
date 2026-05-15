@@ -1,0 +1,97 @@
+# =============================================================================
+# HelpDeskTickets — CI Pipeline
+#
+# Executa em: push para main/dev e pull requests para main
+#
+# GitHub Secrets necessários (Settings → Secrets and variables → Actions):
+#
+#   Banco de dados:
+#     DB_URL              ex: localhost:5432/hdesktickets_db_prod
+#     DB_USERNAME         ex: hdesktickets
+#     DB_PASSWORD         senha do PostgreSQL
+#
+#   Chaves RSA (conteúdo do arquivo em Base64):
+#     RSA_PUBLIC_KEY_B64  base64 do arquivo public.key
+#     RSA_PRIVATE_KEY_B64 base64 do arquivo private.key
+#
+#   Tokens JWT (TTL em segundos):
+#     TOKEN_ACCESS_TTL    ex: 300
+#     TOKEN_REFRESH_TTL   ex: 3600
+#
+# Como gerar os valores Base64 das chaves:
+#   base64 -w 0 src/main/resources/dev_keys/public.key
+#   base64 -w 0 src/main/resources/dev_keys/private.key
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: hdesktickets_db_test
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      # Decodifica as chaves RSA dos secrets e grava em arquivos temporários.
+      # Os arquivos são criados dentro de src/main/resources/dev_keys/ que já
+      # está no .gitignore — nunca serão commitados.
+      - name: Restaurar chaves RSA a partir dos secrets
+        run: |
+          mkdir -p src/main/resources/dev_keys
+          echo "${{ secrets.RSA_PUBLIC_KEY_B64 }}"  | base64 --decode > src/main/resources/dev_keys/public.key
+          echo "${{ secrets.RSA_PRIVATE_KEY_B64 }}" | base64 --decode > src/main/resources/dev_keys/private.key
+
+      - name: Build e testes
+        env:
+          HDT_API_PROFILE: test
+          HDT_PORT: 8081
+          HDT_DATASOURCE_URL: localhost:5434/hdesktickets_db_test
+          HDT_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
+          HDT_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          HDT_API_RSA_PUBLIC_KEY: classpath:dev_keys/public.key
+          HDT_API_RSA_PRIVATE_KEY: classpath:dev_keys/private.key
+          HDT_API_TOKEN_ACCESS_TTL: ${{ secrets.TOKEN_ACCESS_TTL }}
+          HDT_API_TOKEN_REFRESH_TTL: ${{ secrets.TOKEN_REFRESH_TTL }}
+        run: ./mvnw clean verify -Dspring.profiles.active=test
+
+      - name: Upload artefato JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: help-desk-tickets-jar
+          path: target/help_desk_tickets-*.jar
+          retention-days: 7
+
+      # Garante que as chaves não fiquem no runner após o job
+      - name: Limpar chaves RSA temporárias
+        if: always()
+        run: rm -f src/main/resources/dev_keys/public.key src/main/resources/dev_keys/private.key
