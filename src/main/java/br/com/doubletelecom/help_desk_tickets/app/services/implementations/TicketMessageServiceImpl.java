@@ -44,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketMessageDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketMessageDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketMessage;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotProcessableException;
@@ -128,13 +127,9 @@ public class TicketMessageServiceImpl implements TicketMessageServices{
     @Override
     @Transactional
     public Page<PageItemTicketMessageDto> findAll(Pageable pageable, JwtAuthenticationToken token){
-        
-        var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        if(!user.hasRole(Role.Values.API_TICKET_MESSAGE.toString())){
-            throw new UserNotAuthorizedException();
-        }
+        // A autorização já foi verificada pelo @PreAuthorize no controller.
+        // Não é necessário revalidar roles aqui — evita lógica duplicada e inconsistente.
         return ticketMessageRep.findAll(pageable).map(PageItemTicketMessageDto::new);
-
     }
 
     @Override

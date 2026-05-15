@@ -58,8 +58,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.GroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
-import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
 import br.com.doubletelecom.help_desk_tickets.app.services.GroupServices;
 import br.com.doubletelecom.help_desk_tickets.app.services.UserServices;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -109,9 +107,9 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{id}")
-    public ResponseEntity<Group> findById(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
+    public ResponseEntity<PageItemGroupDto> findById(@PathVariable("id") String groupId, JwtAuthenticationToken token) {
         var group = groupServices.findById(groupId, token);
-        return ResponseEntity.ok(group);
+        return ResponseEntity.ok(new PageItemGroupDto(group));
     }
     
     @PatchMapping("/groups/{id}/activate")
@@ -145,12 +143,9 @@ public class GroupController {
     @GetMapping("/groups/{id}/find-by-user")
     @PreAuthorize("hasAuthority('SCOPE_API_ADMIN') or hasAuthority('SCOPE_API_GROUP_MANAGER') or hasAuthority('SCOPE_API_GROUP')")
     public ResponseEntity<List<PageItemGroupDto>> findGroupsByUser(@PathVariable("id") String userId, JwtAuthenticationToken token) {
-        try {
-            var groups = userServices.findGroupsByUserId(userId, token);
-            return ResponseEntity.ok(groups);
-        } catch (Exception e) {
-            throw new ObjectNotFoundException();
-        }
+        // BUG FIX: exceções propagadas ao ExceptionHandlerAdvice — não engolir e relançar como ObjectNotFoundException
+        var groups = userServices.findGroupsByUserId(userId, token);
+        return ResponseEntity.ok(groups);
     }
 
 

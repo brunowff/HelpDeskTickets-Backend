@@ -85,6 +85,7 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Ticket save(CreateTicketDto ticketDto, JwtAuthenticationToken token){
 
+        // O subject do JWT é o UUID do usuário autenticado
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         
         try {
@@ -94,10 +95,13 @@ public class TicketSeviceImpl implements TicketServices{
             ticket.setTicketTitle(ticketDto.ticketTitle());
             ticket.setTicketDescription(ticketDto.ticketDescription());
             ticket.setTicketCategory(ticketCategory);
+            // Valida que a prioridade informada é um valor do enum ValuesOfPriority
             ticket.setTicketPriority(Ticket.ValuesOfPriority.valueOf(ticketDto.ticketPriority()).name());
+            // Todo ticket novo começa com status ABERTO
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.ABERTO.name());
             ticketRep.save(ticket);
 
+            // Registra automaticamente o evento de criação no histórico do ticket
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
@@ -116,12 +120,13 @@ public class TicketSeviceImpl implements TicketServices{
     @Transactional
     public Void deleteTicket(String ticketId, JwtAuthenticationToken token){
 
-        // It's not recomended to delete a ticket, but just inactivate it.
+        // Nota: não é recomendado deletar fisicamente um ticket.
+        // O "delete" aqui é um soft delete: muda o status para CANCELADO.
 
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         
-        // Verify if user is an author by the token or if it's an Admin for delete.
+        // Apenas o autor do ticket ou um admin pode cancelá-lo
         if(user.isAdmin() || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))){
             ticket.setTicketStatus(Ticket.ValuesOfTicketStatus.CANCELADO.name());
             ticket.setFinalizationDateTime(Instant.now());
@@ -156,14 +161,15 @@ public class TicketSeviceImpl implements TicketServices{
         var ticket = ticketRep.findById(ticketDto.ticketId()).orElseThrow( () -> new ObjectNotFoundException());
         var ticketCategory = ticketCategoryRep.findById(ticketDto.ticketCategory().getTicketCategoryId()).orElseThrow( () -> new ObjectNotFoundException());
 
-        // Only Admin, user attribuited to ticket or the author of the ticket can update it.
+        // Verifica se o usuário atribuído existe antes de comparar (pode ser null)
+        boolean isAttribuited = ticket.getAttribuitedToUser() != null
+                && ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()));
+
         if(user.isAdmin()
             || ticket.getUser().getUserId().equals(UUID.fromString(token.getName()))
-            || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
+            || isAttribuited
         ){
-
             try {
-
                 ticket.setUser(user);
                 ticket.setTicketTitle(ticketDto.ticketTitle());
                 ticket.setTicketDescription(ticketDto.ticketDescription());
@@ -175,7 +181,7 @@ public class TicketSeviceImpl implements TicketServices{
                 var ticketLog = new TicketLog();
                 ticketLog.setTicket(ticket);
                 ticketLog.setUser(user);
-                ticketLog.setLogDescription("Ticket updated by: " + user.getUsername().toString());
+                ticketLog.setLogDescription("Ticket updated by: " + user.getUsername());
                 ticketLogRep.save(ticketLog);
 
                 return ticket;
@@ -196,46 +202,63 @@ public class TicketSeviceImpl implements TicketServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
 
-        if(user.isAdmin()
-            || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
-            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
-            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
-            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())
-        ){
-            var message = "Ticket status updated. " + user.getUsername();
-            // Check if ticket is being finalized and the user is the attribuited user or admin.
-            if(status.equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())){
-                if(ticket.getAttribuitedToUser() == null){
-                    throw new UserNotAuthorizedException();
-                }
-                if(ticket.getAttribuitedToUser().equals(user) || user.isAdmin()){
-                    ticket.setFinalizationDateTime(Instant.now());
-                    message = "Ticket finalized by: " + user.getUsername().toString();
-                } else {
-                    throw new UserNotAuthorizedException();
-                }
-            }
+        // Valida o status recebido contra o enum antes de qualquer operação
+        Ticket.ValuesOfTicketStatus newStatus;
+        try {
+            newStatus = Ticket.ValuesOfTicketStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new ObjectNotProcessableException();
+        }
 
-            if(status.equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())){
-                if(!user.equals(ticket.getUser()) || !user.isAdmin()){
-                    throw new UserNotAuthorizedException();
-                }
-                message = "Ticket canceled by: " + user.getUsername().toString();
-                ticket.setFinalizationDateTime(Instant.now());
-            }
-            ticket.setTicketStatus(status);
-            ticketRep.save(ticket);
-            var ticketLog = new TicketLog();
-            ticketLog.setTicket(ticket);
-            ticketLog.setUser(user);
-            ticketLog.setLogDescription(message);
-            ticketLogRep.save(ticketLog);
-
-            return ticket;
-        } else {
+        // Bloqueia alterações em tickets já finalizados ou cancelados
+        if(ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
+            || ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())){
             throw new UserNotAuthorizedException();
         }
 
+        boolean isAttribuited = ticket.getAttribuitedToUser() != null
+                && ticket.getAttribuitedToUser().getUserId().equals(user.getUserId());
+
+        if(!user.isAdmin()
+            && !user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
+            && !isAttribuited){
+            throw new UserNotAuthorizedException();
+        }
+
+        var message = "Ticket status updated to " + status + " by " + user.getUsername();
+
+        // Finalizar exige que o ticket tenha um responsável e que seja ele (ou admin) a finalizar
+        if(newStatus == Ticket.ValuesOfTicketStatus.FINALIZADO){
+            if(ticket.getAttribuitedToUser() == null){
+                throw new ObjectNotProcessableException();
+            }
+            if(!ticket.getAttribuitedToUser().equals(user) && !user.isAdmin()){
+                throw new UserNotAuthorizedException();
+            }
+            ticket.setFinalizationDateTime(Instant.now());
+            message = "Ticket finalized by: " + user.getUsername();
+        }
+
+        // Cancelar só pode ser feito pelo autor ou admin
+        if(newStatus == Ticket.ValuesOfTicketStatus.CANCELADO){
+            if(!user.getUserId().equals(ticket.getUser().getUserId()) && !user.isAdmin()){
+                throw new UserNotAuthorizedException();
+            }
+            message = "Ticket canceled by: " + user.getUsername();
+            ticket.setFinalizationDateTime(Instant.now());
+        }
+
+        ticket.setTicketStatus(status);
+        ticketRep.save(ticket);
+
+        // Registra a mudança de status no histórico
+        var ticketLog = new TicketLog();
+        ticketLog.setTicket(ticket);
+        ticketLog.setUser(user);
+        ticketLog.setLogDescription(message);
+        ticketLogRep.save(ticketLog);
+
+        return ticket;
     }
 
     @Override
@@ -245,12 +268,26 @@ public class TicketSeviceImpl implements TicketServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
 
+        // Valida o valor de prioridade contra o enum
+        try {
+            Ticket.ValuesOfPriority.valueOf(priority);
+        } catch (IllegalArgumentException e) {
+            throw new ObjectNotProcessableException();
+        }
+
+        // Bloqueia alterações em tickets já finalizados ou cancelados
+        if(ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
+            || ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name())){
+            throw new UserNotAuthorizedException();
+        }
+
+        boolean isAttribuited = ticket.getAttribuitedToUser() != null
+                && ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()));
+
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
-            || ticket.getAttribuitedToUser().getUserId().equals(UUID.fromString(token.getName()))
-            || ticket.getUser().getUserId().equals(user.getUserId())
-            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.CANCELADO.name())
-            || !ticket.getTicketStatus().equals(Ticket.ValuesOfTicketStatus.FINALIZADO.name()))
+            || isAttribuited
+            || ticket.getUser().getUserId().equals(user.getUserId()))
         {
             ticket.setTicketPriority(priority);
             ticketRep.save(ticket);
@@ -258,7 +295,7 @@ public class TicketSeviceImpl implements TicketServices{
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket priority updated: " + user.getUsername().toString());
+            ticketLog.setLogDescription("Ticket priority updated to " + priority + " by: " + user.getUsername());
             ticketLogRep.save(ticketLog);
 
             return ticket;
@@ -274,10 +311,13 @@ public class TicketSeviceImpl implements TicketServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         var ticketCategory = ticketCategoryRep.findById(UUID.fromString(ticketCategoryId)).orElseThrow( () -> new ObjectNotFoundException());
-        
+
+        boolean isAttribuited = ticket.getAttribuitedToUser() != null
+                && ticket.getAttribuitedToUser().getUserId().equals(user.getUserId());
+
         if(user.isAdmin()
         || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
-        || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+        || isAttribuited
         || ticket.getUser().getUserId().equals(user.getUserId())
         ){
             ticket.setTicketCategory(ticketCategory);
@@ -286,7 +326,7 @@ public class TicketSeviceImpl implements TicketServices{
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Category updated by: " + user.getUsername().toString());
+            ticketLog.setLogDescription("Ticket Category updated by: " + user.getUsername());
             ticketLogRep.save(ticketLog);
             
             return ticket;
@@ -304,9 +344,12 @@ public class TicketSeviceImpl implements TicketServices{
         var ticket = ticketRep.findById(UUID.fromString(ticketId)).orElseThrow( () -> new ObjectNotFoundException());
         var user2attribuite = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
 
+        boolean isAttribuited = ticket.getAttribuitedToUser() != null
+                && ticket.getAttribuitedToUser().getUserId().equals(user.getUserId());
+
         if(user.isAdmin()
             || user.hasGroup(ticket.getTicketCategory().getDestinationGroup().getGroupId())
-            || ticket.getAttribuitedToUser().getUserId().equals(user.getUserId())
+            || isAttribuited
             || ticket.getUser().getUserId().equals(user.getUserId())
         ){
             ticket.setAttribuitedToUser(user2attribuite);
@@ -315,7 +358,7 @@ public class TicketSeviceImpl implements TicketServices{
             var ticketLog = new TicketLog();
             ticketLog.setTicket(ticket);
             ticketLog.setUser(user);
-            ticketLog.setLogDescription("Ticket Attribuition updated. " + user.getUsername().toString());
+            ticketLog.setLogDescription("Ticket attributed to " + user2attribuite.getUsername() + " by " + user.getUsername());
             ticketLogRep.save(ticketLog);
 
             return ticket;
@@ -355,45 +398,36 @@ public class TicketSeviceImpl implements TicketServices{
     @Override
     @Transactional
     public Page<PageItemTicketDto> findTicketsByTicketCategory(String ticketCategoryId, Pageable pageable){
-        var tickets = ticketRep.findTicketsByTicketCategory(UUID.fromString(ticketCategoryId), pageable).map(PageItemTicketDto::new);
+        var tickets = ticketRep.findByTicketCategory_TicketCategoryId(UUID.fromString(ticketCategoryId), pageable).map(PageItemTicketDto::new);
         return tickets;
-
     }
 
     @Override
     @Transactional
     public Page<PageItemTicketDto> findTicketsByStatus(String status, Pageable pageable){
-
         var tickets = ticketRep.findTicketsByTicketStatus(status, pageable).map(PageItemTicketDto::new);
         return tickets;
-
     }
 
     @Override
     @Transactional
     public Page<PageItemTicketDto> findTicketsByPriority(String priority, Pageable pageable){
-
         var tickets = ticketRep.findTicketsByTicketPriority(priority, pageable).map(PageItemTicketDto::new);
         return tickets;
-
     }
 
     @Override
     @Transactional
     public Page<PageItemTicketDto> findTicketsByTitle(String title, Pageable pageable){
-
-        var tickets = ticketRep.findTicketsByTicketTitleContaining(title, pageable).map(PageItemTicketDto::new);
+        var tickets = ticketRep.findTicketsByTicketTitleContainingIgnoreCase(title, pageable).map(PageItemTicketDto::new);
         return tickets;
-
     }
 
     @Override
     @Transactional
     public Page<PageItemTicketDto> findTicketsByDescription(String description, Pageable pageable){
-
-        var tickets = ticketRep.findTicketsByTicketDescriptionContaining(description, pageable).map(PageItemTicketDto::new);
+        var tickets = ticketRep.findTicketsByTicketDescriptionContainingIgnoreCase(description, pageable).map(PageItemTicketDto::new);
         return tickets;
-
     }
 
 }

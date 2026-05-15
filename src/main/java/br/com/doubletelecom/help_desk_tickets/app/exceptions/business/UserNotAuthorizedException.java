@@ -1,17 +1,10 @@
 /**
- * Exception thrown when a user is not authorized to perform a certain action.
- * This exception results in a response with HTTP status 401 (Unauthorized).
- * 
- * <p>The exception key for this error is "user.not.authorized".</p>
- * 
- * <p>This class extends {@link BaseRuntimeException} and overrides the 
- * {@link BaseRuntimeException#getExceptionKey()} method to return the specific 
- * exception key for this error.</p>
- * 
+ * Exception thrown when an authenticated user attempts an action they don't have permission for.
+ *
+ * <p>Uses HTTP 403 Forbidden — the correct status for authorization failures.
+ * HTTP 401 Unauthorized is reserved for missing/invalid authentication credentials.</p>
+ *
  * @see BaseRuntimeException
- * 
- * @author 
- * @version
  */
 package br.com.doubletelecom.help_desk_tickets.app.exceptions.business;
 
@@ -20,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.BaseRuntimeException;
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
+@ResponseStatus(HttpStatus.FORBIDDEN)
 public class UserNotAuthorizedException extends BaseRuntimeException{
     private static final String KEY = "user.not.authorized";
 

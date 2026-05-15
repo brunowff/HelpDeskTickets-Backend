@@ -40,7 +40,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateTicketLogDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemTicketLogDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketLog;
 import br.com.doubletelecom.help_desk_tickets.app.services.TicketLogServices;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
@@ -75,9 +74,9 @@ public class TicketLogController {
 
     @GetMapping("ticketlog/{id}")
     @PreAuthorize("hasAuthority('SCOPE_API_BASIC') or hasAuthority('SCOPE_API_LOG')")
-    public ResponseEntity<TicketLog> findById(@RequestParam String ticketLogId, JwtAuthenticationToken token){
-        var ticktLog = ticketLogServices.findById(ticketLogId, token);
-        return ResponseEntity.ok(ticktLog);
+    public ResponseEntity<PageItemTicketLogDto> findById(@PathVariable("id") String ticketLogId, JwtAuthenticationToken token){
+        var ticketLog = ticketLogServices.findById(ticketLogId, token);
+        return ResponseEntity.ok(new PageItemTicketLogDto(ticketLog));
     }
     
     @GetMapping("/ticketlogs")

@@ -36,8 +36,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public LoginResponse login(LoginRequest loginReq) {
+        // Busca o usuário pelo e-mail; lança exceção genérica para não revelar se o e-mail existe
         var user = userService.findByEmail(loginReq.email()).orElseThrow( () -> new LoginEmailOrPasswordException());
         
+        // Valida senha e verifica se a conta está ativa
         if(!user.isLoginCorrect(loginReq, passwordEncoder) || user.getActive() == false){
             throw new LoginEmailOrPasswordException();
         }
@@ -46,11 +48,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessTokenExpiresAt = now.plusSeconds(accessTokenTTL);
         var refreshTokenExpiresAt = now.plusSeconds(refreshTokenTTL);
 
+        // UUID aleatório que será embutido no refresh token JWT e persistido no banco
         var tokenUUID = UUID.randomUUID();
 
         var accessToken = jwtUtils.generateAccessToken(user, jwtEncoder, accessTokenExpiresAt);
         var refreshToken = jwtUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, refreshTokenExpiresAt);
         var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
+
+        // Garante que cada usuário tenha no máximo um refresh token ativo (rotação de token)
         refreshTokenService.deleteByUser(user);
         refreshTokenService.saveRefreshToken(user, tokenUUID, refreshTokenExpiresAt);
 
@@ -61,9 +66,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public LoginResponse refresh(String refreshToken) {
         
+        // Decodifica o JWT de refresh para extrair o subject (userId) e o scope (tokenUUID)
         var jwtRefreshToken = jwtDecoder.decode(refreshToken);
         var user = userService.findByUserId(UUID.fromString(jwtRefreshToken.getSubject())).orElseThrow( () -> new LoginEmailOrPasswordException());
         
+        // Valida o token contra o banco (verifica expiração e se não foi revogado)
         if(!refreshTokenService.isTokenValid(jwtRefreshToken)){
             throw new TokenExpiredException();
         }
@@ -77,6 +84,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var accessToken = jwtUtils.generateAccessToken(user, jwtEncoder, accessTokenExpiresAt);
         var refreshTokenResponse = jwtUtils.generateRefreshToken(user, tokenUUID, jwtEncoder, refreshTokenExpiresAt);
         var loggedUser = new LoggedUserDto(user.getUserId(), user.getUsername(), user.getFullname(), user.getEmail());
+
+        // Rotaciona o refresh token: invalida o anterior e persiste o novo
         refreshTokenService.deleteByUser(user);
         refreshTokenService.saveRefreshToken(user, tokenUUID, refreshTokenExpiresAt);
         
@@ -87,6 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public Void logout(String refreshToken) {
+        // Extrai o UUID do claim scope e remove o registro do banco, invalidando o token
         var jwtRefreshToken = jwtDecoder.decode(refreshToken);
         refreshTokenService.deleteByToken(jwtUtils.getRefreshTokenUUID(jwtRefreshToken));
         return null;

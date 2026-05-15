@@ -59,11 +59,12 @@ public class AdminUserConfig implements CommandLineRunner{
     @Transactional
     public void run(String... args) throws Exception{
 
+        // Carrega todas as roles existentes para atribuir ao admin
         //var roleAdmin = roleRep.findByName(Role.Values.API_ADMIN.name()).orElseThrow( () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
         Set<Role> roles = new HashSet<>(roleRep.findAll());
         var userAdmin = userRep.findByUsername("admin");
 
-        // Check if admin is present or create it.
+        // Cria o usuário admin apenas se ainda não existir (idempotente)
         userAdmin.ifPresentOrElse(
                 user -> {
                     System.out.println(user.getUsername() + ": Admin user alredy exists!");
@@ -73,9 +74,10 @@ public class AdminUserConfig implements CommandLineRunner{
                     user.setFullname("Administrador do Sistema");
                     user.setUsername("admin");
                     user.setEmail("admin@doubletelecom.com.br");
+                    // Senha codificada com BCrypt — alterar em produção via endpoint de reset
                     user.setPassword(passwordEncoder.encode("M3tr0T3l3c0m"));
                     user.setActive(true);
-                    user.setRoles(roles);
+                    user.setRoles(roles); // Admin recebe todas as roles disponíveis
                     userRep.save(user);
                 }
         );

@@ -29,7 +29,16 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 
 /*
- * Security configuration for JWT Token and Password Encoding with public and private keys
+ * Configuração de segurança JWT com RS256.
+ *
+ * Decisões de design:
+ * - OAuth2 Resource Server: o Spring Security valida automaticamente o JWT em cada requisição,
+ *   extrai os claims e popula o SecurityContext — sem necessidade de filtro customizado.
+ * - RSA (assimétrico): a chave pública pode ser distribuída para outros serviços validarem
+ *   tokens sem expor a chave privada.
+ * - STATELESS: nenhuma sessão HTTP é criada; toda autenticação vem do JWT no header.
+ * - CSRF desabilitado: desnecessário em APIs stateless com JWT (sem cookies de sessão).
+ * - CORS aberto (*): adequado para desenvolvimento; restringir origens em produção.
  */
 
 @Configuration
@@ -50,7 +59,15 @@ public class SecurityConfig {
         private String refreshTokenTTL;
 
     /*
-     * A filter to handle JWT Token on headers and grant authentication on routes match.
+     * Filtro principal de segurança.
+     *
+     * Rotas públicas:
+     * - Swagger UI e OpenAPI docs (para facilitar integração e testes)
+     * - POST /auth/login e /auth/refresh (fluxo de autenticação)
+     * - /error (tratamento de erros do Spring)
+     *
+     * Todas as demais rotas exigem JWT válido no header Authorization.
+     * A autorização granular por role é feita via @PreAuthorize nos controllers.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -74,11 +91,16 @@ public class SecurityConfig {
             return http.build();
     }
 
+    /** Decodifica e valida JWTs recebidos nas requisições usando a chave pública RSA. */
     @Bean
     public JwtDecoder jwtDecoder(){
             return NimbusJwtDecoder.withPublicKey(publicKey).build();
         }
 
+    /**
+     * Codifica (assina) JWTs gerados pela aplicação usando o par de chaves RSA.
+     * O JWKSet expõe a chave pública para que outros serviços possam validar os tokens.
+     */
     @Bean
     public JwtEncoder jwtEncoder(){
         JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
@@ -87,17 +109,19 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
+    /** TTL do access token em segundos, injetado de {@code jwt.token.ttl.access}. */
     @Bean
     public Long accessTokenTTL(){
         return Long.parseLong(accessTokenTTL);
     }
 
+    /** TTL do refresh token em segundos, injetado de {@code jwt.token.ttl.refresh}. */
     @Bean
     public Long refreshTokenTTL(){
         return Long.parseLong(refreshTokenTTL);
     }
 
-    // Bean for password encoding.
+    /** Encoder BCrypt para senhas. Fator de custo padrão (10 rounds). */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();

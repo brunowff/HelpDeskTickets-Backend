@@ -52,12 +52,10 @@
  */
 package br.com.doubletelecom.help_desk_tickets.app.services.implementations;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,7 +69,6 @@ import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.CreateUserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemGroupDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.UserDto;
 import br.com.doubletelecom.help_desk_tickets.app.domain.dtos.PageItemUserDto;
-import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Group;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.Role;
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.User;
 import br.com.doubletelecom.help_desk_tickets.app.exceptions.business.ObjectNotFoundException;
@@ -119,10 +116,11 @@ public class UserServiceImpl implements UserServices{
     @Transactional
     public User save(@RequestBody @Validated CreateUserDto userDto){
         
+        // Todo novo usuário recebe a role básica por padrão
         var roleBasic = roleRep.findByName(Role.Values.API_BASIC.name()).orElse(null);
         var userFromDb = userRep.findByUsername(userDto.username());
 
-        // Check if users already exist.
+        // Impede cadastro duplicado por username
         if(userFromDb.isPresent()){
             throw new ObjectNotProcessableException();
         }
@@ -132,7 +130,7 @@ public class UserServiceImpl implements UserServices{
         user.setFullname(userDto.fullname());
         user.setUsername(userDto.username());
         user.setEmail(userDto.email());
-        // Password encoding.
+        // Senha sempre armazenada com hash BCrypt — nunca em texto plano
         user.setPassword(passwordEncoder.encode(userDto.password()));
         user.setActive(true);
         user.setRoles(Set.of(roleBasic));
@@ -161,16 +159,27 @@ public class UserServiceImpl implements UserServices{
     public Void addRoleToUser(@RequestParam String userId, @RequestParam String roleName, JwtAuthenticationToken token){
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
-        var user2alterate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
-        Role.Values roleEnumValues = Role.Values.valueOf(roleName);
-        var role2add = roleRep.findByName(roleEnumValues.name()).orElseThrow( () -> new ObjectNotFoundException());
-        
-        if(user2alterate.hasRole(role2add.toString())){
-            throw new ObjectNotProcessableException();
-        }
-        
+
         if(!user.isAdmin()){
             throw new UserNotAuthorizedException();
+        }
+
+        var user2alterate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new ObjectNotFoundException());
+
+        // Valida que o roleName é um valor do enum antes de buscar no banco
+        Role.Values roleEnumValues;
+        try {
+            roleEnumValues = Role.Values.valueOf(roleName);
+        } catch (IllegalArgumentException e) {
+            throw new ObjectNotFoundException();
+        }
+
+        var role2add = roleRep.findByName(roleEnumValues.name()).orElseThrow( () -> new ObjectNotFoundException());
+
+        // BUG FIX: era role2add.toString() que retorna "Role(roleId=X, name=Y)" — nunca batia
+        // Correto: comparar pelo nome da role
+        if(user2alterate.hasRole(role2add.getName())){
+            throw new ObjectNotProcessableException();
         }
         
         var roles = user2alterate.getRoles();
@@ -186,6 +195,7 @@ public class UserServiceImpl implements UserServices{
         
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         
+        // A role API_ADMIN não pode ser removida via API para proteger o acesso administrativo
         if(!user.isAdmin() || roleName.equals("API_ADMIN")){
             throw new UserNotAuthorizedException();
         }
@@ -244,6 +254,7 @@ public class UserServiceImpl implements UserServices{
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         var user2deactivate = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
 
+        // Impede que um admin desative outro admin (proteção contra lock-out acidental)
         if(user.isAdmin() && !user2deactivate.isAdmin()){
             user2deactivate.setActive(false);
             userRep.save(user2deactivate);
@@ -302,21 +313,14 @@ public class UserServiceImpl implements UserServices{
     public List<PageItemGroupDto> findGroupsByUserId(String userId, JwtAuthenticationToken token){
         var user = userRep.findById(UUID.fromString(token.getName())).orElseThrow( () -> new UserNotFoundException());
         
-        if(user.isAdmin() || user.hasRole("API_GROUP_MANAGER") || user.hasRole("API_GROUP")){
-            try {
-                var user2find = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
-                Iterator<Group> groups = user2find.getGroups().iterator();
-                List<PageItemGroupDto> groups2return = new CopyOnWriteArrayList<>();
-                while (groups.hasNext()) {
-                    groups2return.add(new PageItemGroupDto(groups.next()));
-                }
-                return groups2return;
-            } catch (Exception e) {
-                throw new ObjectNotFoundException();
-            }
-        } else {
+        if(!user.isAdmin() && !user.hasRole("API_GROUP_MANAGER") && !user.hasRole("API_GROUP")){
             throw new UserNotAuthorizedException();
         }
-        
+
+        // BUG FIX: substituído Iterator + CopyOnWriteArrayList por stream — mais simples e sem overhead
+        var user2find = userRep.findById(UUID.fromString(userId)).orElseThrow( () -> new UserNotFoundException());
+        return user2find.getGroups().stream()
+                .map(PageItemGroupDto::new)
+                .toList();
     }
 }

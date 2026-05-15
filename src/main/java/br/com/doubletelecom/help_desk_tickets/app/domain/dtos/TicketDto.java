@@ -1,23 +1,12 @@
 /**
- * Data Transfer Object for Ticket.
- * 
- * @param ticketId Unique identifier for the ticket.
- * @param ticketTitle Title of the ticket.
- * @param ticketDescription Description of the ticket.
- * @param ticketStatus Status of the ticket.
- * @param ticketPriority Priority level of the ticket.
- * @param ticketCategory Category identifier for the ticket.
- * @param userId Identifier of the user who created the ticket.
- * @param attibuitedToUserId Identifier of the user to whom the ticket is assigned.
- * @param creationDateTime Date and time when the ticket was created.
- * @param finalizationDateTime Date and time when the ticket was finalized.
- * 
- * @author 
- * @version
+ * Data Transfer Object para atualização de um ticket existente.
+ *
+ * <p>Usa {@link Instant} para os campos de data/hora, consistente com as entidades JPA.
+ * O campo {@code userAuthor} é somente leitura — o autor não pode ser alterado após a criação.</p>
  */
 package br.com.doubletelecom.help_desk_tickets.app.domain.dtos;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import br.com.doubletelecom.help_desk_tickets.app.domain.entities.TicketCategory;
@@ -49,9 +38,9 @@ public record TicketDto(
 
     UserDto attibuitedToUserId,
 
-    Date creationDateTime,
+    Instant creationDateTime,
 
-    Date finalizationDateTime
+    Instant finalizationDateTime
     
     ) {
 

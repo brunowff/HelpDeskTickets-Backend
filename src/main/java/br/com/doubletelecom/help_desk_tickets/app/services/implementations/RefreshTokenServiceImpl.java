@@ -26,10 +26,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public RefreshToken saveRefreshToken(User user, UUID token, Instant expiresAt) {
-        var refreshToken = refreshTokenRep.findByUser(user).orElse(new RefreshToken());
-        refreshToken.setToken(token);
-        refreshToken.setExpiresAt(expiresAt);
-        refreshToken.setUser(user);
+        // BUG FIX: não reutilizar registro existente — o deleteByUser anterior pode não ter
+        // commitado ainda na mesma transação, causando conflito de chave única.
+        // O fluxo correto é: deleteByUser → flush → save novo registro.
+        // Como AuthenticationServiceImpl já chama deleteByUser antes, aqui sempre criamos novo.
+        var refreshToken = RefreshToken.builder()
+                .token(token)
+                .expiresAt(expiresAt)
+                .user(user)
+                .build();
         return refreshTokenRep.save(refreshToken);
     }
 
