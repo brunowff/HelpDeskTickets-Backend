@@ -30,13 +30,13 @@ HelpDeskTickets é uma API RESTful para gerenciamento de chamados de suporte té
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Controllers (REST)              │  ← Recebe requisições HTTP, valida DTOs
+│              Controllers (REST)             │  ← Recebe requisições HTTP, valida DTOs
 ├─────────────────────────────────────────────┤
-│         Services (Interfaces + Impls)        │  ← Regras de negócio, autorização contextual
+│         Services (Interfaces + Impls)       │  ← Regras de negócio, autorização contextual
 ├─────────────────────────────────────────────┤
-│              Repositories (JPA)              │  ← Acesso a dados via Spring Data
+│              Repositories (JPA)             │  ← Acesso a dados via Spring Data
 ├─────────────────────────────────────────────┤
-│           Entities / Domain Model            │  ← Mapeamento JPA, enums de domínio
+│           Entities / Domain Model           │  ← Mapeamento JPA, enums de domínio
 └─────────────────────────────────────────────┘
 ```
 
@@ -77,16 +77,16 @@ br.com.doubletelecom.help_desk_tickets
 
 ```
 ┌──────────┐     N:N    ┌──────────┐
-│   User   │───────────│   Role   │
-│          │           └──────────┘
+│   User   │────────────│   Role   │
+│          │            └──────────┘
 │          │     N:N    ┌──────────┐
-│          │───────────│  Group   │
-└────┬─────┘           └────┬─────┘
-     │                      │
-     │ 1:N                  │ 1:N (destinationGroup)
-     ▼                      ▼
+│          │────────────│  Group   │
+└────┬─────┘            └────┬─────┘
+     │                       │
+     │ 1:N                   │ 1:N (destinationGroup)
+     ▼                       ▼
 ┌──────────┐     N:1   ┌──────────────┐
-│  Ticket  │──────────│TicketCategory│
+│  Ticket  │───────────│TicketCategory│
 │          │           └──────────────┘
 │          │ N:1 (attribuitedToUser)
 │          │──────────► User
