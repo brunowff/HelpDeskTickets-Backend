@@ -5,8 +5,8 @@
  * The admin user is created with the following details:
  * - Full name: Administrador do Sistema
  * - Username: admin
- * - Email: admin@doubletelecom.com.br
- * - Password: M3tr0T3l3c0m (encoded using BCryptPasswordEncoder)
+ * - Email: admin@youremail.com.br
+ * - Password: Y0urP@$$worD (encoded using BCryptPasswordEncoder)
  * - Active status: true
  * - Roles: API_ADMIN
  * 
@@ -73,9 +73,9 @@ public class AdminUserConfig implements CommandLineRunner{
                     var user = new User();
                     user.setFullname("Administrador do Sistema");
                     user.setUsername("admin");
-                    user.setEmail("admin@doubletelecom.com.br");
+                    user.setEmail("admin@youremail.com.br");
                     // Senha codificada com BCrypt — alterar em produção via endpoint de reset
-                    user.setPassword(passwordEncoder.encode("M3tr0T3l3c0m"));
+                    user.setPassword(passwordEncoder.encode("Y0urP@$$worD"));
                     user.setActive(true);
                     user.setRoles(roles); // Admin recebe todas as roles disponíveis
                     userRep.save(user);
