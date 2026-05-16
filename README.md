@@ -172,8 +172,8 @@ Criado automaticamente na primeira inicialização:
 
 | Campo | Valor |
 |---|---|
-| Email | `admin@doubletelecom.com.br` |
-| Senha | `M3tr0T3l3c0m` |
+| Email | `admin@youremail.com.br` |
+| Senha | `Y0urP@$$worD` |
 
 ### Fluxo de autenticação JWT
 
